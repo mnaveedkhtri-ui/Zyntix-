@@ -8,6 +8,7 @@ export default function SettingsPage() {
   const [githubKey, setGithubKey] = useState("");
   const [devtoKey, setDevtoKey] = useState("");
   const [hashnodeKey, setHashnodeKey] = useState("");
+  const [notionKey, setNotionKey] = useState("");
   const [saved, setSaved] = useState(false);
 
   const handleSave = () => {
@@ -15,6 +16,7 @@ export default function SettingsPage() {
     localStorage.setItem("github_key", githubKey);
     localStorage.setItem("devto_key", devtoKey);
     localStorage.setItem("hashnode_key", hashnodeKey);
+    localStorage.setItem("notion_key", notionKey);
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
   };
@@ -97,7 +99,7 @@ export default function SettingsPage() {
                   <p className="text-xs text-slate-500 mt-2">Required for Web 2.0 Article publishing.</p>
                 </div>
 
-                {/* Hashnode */}
+                                {/* Hashnode */}
                 <div>
                   <label className="block text-sm font-bold text-slate-300 mb-2">Hashnode Personal Access Token (DA 90)</label>
                   <input 
@@ -108,6 +110,19 @@ export default function SettingsPage() {
                     className="w-full bg-[#020617] border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all placeholder:text-slate-600 font-mono"
                   />
                   <p className="text-xs text-slate-500 mt-2">Required for Hashnode Blog publishing.</p>
+                </div>
+
+                {/* Notion */}
+                <div>
+                  <label className="block text-sm font-bold text-slate-300 mb-2">Notion Integration Token (DA 90+)</label>
+                  <input 
+                    type="password" 
+                    value={notionKey}
+                    onChange={(e) => setNotionKey(e.target.value)}
+                    placeholder="ntn_..." 
+                    className="w-full bg-[#020617] border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all placeholder:text-slate-600 font-mono"
+                  />
+                  <p className="text-xs text-slate-500 mt-2">Required for creating public Notion SEO pages.</p>
                 </div>
              </div>
 
@@ -127,3 +142,4 @@ export default function SettingsPage() {
     </div>
   );
 }
+
