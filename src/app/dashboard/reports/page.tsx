@@ -59,61 +59,15 @@ export default function ReportsPage() {
                 </tr>
               </thead>
               <tbody className="text-sm font-medium">
-                <tr className="border-b border-slate-800/50 hover:bg-slate-800/20 transition-colors group">
-                  <td className="p-5 text-slate-300">#CMP-9923</td>
-                  <td className="p-5">
-                    <span className="px-2.5 py-1 bg-cyan-500/10 text-cyan-400 rounded-lg text-xs uppercase tracking-wide font-bold border border-cyan-500/20">Web 2.0</span>
-                  </td>
-                  <td className="p-5 text-slate-300 flex items-center gap-2">
-                    best-ai-tools.com <ExternalLink className="w-3 h-3 text-slate-500" />
-                  </td>
-                  <td className="p-5 text-emerald-400 font-bold">10 / 10</td>
-                  <td className="p-5 text-slate-400">Oct 24, 2026</td>
-                  <td className="p-5">
-                    <span className="flex items-center gap-1.5 text-emerald-400 text-xs font-bold uppercase"><CheckCircle2 className="w-4 h-4" /> Completed</span>
-                  </td>
-                  <td className="p-5 text-right">
-                    <button className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg transition-colors shadow-sm">
-                      <Download className="w-4 h-4" /> CSV
-                    </button>
-                  </td>
-                </tr>
-                <tr className="border-b border-slate-800/50 hover:bg-slate-800/20 transition-colors group">
-                  <td className="p-5 text-slate-300">#CMP-9922</td>
-                  <td className="p-5">
-                    <span className="px-2.5 py-1 bg-blue-500/10 text-blue-400 rounded-lg text-xs uppercase tracking-wide font-bold border border-blue-500/20">Profiles</span>
-                  </td>
-                  <td className="p-5 text-slate-300 flex items-center gap-2">
-                    seo-agency.de <ExternalLink className="w-3 h-3 text-slate-500" />
-                  </td>
-                  <td className="p-5 text-emerald-400 font-bold">50 / 50</td>
-                  <td className="p-5 text-slate-400">Oct 23, 2026</td>
-                  <td className="p-5">
-                    <span className="flex items-center gap-1.5 text-emerald-400 text-xs font-bold uppercase"><CheckCircle2 className="w-4 h-4" /> Completed</span>
-                  </td>
-                  <td className="p-5 text-right">
-                    <button className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg transition-colors shadow-sm">
-                      <Download className="w-4 h-4" /> CSV
-                    </button>
-                  </td>
-                </tr>
-                <tr className="hover:bg-slate-800/20 transition-colors group">
-                  <td className="p-5 text-slate-300">#CMP-9921</td>
-                  <td className="p-5">
-                    <span className="px-2.5 py-1 bg-purple-500/10 text-purple-400 rounded-lg text-xs uppercase tracking-wide font-bold border border-purple-500/20">Comments</span>
-                  </td>
-                  <td className="p-5 text-slate-300 flex items-center gap-2">
-                    tech-startup.io <ExternalLink className="w-3 h-3 text-slate-500" />
-                  </td>
-                  <td className="p-5 text-emerald-400 font-bold">500 / 500</td>
-                  <td className="p-5 text-slate-400">Oct 22, 2026</td>
-                  <td className="p-5">
-                    <span className="flex items-center gap-1.5 text-emerald-400 text-xs font-bold uppercase"><CheckCircle2 className="w-4 h-4" /> Completed</span>
-                  </td>
-                  <td className="p-5 text-right">
-                    <button className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg transition-colors shadow-sm">
-                      <Download className="w-4 h-4" /> CSV
-                    </button>
+                <tr>
+                  <td colSpan={7} className="p-16 text-center text-slate-500">
+                    <div className="flex flex-col items-center justify-center">
+                      <div className="w-16 h-16 rounded-full bg-slate-800/50 flex items-center justify-center mb-4">
+                        <FileSpreadsheet className="w-8 h-8 text-slate-600" />
+                      </div>
+                      <p className="text-lg font-bold text-slate-400 mb-1">No campaigns found</p>
+                      <p className="text-sm">Run your first Zyntix campaign from the sidebar to generate a report.</p>
+                    </div>
                   </td>
                 </tr>
               </tbody>
