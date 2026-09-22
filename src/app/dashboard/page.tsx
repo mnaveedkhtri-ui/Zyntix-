@@ -22,18 +22,38 @@ export default function Dashboard() {
     if (!targetUrl) return;
     
     setIsProcessing(true);
-    setProgress(0);
+    setProgress(20);
     
-    // Simulate processing steps
-    const steps = [25, 50, 75, 100];
-    for (let i = 0; i < steps.length; i++) {
-      await new Promise(r => setTimeout(r, 1000));
-      setProgress(steps[i]);
+    try {
+      const res = await fetch('/api/syndicate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          url: targetUrl,
+          title: "Premium Skincare", 
+          location: "Global",
+          keywords: "organic skincare, cruelty-free"
+        })
+      });
+      
+      setProgress(60);
+      const data = await res.json();
+      setProgress(90);
+      
+      if (data.success) {
+        setProgress(100);
+        console.log("Syndicated Result:", data);
+        // Display or save the result...
+      } else {
+        alert("Error syndicating: " + data.error);
+      }
+    } catch (err) {
+      alert("Failed to connect to the server.");
     }
     
     setTimeout(() => {
       setIsProcessing(false);
-    }, 500);
+    }, 1000);
   };
 
   return (
