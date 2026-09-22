@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Link2, LayoutDashboard, Settings, Activity, CheckCircle2, Globe, FileText, ArrowRight, UploadCloud, Users } from "lucide-react";
+import { Link2, LayoutDashboard, Settings, Activity, CheckCircle2, Globe, FileText, ArrowRight, UploadCloud, Users, MessageSquare, UserPlus, HelpCircle } from "lucide-react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 export default function Dashboard() {
   const [targetUrls, setTargetUrls] = useState("");
@@ -66,15 +67,18 @@ export default function Dashboard() {
         </div>
         
         <nav className="space-y-2">
-          <a href="/dashboard" className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 text-cyan-400 rounded-xl font-medium border border-cyan-500/20 shadow-sm">
-            <LayoutDashboard className="w-5 h-5" /> Campaigns
-          </a>
-          <a href="/dashboard/comments" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors">
-            <Activity className="w-5 h-5" /> Blog Comments
-          </a>
-          <a href="#" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors">
-            <Settings className="w-5 h-5" /> Integrations
-          </a>
+          <Link href="/dashboard" className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 text-cyan-400 rounded-xl font-medium border border-cyan-500/20 shadow-sm">
+            <FileText className="w-5 h-5" /> Web 2.0 Articles
+          </Link>
+          <Link href="/dashboard/comments" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors">
+            <MessageSquare className="w-5 h-5" /> Blog Comments
+          </Link>
+          <Link href="#" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors">
+            <UserPlus className="w-5 h-5" /> High-DA Profiles
+          </Link>
+          <Link href="#" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors">
+            <HelpCircle className="w-5 h-5" /> Q&A / Forums
+          </Link>
         </nav>
       </aside>
 
