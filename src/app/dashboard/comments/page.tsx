@@ -1,33 +1,36 @@
 "use client";
 
 import { useState } from "react";
-import { Link2, Zap, CheckCircle2, Search, Settings2, ShieldAlert } from "lucide-react";
+import { Link2, Zap, CheckCircle2, Search, Settings2, ShieldAlert, Download, FileSpreadsheet } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 
 export default function BulkComments() {
-  const [targetUrls, setTargetUrls] = useState("");
+  const [niche, setNiche] = useState("");
   const [clientLink, setClientLink] = useState("");
-  const [language, setLanguage] = useState("German (.de)");
+  const [targetTld, setTargetTld] = useState(".de (Germany)");
+  const [linkCount, setLinkCount] = useState(500);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isFinished, setIsFinished] = useState(false);
   const [progress, setProgress] = useState(0);
   const [processedCount, setProcessedCount] = useState(0);
 
   const handleBlast = async (e: React.FormEvent) => {
     e.preventDefault();
-    const urls = targetUrls.split('\n').map(u => u.trim()).filter(u => u);
-    if (urls.length === 0 || !clientLink) return;
+    if (!niche || !clientLink) return;
     
     setIsProcessing(true);
+    setIsFinished(false);
     setProgress(0);
     setProcessedCount(0);
     
     try {
-      // Process each URL
-      for (let i = 0; i < urls.length; i++) {
-        await new Promise(r => setTimeout(r, 200)); // Fast loop for UI demo
+      // Simulate Scraping and Processing
+      for (let i = 0; i < linkCount; i++) {
+        // Fast loop for UI demo, but conceptually it scrapes then posts
+        await new Promise(r => setTimeout(r, 20)); 
         setProcessedCount(i + 1);
-        setProgress(Math.round(((i + 1) / urls.length) * 100));
+        setProgress(Math.round(((i + 1) / linkCount) * 100));
       }
     } catch (err) {
       alert("Failed to connect to the server.");
@@ -35,6 +38,7 @@ export default function BulkComments() {
     
     setTimeout(() => {
       setIsProcessing(false);
+      setIsFinished(true);
     }, 1000);
   };
 
@@ -66,8 +70,8 @@ export default function BulkComments() {
       <main className="flex-1 p-8 max-w-5xl mx-auto">
         <header className="mb-10 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold mb-2 tracking-tight text-white">Bulk Comment Engine</h1>
-            <p className="text-[#888888] text-sm">Automate semantic blog comments across 500+ high-authority sites instantly.</p>
+            <h1 className="text-3xl font-bold mb-2 tracking-tight text-white">Auto-Scraper & Commenter</h1>
+            <p className="text-[#888888] text-sm">Automatically find target blogs by country and drop AI semantic comments.</p>
           </div>
           <div className="flex items-center gap-2 px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded text-blue-500 text-xs font-semibold">
             AGENCY TIER
@@ -81,52 +85,64 @@ export default function BulkComments() {
               <form onSubmit={handleBlast}>
                 <div className="grid grid-cols-2 gap-4 mb-6">
                   <div>
-                    <label className="block text-sm font-medium text-[#888888] mb-2">Client's Backlink URL</label>
+                    <label className="block text-sm font-medium text-[#888888] mb-2">Niche / Keyword</label>
                     <input 
-                      type="url"
-                      value={clientLink}
-                      onChange={(e) => setClientLink(e.target.value)}
-                      placeholder="https://client-site.com"
+                      type="text"
+                      value={niche}
+                      onChange={(e) => setNiche(e.target.value)}
+                      placeholder="e.g. Technology, Health"
                       className="w-full bg-[#0A0A0A] border border-[#333333] rounded-md py-2 px-3 text-white focus:outline-none focus:border-white transition-colors text-sm"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-[#888888] mb-2">Language / Geo</label>
+                    <label className="block text-sm font-medium text-[#888888] mb-2">Target TLD (Geo)</label>
                     <select 
-                      value={language}
-                      onChange={(e) => setLanguage(e.target.value)}
+                      value={targetTld}
+                      onChange={(e) => setTargetTld(e.target.value)}
                       className="w-full bg-[#0A0A0A] border border-[#333333] rounded-md py-2 px-3 text-white focus:outline-none focus:border-white transition-colors text-sm"
                     >
-                      <option>German (.de)</option>
-                      <option>English (.com)</option>
-                      <option>French (.fr)</option>
-                      <option>Spanish (.es)</option>
+                      <option value=".de (Germany)">.de (Germany)</option>
+                      <option value=".co.uk (UK)">.co.uk (UK)</option>
+                      <option value=".fr (France)">.fr (France)</option>
+                      <option value=".com (Global)">.com (Global)</option>
                     </select>
                   </div>
                 </div>
 
-                <div className="mb-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="block text-sm font-medium text-[#888888]">Target Blog URLs (Paste up to 500)</label>
-                    <span className="text-xs text-[#666666]">{targetUrls.split('\n').filter(u => u.trim()).length} / 500 URLs</span>
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div>
+                    <label className="block text-sm font-medium text-[#888888] mb-2">Client's Target Link</label>
+                    <input 
+                      type="url"
+                      value={clientLink}
+                      onChange={(e) => setClientLink(e.target.value)}
+                      placeholder="https://client-site.de"
+                      className="w-full bg-[#0A0A0A] border border-[#333333] rounded-md py-2 px-3 text-white focus:outline-none focus:border-white transition-colors text-sm"
+                      required
+                    />
                   </div>
-                  <textarea 
-                    value={targetUrls}
-                    onChange={(e) => setTargetUrls(e.target.value)}
-                    placeholder="https://high-da-blog.de/article-1&#10;https://another-site.de/post-2"
-                    className="w-full h-48 bg-[#0A0A0A] border border-[#333333] rounded-md py-3 px-4 text-white focus:outline-none focus:border-white transition-colors resize-none font-mono text-xs"
-                    required
-                  />
+                  <div>
+                    <label className="block text-sm font-medium text-[#888888] mb-2">Number of Backlinks needed</label>
+                    <input 
+                      type="number"
+                      value={linkCount}
+                      onChange={(e) => setLinkCount(Number(e.target.value))}
+                      min="10"
+                      max="1000"
+                      className="w-full bg-[#0A0A0A] border border-[#333333] rounded-md py-2 px-3 text-white focus:outline-none focus:border-white transition-colors text-sm"
+                      required
+                    />
+                  </div>
                 </div>
 
                 <div className="flex justify-end">
                   <button 
                     type="submit"
-                    disabled={isProcessing || !targetUrls.trim() || !clientLink}
+                    disabled={isProcessing || !niche || !clientLink}
                     className="px-6 py-2.5 bg-white text-black font-semibold rounded-md hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm"
                   >
-                    {isProcessing ? "Executing..." : "Start 500x Blast"} <Zap className="w-4 h-4" />
+                    {isProcessing ? "Scraping & Blasting..." : `Start ${linkCount}x Blast`} <Zap className="w-4 h-4" />
                   </button>
                 </div>
                 
@@ -134,7 +150,7 @@ export default function BulkComments() {
                 {isProcessing && (
                   <div className="mt-8 p-4 bg-[#0A0A0A] rounded-lg border border-[#333333]">
                     <div className="flex justify-between text-xs font-semibold text-white mb-3">
-                      <span>Bypassing spam filters & generating context...</span>
+                      <span>Dorking Google & bypassing spam filters...</span>
                       <span>{progress}%</span>
                     </div>
                     <div className="w-full h-1.5 bg-[#222222] rounded-full overflow-hidden">
@@ -145,11 +161,29 @@ export default function BulkComments() {
                       />
                     </div>
                     <div className="mt-4 space-y-2 text-xs text-[#888888] font-medium">
-                      <p className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-white" /> Scraped {processedCount} of {targetUrls.split('\n').filter(u => u.trim()).length} target blogs.</p>
-                      {progress >= 50 && <p className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-white" /> AI writing natural German responses...</p>}
-                      {progress >= 100 && <p className="flex items-center gap-2 text-green-500 font-semibold"><CheckCircle2 className="w-4 h-4" /> Blast complete! Report generated.</p>}
+                      <p className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-white" /> Scraped {processedCount} of {linkCount} target {targetTld.split(' ')[0]} blogs.</p>
+                      {progress >= 50 && <p className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-white" /> AI writing natural semantic responses...</p>}
                     </div>
                   </div>
+                )}
+
+                {/* Finished State / Report Download */}
+                {isFinished && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mt-8 p-6 bg-green-500/10 border border-green-500/20 rounded-lg flex items-center justify-between"
+                  >
+                    <div>
+                      <h3 className="text-green-500 font-bold mb-1 flex items-center gap-2">
+                        <CheckCircle2 className="w-5 h-5" /> Blast Complete!
+                      </h3>
+                      <p className="text-sm text-[#888888]">Successfully posted {linkCount} comments. Ready for client delivery.</p>
+                    </div>
+                    <button type="button" className="px-4 py-2 bg-green-600 text-white font-semibold rounded hover:bg-green-700 transition-colors flex items-center gap-2 text-sm shadow-lg shadow-green-500/20">
+                      <FileSpreadsheet className="w-4 h-4" /> Download Report (.csv)
+                    </button>
+                  </motion.div>
                 )}
               </form>
             </div>
@@ -158,19 +192,19 @@ export default function BulkComments() {
           {/* Sidebar Info */}
           <div className="space-y-6">
             <div className="bg-[#111111] border border-[#222222] p-5 rounded-xl">
-              <h2 className="font-semibold text-sm text-white mb-4 flex items-center gap-2"><Settings2 className="w-4 h-4" /> AI Configuration</h2>
+              <h2 className="font-semibold text-sm text-white mb-4 flex items-center gap-2"><Settings2 className="w-4 h-4" /> Scraper Config</h2>
               <div className="space-y-3 text-xs text-[#888888]">
-                <p><strong>Footprint:</strong> WordPress, Custom Forms</p>
+                <p><strong>Dorks:</strong> <code>site:{targetTld.split(' ')[0]} inurl:blog</code></p>
                 <p><strong>Proxy Rotation:</strong> Enabled (Residential)</p>
                 <p><strong>Bypass:</strong> Akismet AI Evasion</p>
-                <p><strong>Context Match:</strong> Strict</p>
+                <p><strong>Report:</strong> Detailed (URL, DR, Anchor)</p>
               </div>
             </div>
 
             <div className="bg-[#1A1111] border border-red-900/30 p-5 rounded-xl">
               <h2 className="font-semibold text-sm text-red-400 mb-2 flex items-center gap-2"><ShieldAlert className="w-4 h-4" /> Agency Notice</h2>
               <p className="text-xs text-red-400/80 leading-relaxed">
-                Running 500 links simultaneously requires high proxy bandwidth. Our system automatically throttles submissions to 10-15 per minute to avoid setting off Akismet/Cloudflare spam traps on high DA .de domains.
+                Reports are generated automatically in CSV format (Excel). You can send this directly to your clients via Fiverr/Upwork as proof of work.
               </p>
             </div>
           </div>
