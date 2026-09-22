@@ -101,6 +101,9 @@ export default function ForumsDashboard() {
           <Link href="/dashboard/forums" className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 text-cyan-400 rounded-xl font-medium border border-cyan-500/20 shadow-sm">
             <HelpCircle className="w-5 h-5" /> Q&A / Forums
           </Link>
+          <Link href="/dashboard/reports" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors mt-8 border border-slate-800/50">
+            <FileSpreadsheet className="w-5 h-5" /> Detailed Reports
+          </Link>
         </nav>
       </aside>
 
