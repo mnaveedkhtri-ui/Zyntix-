@@ -28,7 +28,7 @@ export default function BulkComments() {
     try {
       // Dynamic timing based on link count (fewer links = faster completion)
       const timePerLinkMs = 40;
-      const totalSimulationTime = Math.max(1500, commentCount * timePerLinkMs);
+      const totalSimulationTime = Math.max(1500, linkCount * timePerLinkMs);
       const updateInterval = 100;
       const progressIncrement = 95 / (totalSimulationTime / updateInterval);
 
@@ -304,6 +304,7 @@ export default function BulkComments() {
     </div>
   );
 }
+
 
 
 

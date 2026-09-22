@@ -29,7 +29,7 @@ export default function ForumsDashboard() {
     try {
       // Dynamic timing based on link count (fewer links = faster completion)
       const timePerLinkMs = 40;
-      const totalSimulationTime = Math.max(1500, answerCount * timePerLinkMs);
+      const totalSimulationTime = Math.max(1500, postCount * timePerLinkMs);
       const updateInterval = 100;
       const progressIncrement = 95 / (totalSimulationTime / updateInterval);
 
@@ -312,6 +312,7 @@ export default function ForumsDashboard() {
     </div>
   );
 }
+
 
 
 
