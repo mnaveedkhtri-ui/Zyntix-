@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Zap, CheckCircle2, Settings2, ShieldAlert, FileSpreadsheet, Globe, FileText, MessageSquare, UserPlus, HelpCircle, User , Layers, Settings} from "lucide-react";
+import { Zap, CheckCircle2, Settings2, ShieldAlert, FileSpreadsheet, Globe, FileText, MessageSquare, UserPlus, HelpCircle, User , Layers, Settings, Activity} from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 
@@ -10,7 +10,7 @@ export default function ProfilesDashboard() {
   const [clientLink, setClientLink] = useState("");
   const [daTier, setDaTier] = useState("DA 90+ (Elite - GitHub, Adobe)");
   const [targetTld, setTargetTld] = useState(".com (Global)");
-  const [profileCount, setProfileCount] = useState(50);
+  const [profileCount, setProfileCount] = useState(1);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -310,6 +310,8 @@ export default function ProfilesDashboard() {
     </div>
   );
 }
+
+
 
 
 
