@@ -148,29 +148,34 @@ export default function BulkComments() {
                   </div>
                 </div>
 
-                {/* Natural Pacing / Drip Feed (Anti-Spam) */}
+                {/* Campaign Delivery Engine */}
                 <div className="mb-8">
-                  <label className="block text-sm font-bold text-slate-200 mb-2">Link Velocity (Anti-Spam Pacing)</label>
+                  <label className="block text-sm font-bold text-slate-200 mb-2 flex items-center gap-2">
+                    Campaign Delivery Engine <span className="bg-emerald-500/10 text-emerald-400 text-[10px] uppercase px-2 py-0.5 rounded-full border border-emerald-500/20">Safe Mode</span>
+                  </label>
                   <div className="grid grid-cols-3 gap-3">
-                    <label className="cursor-pointer">
+                    <label className="cursor-pointer group">
                       <input type="radio" name="velocity" className="peer sr-only" defaultChecked />
-                      <div className="p-3 text-center border border-slate-800 bg-[#020617] rounded-xl text-slate-400 peer-checked:border-emerald-500 peer-checked:text-emerald-400 peer-checked:bg-emerald-500/10 transition-all text-sm font-bold">
-                        Drip (30 Days)
-                        <div className="text-xs font-normal opacity-80 mt-1">100% Natural</div>
+                      <div className="p-3 text-center border border-slate-800 bg-[#020617] rounded-xl text-slate-400 peer-checked:border-emerald-500 peer-checked:text-emerald-400 peer-checked:bg-emerald-500/10 transition-all text-sm font-bold group-hover:border-slate-600 shadow-sm relative overflow-hidden">
+                        Natural Drip (30 Days)
+                        <div className="text-xs font-normal opacity-80 mt-1">Recommended</div>
+                        <div className="absolute top-0 right-0 w-8 h-8 bg-emerald-500/20 blur-xl rounded-full opacity-0 peer-checked:opacity-100"></div>
                       </div>
                     </label>
-                    <label className="cursor-pointer">
+                    <label className="cursor-pointer group">
                       <input type="radio" name="velocity" className="peer sr-only" />
-                      <div className="p-3 text-center border border-slate-800 bg-[#020617] rounded-xl text-slate-400 peer-checked:border-cyan-500 peer-checked:text-cyan-400 peer-checked:bg-cyan-500/10 transition-all text-sm font-bold">
-                        Paced (7 Days)
-                        <div className="text-xs font-normal opacity-80 mt-1">Balanced</div>
+                      <div className="p-3 text-center border border-slate-800 bg-[#020617] rounded-xl text-slate-400 peer-checked:border-blue-500 peer-checked:text-blue-400 peer-checked:bg-blue-500/10 transition-all text-sm font-bold group-hover:border-slate-600 shadow-sm relative overflow-hidden">
+                        Balanced (7 Days)
+                        <div className="text-xs font-normal opacity-80 mt-1">Standard Speed</div>
+                        <div className="absolute top-0 right-0 w-8 h-8 bg-blue-500/20 blur-xl rounded-full opacity-0 peer-checked:opacity-100"></div>
                       </div>
                     </label>
-                    <label className="cursor-pointer">
+                    <label className="cursor-pointer group">
                       <input type="radio" name="velocity" className="peer sr-only" />
-                      <div className="p-3 text-center border border-slate-800 bg-[#020617] rounded-xl text-slate-400 peer-checked:border-red-500 peer-checked:text-red-400 peer-checked:bg-red-500/10 transition-all text-sm font-bold">
-                        Instant Blast
-                        <div className="text-xs font-normal opacity-80 mt-1">High Risk</div>
+                      <div className="p-3 text-center border border-slate-800 bg-[#020617] rounded-xl text-slate-400 peer-checked:border-cyan-500 peer-checked:text-cyan-400 peer-checked:bg-cyan-500/10 transition-all text-sm font-bold group-hover:border-slate-600 shadow-sm relative overflow-hidden">
+                        Turbo Blast (24h)
+                        <div className="text-xs font-normal opacity-80 mt-1">For Authority Sites</div>
+                        <div className="absolute top-0 right-0 w-8 h-8 bg-cyan-500/20 blur-xl rounded-full opacity-0 peer-checked:opacity-100"></div>
                       </div>
                     </label>
                   </div>
