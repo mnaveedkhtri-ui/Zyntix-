@@ -20,8 +20,8 @@ export default function HowItWorks() {
               <Key className="w-6 h-6 text-purple-400" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold mb-3 text-white">1. Connect Your Accounts</h2>
-              <p className="text-slate-400 leading-relaxed">Head to the dashboard and authorize our application to post on your behalf to Medium, Blogger, Dev.to, and Hashnode. We use official APIs so your passwords stay secure.</p>
+              <h2 className="text-2xl font-bold mb-3 text-white">1. Select Campaign & Niche</h2>
+              <p className="text-slate-400 leading-relaxed">Choose between Web 2.0, Niche Forums, High-DA Profiles, Blog Comments, or a Mixed Strategy. There is zero setup required—our Global Agency Pool of aged accounts handles everything instantly.</p>
             </div>
           </div>
 
@@ -30,8 +30,8 @@ export default function HowItWorks() {
               <Activity className="w-6 h-6 text-cyan-400" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold mb-3 text-white">2. Paste Your URLs</h2>
-              <p className="text-slate-400 leading-relaxed">Drop your target URLs into the bulk upload tool. You can submit a single blog post or a list of 500 pages you want to build links for.</p>
+              <h2 className="text-2xl font-bold mb-3 text-white">2. Paste URLs & Target Geo</h2>
+              <p className="text-slate-400 leading-relaxed">Drop your client's target URLs and select your desired region from 14+ Geo-Targeted TLDs (like .de, .co.uk, .com). Zyntix will localize the backlinks to ensure maximum ranking impact.</p>
             </div>
           </div>
 
@@ -40,8 +40,8 @@ export default function HowItWorks() {
               <PlayCircle className="w-6 h-6 text-emerald-400" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold mb-3 text-white">3. Let the System Run</h2>
-              <p className="text-slate-400 leading-relaxed">We take over. The AI reads your posts, rewrites them into fresh articles, fetches cover images, and publishes them across your connected networks with contextual backlinks pointing back to you.</p>
+              <h2 className="text-2xl font-bold mb-3 text-white">3. 12-Hour Turbo Delivery</h2>
+              <p className="text-slate-400 leading-relaxed">Zyntix takes over. Using residential proxies and human-emulation delays, it safely builds your entire link profile and generates a pristine white-label CSV report for you to hand to your clients.</p>
             </div>
           </div>
         </div>
