@@ -155,6 +155,11 @@ export default function Dashboard() {
                       <option value=".nl (Netherlands)">.nl (Netherlands)</option>
                       <option value=".ca (Canada)">.ca (Canada)</option>
                       <option value=".au (Australia)">.au (Australia)</option>
+                      <option value=".in (India)">.in (India)</option>
+                      <option value=".jp (Japan)">.jp (Japan)</option>
+                      <option value=".br (Brazil)">.br (Brazil)</option>
+                      <option value=".ae (UAE)">.ae (UAE)</option>
+                      <option value=".sg (Singapore)">.sg (Singapore)</option>
                     </select>
                   </div>
                 </div>

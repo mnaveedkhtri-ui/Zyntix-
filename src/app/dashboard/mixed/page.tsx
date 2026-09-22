@@ -150,6 +150,15 @@ export default function MixedCampaigns() {
                       <option value=".co.uk (UK)">.co.uk (UK)</option>
                       <option value=".fr (France)">.fr (France)</option>
                       <option value=".es (Spain)">.es (Spain)</option>
+                      <option value=".it (Italy)">.it (Italy)</option>
+                      <option value=".nl (Netherlands)">.nl (Netherlands)</option>
+                      <option value=".ca (Canada)">.ca (Canada)</option>
+                      <option value=".au (Australia)">.au (Australia)</option>
+                      <option value=".in (India)">.in (India)</option>
+                      <option value=".jp (Japan)">.jp (Japan)</option>
+                      <option value=".br (Brazil)">.br (Brazil)</option>
+                      <option value=".ae (UAE)">.ae (UAE)</option>
+                      <option value=".sg (Singapore)">.sg (Singapore)</option>
                     </select>
                   </div>
                 </div>
