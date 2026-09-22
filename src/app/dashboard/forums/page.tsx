@@ -9,6 +9,7 @@ export default function ForumsDashboard() {
   const [niche, setNiche] = useState("");
   const [clientLink, setClientLink] = useState("");
   const [forumType, setForumType] = useState("Quora / Reddit (Top Tier)");
+  const [targetTld, setTargetTld] = useState(".com (Global)");
   const [postCount, setPostCount] = useState(25);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
@@ -101,6 +102,9 @@ export default function ForumsDashboard() {
           <Link href="/dashboard/forums" className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 text-cyan-400 rounded-xl font-medium border border-cyan-500/20 shadow-sm">
             <HelpCircle className="w-5 h-5" /> Q&A / Forums
           </Link>
+          <Link href="/dashboard/mixed" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors">
+            <Layers className="w-5 h-5" /> Mixed Campaigns
+          </Link>
           <Link href="/dashboard/reports" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors mt-8 border border-slate-800/50">
             <FileSpreadsheet className="w-5 h-5" /> Detailed Reports
           </Link>
@@ -123,28 +127,42 @@ export default function ForumsDashboard() {
           <div className="md:col-span-2 space-y-6">
             <div className="bg-[#050B14] border border-white/5 p-6 rounded-2xl shadow-xl">
               <form onSubmit={handleBlast}>
-                <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="grid grid-cols-3 gap-4 mb-6">
                   <div>
-                    <label className="block text-sm font-bold text-slate-200 mb-2">Search Question / Keyword</label>
+                    <label className="block text-sm font-bold text-slate-200 mb-2">Target Niche</label>
                     <input 
                       type="text"
                       value={niche}
                       onChange={(e) => setNiche(e.target.value)}
-                      placeholder="e.g. 'How to lose weight fast'"
+                      placeholder="e.g. Finance, Crypto"
                       className="w-full bg-[#020617] border border-slate-800 rounded-xl py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-slate-200 mb-2">Target Platforms</label>
+                    <label className="block text-sm font-bold text-slate-200 mb-2">Platform Selection</label>
                     <select 
                       value={forumType}
                       onChange={(e) => setForumType(e.target.value)}
                       className="w-full bg-[#020617] border border-slate-800 rounded-xl py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm appearance-none"
                     >
-                      <option>Quora & Reddit (Top Tier)</option>
-                      <option>Niche Specific vBulletin Boards</option>
-                      <option>Yahoo Answers (Archived / Mirrors)</option>
+                      <option>Quora / Reddit (Top Tier)</option>
+                      <option>Niche Forums (vBulletin)</option>
+                      <option>All Platforms (Mixed)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-slate-200 mb-2">Target TLD (Geo)</label>
+                    <select 
+                      value={targetTld}
+                      onChange={(e) => setTargetTld(e.target.value)}
+                      className="w-full bg-[#020617] border border-slate-800 rounded-xl py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm appearance-none"
+                    >
+                      <option value=".com (Global)">.com (Global / US)</option>
+                      <option value=".de (Germany)">.de (Germany)</option>
+                      <option value=".co.uk (UK)">.co.uk (UK)</option>
+                      <option value=".fr (France)">.fr (France)</option>
+                      <option value=".es (Spain)">.es (Spain)</option>
                     </select>
                   </div>
                 </div>
@@ -184,7 +202,7 @@ export default function ForumsDashboard() {
                     <div className="flex items-center justify-between relative z-10">
                       <div>
                         <h4 className="text-cyan-400 font-bold text-lg flex items-center gap-2">
-                          <Zap className="w-5 h-5" /> Turbo Delivery (24 Hours)
+                          <Zap className="w-5 h-5" /> Turbo Delivery (12 Hours)
                         </h4>
                         <p className="text-slate-400 text-sm mt-1">Clients want it fast. We deliver it safely.</p>
                       </div>

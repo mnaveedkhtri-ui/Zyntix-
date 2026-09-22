@@ -1,0 +1,24 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Campaign {
+  id             String   @id @default(uuid())
+  type           String   // 'web20', 'comments', 'profiles', 'forums'
+  niche          String
+  targetLink     String
+  status         String   @default("pending") // 'pending', 'processing', 'completed', 'failed'
+  progress       Int      @default(0)
+  totalRequested Int
+  totalCompleted Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  
+  // JSON array of generated links for the CSV report
+  reportData     String?  // We'll store stringified JSON array of { url: string, anchor: string, status: string }
+}

@@ -28,6 +28,9 @@ export default function ReportsPage() {
           <Link href="/dashboard/forums" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors">
             <HelpCircle className="w-5 h-5" /> Q&A / Forums
           </Link>
+          <Link href="/dashboard/mixed" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors">
+            <Layers className="w-5 h-5" /> Mixed Campaigns
+          </Link>
           <Link href="/dashboard/reports" className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 text-emerald-400 rounded-xl font-medium border border-emerald-500/20 shadow-sm mt-8">
             <FileSpreadsheet className="w-5 h-5" /> Detailed Reports
           </Link>

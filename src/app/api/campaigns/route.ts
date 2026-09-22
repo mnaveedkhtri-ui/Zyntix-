@@ -7,16 +7,22 @@ function generateMockLinks(type: string, niche: string, count: number, clientLin
   
   for (let i = 0; i < count; i++) {
     let url = "";
-    if (type === "web20") {
+    let currentType = type;
+    if (type === "mixed") {
+      const types = ["web20", "comments", "profiles", "forums"];
+      currentType = types[i % types.length];
+    }
+
+    if (currentType === "web20") {
       const domains = ["medium.com", "dev.to", "hashnode.dev", "wordpress.com", "blogger.com"];
       url = `https://${domains[i % domains.length]}/@seo-writer-${Math.floor(Math.random() * 1000)}/the-ultimate-guide-to-${sanitizedNiche}-${Math.floor(Math.random() * 10000)}`;
-    } else if (type === "comments") {
+    } else if (currentType === "comments") {
       const domains = [".de", ".co.uk", ".com", ".net", ".org"];
       url = `https://blog-about-${sanitizedNiche}${domains[i % domains.length]}/post-${Math.floor(Math.random() * 1000)}#comment-${Math.floor(Math.random() * 10000)}`;
-    } else if (type === "profiles") {
+    } else if (currentType === "profiles") {
       const domains = ["github.com", "behance.net", "adobe.com", "microsoft.com", "disqus.com"];
       url = `https://${domains[i % domains.length]}/${sanitizedNiche}-expert-${Math.floor(Math.random() * 10000)}`;
-    } else if (type === "forums") {
+    } else if (currentType === "forums") {
       const domains = ["reddit.com/r", "quora.com", "forums.digitalpoint.com"];
       url = `https://${domains[i % domains.length]}/${sanitizedNiche}/thread-${Math.floor(Math.random() * 10000)}`;
     }
@@ -25,6 +31,7 @@ function generateMockLinks(type: string, niche: string, count: number, clientLin
       url,
       anchor: `Best ${niche} resources`,
       target: clientLink,
+      type: currentType,
       status: "Live (DoFollow)"
     });
   }

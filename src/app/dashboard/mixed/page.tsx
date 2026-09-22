@@ -1,16 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { Zap, CheckCircle2, Settings2, ShieldAlert, FileSpreadsheet, Globe, FileText, MessageSquare, UserPlus, HelpCircle, User } from "lucide-react";
+import { Zap, CheckCircle2, Settings2, ShieldAlert, FileSpreadsheet, Globe, FileText, MessageSquare, UserPlus, HelpCircle, Layers } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 
-export default function ProfilesDashboard() {
+export default function MixedCampaigns() {
   const [niche, setNiche] = useState("");
   const [clientLink, setClientLink] = useState("");
-  const [daTier, setDaTier] = useState("DA 90+ (Elite - GitHub, Adobe)");
   const [targetTld, setTargetTld] = useState(".com (Global)");
-  const [profileCount, setProfileCount] = useState(50);
+  const [linkCount, setLinkCount] = useState(100);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -35,10 +34,10 @@ export default function ProfilesDashboard() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          type: "profiles",
+          type: "mixed",
           niche,
           targetLink: clientLink,
-          totalRequested: profileCount
+          totalRequested: linkCount
         })
       });
 
@@ -47,7 +46,7 @@ export default function ProfilesDashboard() {
       
       if (data.success) {
         setProgress(100);
-        setProcessedCount(profileCount);
+        setProcessedCount(linkCount);
         setReportData(data.reportData);
         setTimeout(() => {
           setIsProcessing(false);
@@ -65,14 +64,14 @@ export default function ProfilesDashboard() {
 
   const downloadCsv = () => {
     if (!reportData || reportData.length === 0) return;
-    const headers = ["Target Client URL", "Published Backlink URL", "Anchor Text", "Status"];
-    const rows = reportData.map(r => `"${r.target}","${r.url}","${r.anchor}","${r.status}"`);
+    const headers = ["Target Client URL", "Published Backlink URL", "Anchor Text", "Type", "Status"];
+    const rows = reportData.map(r => `"${r.target}","${r.url}","${r.anchor}","${r.type}","${r.status}"`);
     const csvContent = [headers.join(","), ...rows].join("\n");
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", `syndicator_report_profiles_${Date.now()}.csv`);
+    link.setAttribute("download", `syndicator_report_mixed_${Date.now()}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -96,13 +95,13 @@ export default function ProfilesDashboard() {
           <Link href="/dashboard/comments" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors">
             <MessageSquare className="w-5 h-5" /> Blog Comments
           </Link>
-          <Link href="/dashboard/profiles" className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 text-cyan-400 rounded-xl font-medium border border-cyan-500/20 shadow-sm">
+          <Link href="/dashboard/profiles" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors">
             <UserPlus className="w-5 h-5" /> High-DA Profiles
           </Link>
           <Link href="/dashboard/forums" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors">
             <HelpCircle className="w-5 h-5" /> Q&A / Forums
           </Link>
-          <Link href="/dashboard/mixed" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors">
+          <Link href="/dashboard/mixed" className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-purple-500/10 to-pink-500/10 text-purple-400 rounded-xl font-medium border border-purple-500/20 shadow-sm mt-4">
             <Layers className="w-5 h-5" /> Mixed Campaigns
           </Link>
           <Link href="/dashboard/reports" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors mt-8 border border-slate-800/50">
@@ -115,8 +114,8 @@ export default function ProfilesDashboard() {
       <main className="flex-1 p-8 max-w-5xl mx-auto">
         <header className="mb-10 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-black mb-2 tracking-tight">High-DA Profile Creator</h1>
-            <p className="text-slate-400 font-medium">Automatically generate realistic user profiles on DA90+ sites with contextual bio links.</p>
+            <h1 className="text-3xl font-black mb-2 tracking-tight">Mixed Backlink Campaigns</h1>
+            <p className="text-slate-400 font-medium">Distribute high-authority links across Web 2.0, Forums, Profiles, and Comments.</p>
           </div>
           <div className="flex items-center gap-2 px-3 py-1.5 bg-purple-500/10 border border-purple-500/20 rounded-full">
             <span className="text-xs font-bold text-purple-400 tracking-wide uppercase">Agency License</span>
@@ -127,29 +126,17 @@ export default function ProfilesDashboard() {
           <div className="md:col-span-2 space-y-6">
             <div className="bg-[#050B14] border border-white/5 p-6 rounded-2xl shadow-xl">
               <form onSubmit={handleBlast}>
-                <div className="grid grid-cols-3 gap-4 mb-6">
+                <div className="grid grid-cols-2 gap-4 mb-6">
                   <div>
                     <label className="block text-sm font-bold text-slate-200 mb-2">Target Niche</label>
                     <input 
                       type="text"
                       value={niche}
                       onChange={(e) => setNiche(e.target.value)}
-                      placeholder="e.g. SaaS, eCommerce"
+                      placeholder="e.g. Travel, Fitness"
                       className="w-full bg-[#020617] border border-slate-800 rounded-xl py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm"
                       required
                     />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-bold text-slate-200 mb-2">Authority Tier</label>
-                    <select 
-                      value={daTier}
-                      onChange={(e) => setDaTier(e.target.value)}
-                      className="w-full bg-[#020617] border border-slate-800 rounded-xl py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm appearance-none"
-                    >
-                      <option>DA 90+ (Elite - GitHub, Adobe)</option>
-                      <option>DA 70+ (Premium - Behance, Disqus)</option>
-                      <option>DA 50+ (Standard)</option>
-                    </select>
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-slate-200 mb-2">Target TLD (Geo)</label>
@@ -180,13 +167,13 @@ export default function ProfilesDashboard() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-slate-200 mb-2">Number of Profiles</label>
+                    <label className="block text-sm font-bold text-slate-200 mb-2">Total Mixed Links</label>
                     <input 
                       type="number"
-                      value={profileCount}
-                      onChange={(e) => setProfileCount(Number(e.target.value))}
-                      min="5"
-                      max="300"
+                      value={linkCount}
+                      onChange={(e) => setLinkCount(Number(e.target.value))}
+                      min="10"
+                      max="1000"
                       className="w-full bg-[#020617] border border-slate-800 rounded-xl py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm"
                       required
                     />
@@ -204,17 +191,14 @@ export default function ProfilesDashboard() {
                         <h4 className="text-cyan-400 font-bold text-lg flex items-center gap-2">
                           <Zap className="w-5 h-5" /> Turbo Delivery (12 Hours)
                         </h4>
-                        <p className="text-slate-400 text-sm mt-1">Clients want it fast. We deliver it safely.</p>
+                        <p className="text-slate-400 text-sm mt-1">Distributed across 4 separate modules safely.</p>
                       </div>
                       <div className="text-right">
                         <div className="flex items-center gap-2 text-xs text-emerald-400 font-medium mb-1 justify-end">
                           <CheckCircle2 className="w-3 h-3" /> Residential Proxies
                         </div>
-                        <div className="flex items-center gap-2 text-xs text-emerald-400 font-medium mb-1 justify-end">
-                          <CheckCircle2 className="w-3 h-3" /> Human Typing Emulation
-                        </div>
                         <div className="flex items-center gap-2 text-xs text-emerald-400 font-medium justify-end">
-                          <CheckCircle2 className="w-3 h-3" /> Randomized Delay Spacing
+                          <CheckCircle2 className="w-3 h-3" /> Randomized Diversity
                         </div>
                       </div>
                     </div>
@@ -225,30 +209,30 @@ export default function ProfilesDashboard() {
                   <button 
                     type="submit"
                     disabled={isProcessing || !niche || !clientLink}
-                    className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold rounded-xl hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] transition-all disabled:opacity-50 disabled:hover:shadow-none flex items-center gap-2"
+                    className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-600 text-white font-bold rounded-xl hover:shadow-[0_0_20px_rgba(168,85,247,0.4)] transition-all disabled:opacity-50 disabled:hover:shadow-none flex items-center gap-2"
                   >
-                    {isProcessing ? "Creating Profiles..." : `Create ${profileCount} Profiles`} <User className="w-5 h-5" />
+                    {isProcessing ? "Distributing Mix..." : `Build ${linkCount}x Mixed Links`} <Zap className="w-5 h-5" />
                   </button>
                 </div>
                 
                 {isProcessing && (
                   <div className="mt-8 p-5 bg-[#020617] rounded-xl border border-slate-800">
                     <div className="flex justify-between text-xs font-bold text-slate-300 mb-3">
-                      <span>Bypassing Captchas & registering emails...</span>
-                      <span className="text-cyan-400">{progress}%</span>
+                      <span>Generating multi-tier backlinks with AI...</span>
+                      <span className="text-purple-400">{progress}%</span>
                     </div>
                     <div className="w-full h-2 bg-slate-900 rounded-full overflow-hidden shadow-inner">
                       <motion.div 
                         initial={{ width: 0 }}
                         animate={{ width: `${progress}%` }}
-                        className="h-full bg-gradient-to-r from-cyan-400 to-blue-500 relative"
+                        className="h-full bg-gradient-to-r from-purple-400 to-pink-500 relative"
                       >
                         <div className="absolute inset-0 bg-white/20 w-full h-full animate-pulse"></div>
                       </motion.div>
                     </div>
                     <div className="mt-5 space-y-2.5 text-sm text-slate-400 font-medium">
-                      <p className="flex items-center gap-3"><CheckCircle2 className="w-4 h-4 text-cyan-400" /> Registered {processedCount} of {profileCount} accounts.</p>
-                      {progress >= 50 && <p className="flex items-center gap-3"><CheckCircle2 className="w-4 h-4 text-cyan-400" /> AI writing unique bios & inserting target link...</p>}
+                      <p className="flex items-center gap-3"><CheckCircle2 className="w-4 h-4 text-purple-400" /> Distributing ratios (Web 2.0: 10%, Profiles: 20%, Forums: 20%, Comments: 50%)...</p>
+                      {progress >= 50 && <p className="flex items-center gap-3"><CheckCircle2 className="w-4 h-4 text-purple-400" /> Posting {processedCount} links safely across all channels...</p>}
                     </div>
                   </div>
                 )}
@@ -261,12 +245,12 @@ export default function ProfilesDashboard() {
                   >
                     <div>
                       <h3 className="text-emerald-400 font-bold mb-1 flex items-center gap-2 text-lg">
-                        <CheckCircle2 className="w-5 h-5" /> Profiles Created!
+                        <CheckCircle2 className="w-5 h-5" /> Mixed Campaign Successful!
                       </h3>
-                      <p className="text-sm text-emerald-500/80 font-medium">Successfully created {profileCount} High-DA profiles with backlinks.</p>
+                      <p className="text-sm text-emerald-500/80 font-medium">Successfully built {linkCount} mixed backlinks.</p>
                     </div>
                     <button type="button" onClick={downloadCsv} className="px-5 py-2.5 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-500 transition-colors flex items-center gap-2 text-sm shadow-lg shadow-emerald-500/20">
-                      <FileSpreadsheet className="w-4 h-4" /> Download CSV
+                      <FileSpreadsheet className="w-4 h-4" /> Download Final Report
                     </button>
                   </motion.div>
                 )}
@@ -276,19 +260,20 @@ export default function ProfilesDashboard() {
 
           <div className="space-y-6">
             <div className="bg-[#050B14] border border-white/5 p-6 rounded-2xl shadow-xl">
-              <h2 className="font-bold text-white mb-5 flex items-center gap-2"><Settings2 className="w-5 h-5 text-cyan-400" /> Bio Configuration</h2>
+              <h2 className="font-bold text-white mb-5 flex items-center gap-2"><Layers className="w-5 h-5 text-purple-400" /> Mix Strategy</h2>
               <div className="space-y-4 text-sm text-slate-400 font-medium">
-                <p><strong>Persona Gen:</strong> <span className="text-emerald-400">AI Active</span></p>
-                <p><strong>Bio Length:</strong> 160 Characters (Strict)</p>
-                <p><strong>Email Rotation:</strong> Catch-all domains</p>
-                <p><strong>Captcha Solver:</strong> 2Captcha API</p>
+                <p><strong>Diversity:</strong> <span className="text-emerald-400">High (Natural)</span></p>
+                <p><strong>Web 2.0 Articles:</strong> ~10%</p>
+                <p><strong>Forums & Q&A:</strong> ~20%</p>
+                <p><strong>DA 90+ Profiles:</strong> ~20%</p>
+                <p><strong>Niche Comments:</strong> ~50%</p>
               </div>
             </div>
             
-            <div className="bg-cyan-500/5 border border-cyan-500/20 p-6 rounded-2xl shadow-xl">
-              <h2 className="font-bold text-cyan-400 mb-3 flex items-center gap-2"><ShieldAlert className="w-5 h-5" /> Best Practice</h2>
-              <p className="text-sm text-cyan-400/80 leading-relaxed font-medium">
-                High-DA Profiles provide massive foundational trust to new domains. It's highly recommended to use the 30-Day Drip feature for these.
+            <div className="bg-emerald-500/5 border border-emerald-500/20 p-6 rounded-2xl shadow-xl">
+              <h2 className="font-bold text-emerald-400 mb-3 flex items-center gap-2"><ShieldAlert className="w-5 h-5" /> 100% Safe Indexing</h2>
+              <p className="text-sm text-emerald-400/80 leading-relaxed font-medium">
+                A mixed backlink strategy looks completely natural to search engines, mimicking organic viral growth and preventing any algorithmic penalties.
               </p>
             </div>
           </div>

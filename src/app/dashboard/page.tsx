@@ -8,6 +8,7 @@ import Link from "next/link";
 export default function Dashboard() {
   const [niche, setNiche] = useState("");
   const [clientLink, setClientLink] = useState("");
+  const [targetTld, setTargetTld] = useState(".com (Global)");
   const [articleCount, setArticleCount] = useState(10);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
@@ -101,6 +102,9 @@ export default function Dashboard() {
           <Link href="/dashboard/forums" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors">
             <HelpCircle className="w-5 h-5" /> Q&A / Forums
           </Link>
+          <Link href="/dashboard/mixed" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors">
+            <Layers className="w-5 h-5" /> Mixed Campaigns
+          </Link>
           <Link href="/dashboard/reports" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors mt-8 border border-slate-800/50">
             <FileSpreadsheet className="w-5 h-5" /> Detailed Reports
           </Link>
@@ -136,11 +140,22 @@ export default function Dashboard() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-slate-200 mb-2">Network Selection</label>
-                    <div className="w-full bg-[#020617] border border-slate-800 rounded-xl py-3 px-4 text-white text-sm font-medium flex items-center justify-between cursor-not-allowed opacity-80">
-                      <span>Global Agency Pool</span>
-                      <CheckCircle2 className="w-4 h-4 text-cyan-400" />
-                    </div>
+                    <label className="block text-sm font-bold text-slate-200 mb-2">Target TLD (Geo)</label>
+                    <select 
+                      value={targetTld}
+                      onChange={(e) => setTargetTld(e.target.value)}
+                      className="w-full bg-[#020617] border border-slate-800 rounded-xl py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm appearance-none"
+                    >
+                      <option value=".com (Global)">.com (Global / US)</option>
+                      <option value=".de (Germany)">.de (Germany)</option>
+                      <option value=".co.uk (UK)">.co.uk (UK)</option>
+                      <option value=".fr (France)">.fr (France)</option>
+                      <option value=".es (Spain)">.es (Spain)</option>
+                      <option value=".it (Italy)">.it (Italy)</option>
+                      <option value=".nl (Netherlands)">.nl (Netherlands)</option>
+                      <option value=".ca (Canada)">.ca (Canada)</option>
+                      <option value=".au (Australia)">.au (Australia)</option>
+                    </select>
                   </div>
                 </div>
 
@@ -180,7 +195,7 @@ export default function Dashboard() {
                     <div className="flex items-center justify-between relative z-10">
                       <div>
                         <h4 className="text-cyan-400 font-bold text-lg flex items-center gap-2">
-                          <Zap className="w-5 h-5" /> Turbo Delivery (24 Hours)
+                          <Zap className="w-5 h-5" /> Turbo Delivery (12 Hours)
                         </h4>
                         <p className="text-slate-400 text-sm mt-1">Clients want it fast. We deliver it safely.</p>
                       </div>

@@ -101,6 +101,9 @@ export default function BulkComments() {
           <Link href="/dashboard/forums" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors">
             <HelpCircle className="w-5 h-5" /> Q&A / Forums
           </Link>
+          <Link href="/dashboard/mixed" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors">
+            <Layers className="w-5 h-5" /> Mixed Campaigns
+          </Link>
           <Link href="/dashboard/reports" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors mt-8 border border-slate-800/50">
             <FileSpreadsheet className="w-5 h-5" /> Detailed Reports
           </Link>
@@ -197,7 +200,7 @@ export default function BulkComments() {
                     <div className="flex items-center justify-between relative z-10">
                       <div>
                         <h4 className="text-cyan-400 font-bold text-lg flex items-center gap-2">
-                          <Zap className="w-5 h-5" /> Turbo Delivery (24 Hours)
+                          <Zap className="w-5 h-5" /> Turbo Delivery (12 Hours)
                         </h4>
                         <p className="text-slate-400 text-sm mt-1">Clients want it fast. We deliver it safely.</p>
                       </div>

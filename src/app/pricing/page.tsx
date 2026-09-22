@@ -56,7 +56,7 @@ export default function Pricing() {
               <div className="flex items-start gap-3"><CheckCircle2 className="w-5 h-5 text-cyan-400 shrink-0" /><span className="text-sm font-medium text-slate-200">Unlimited Blog Comments</span></div>
               <div className="flex items-start gap-3"><CheckCircle2 className="w-5 h-5 text-cyan-400 shrink-0" /><span className="text-sm font-medium text-slate-200">Reddit & Quora Outreach</span></div>
               <div className="flex items-start gap-3"><CheckCircle2 className="w-5 h-5 text-cyan-400 shrink-0" /><span className="text-sm font-medium text-slate-200">High-DA Profiles (GitHub, Adobe)</span></div>
-              <div className="flex items-start gap-3"><CheckCircle2 className="w-5 h-5 text-cyan-400 shrink-0" /><span className="text-sm font-medium text-emerald-400">Turbo Delivery Engine (24h)</span></div>
+              <div className="flex items-start gap-3"><CheckCircle2 className="w-5 h-5 text-cyan-400 shrink-0" /><span className="text-sm font-medium text-emerald-400">Turbo Delivery Engine (12h)</span></div>
             </div>
             
             <Link href="/dashboard" className="w-full flex justify-center items-center gap-2 px-6 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] text-white font-bold rounded-xl transition-all">
