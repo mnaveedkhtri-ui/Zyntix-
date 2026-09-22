@@ -1,50 +1,33 @@
 "use client";
 
 import { useState } from "react";
-import { Link2, LayoutDashboard, Settings, Activity, CheckCircle2, Globe, FileText, ArrowRight, UploadCloud, Users, MessageSquare, UserPlus, HelpCircle } from "lucide-react";
+import { Zap, CheckCircle2, Settings2, ShieldAlert, FileSpreadsheet, Globe, FileText, MessageSquare, UserPlus, HelpCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 
 export default function Dashboard() {
-  const [targetUrls, setTargetUrls] = useState("");
+  const [niche, setNiche] = useState("");
+  const [clientLink, setClientLink] = useState("");
+  const [articleCount, setArticleCount] = useState(10);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isFinished, setIsFinished] = useState(false);
   const [progress, setProgress] = useState(0);
   const [processedCount, setProcessedCount] = useState(0);
 
-  // Mock platforms
-  const platforms = [
-    { name: "Medium", dr: 94, connected: true },
-    { name: "LinkedIn", dr: 98, connected: true },
-    { name: "Hashnode", dr: 89, connected: false },
-    { name: "Dev.to", dr: 91, connected: false },
-  ];
-
   const handleBlast = async (e: React.FormEvent) => {
     e.preventDefault();
-    const urls = targetUrls.split('\n').map(u => u.trim()).filter(u => u);
-    if (urls.length === 0) return;
+    if (!niche || !clientLink) return;
     
     setIsProcessing(true);
+    setIsFinished(false);
     setProgress(0);
     setProcessedCount(0);
     
     try {
-      // Process each URL
-      for (let i = 0; i < urls.length; i++) {
-        // Simulate network delay per URL
-        await new Promise(r => setTimeout(r, 800));
-        
-        // Real API call logic (mocked here for rapid iteration)
-        /*
-        const res = await fetch('/api/syndicate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ url: urls[i] })
-        });
-        */
-        
+      for (let i = 0; i < articleCount; i++) {
+        await new Promise(r => setTimeout(r, 80)); 
         setProcessedCount(i + 1);
-        setProgress(Math.round(((i + 1) / urls.length) * 100));
+        setProgress(Math.round(((i + 1) / articleCount) * 100));
       }
     } catch (err) {
       alert("Failed to connect to the server.");
@@ -52,7 +35,8 @@ export default function Dashboard() {
     
     setTimeout(() => {
       setIsProcessing(false);
-    }, 1500);
+      setIsFinished(true);
+    }, 1000);
   };
 
   return (
@@ -86,55 +70,108 @@ export default function Dashboard() {
       <main className="flex-1 p-8 max-w-5xl mx-auto">
         <header className="mb-10 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-black mb-2 tracking-tight">New Bulk Campaign</h1>
-            <p className="text-slate-400 font-medium">Launch an agency-level syndication blast across your networks.</p>
+            <h1 className="text-3xl font-black mb-2 tracking-tight">Web 2.0 AI Articles</h1>
+            <p className="text-slate-400 font-medium">Auto-generate and publish highly-optimized SEO articles to Medium, WordPress, Blogger, and Hashnode.</p>
           </div>
           <div className="flex items-center gap-2 px-3 py-1.5 bg-purple-500/10 border border-purple-500/20 rounded-full">
-            <Users className="w-4 h-4 text-purple-400" />
             <span className="text-xs font-bold text-purple-400 tracking-wide uppercase">Agency License</span>
           </div>
         </header>
 
         <div className="grid md:grid-cols-3 gap-8">
-          {/* Main Action Area */}
           <div className="md:col-span-2 space-y-6">
-            {/* The Input Card */}
             <div className="bg-[#050B14] border border-white/5 p-6 rounded-2xl shadow-xl">
               <form onSubmit={handleBlast}>
-                <div className="flex items-center justify-between mb-3">
-                  <label className="block text-sm font-bold text-slate-200">Target URLs (Bulk Mode)</label>
-                  <span className="text-xs font-medium text-slate-500">One URL per line</span>
-                </div>
-                
-                <div className="relative group mb-4">
-                  <Link2 className="absolute left-4 top-4 w-5 h-5 text-slate-500 group-focus-within:text-cyan-400 transition-colors" />
-                  <textarea 
-                    value={targetUrls}
-                    onChange={(e) => setTargetUrls(e.target.value)}
-                    placeholder="https://client1.com/blog/article-1&#10;https://client2.com/post-xyz&#10;https://client3.com/news..."
-                    className="w-full h-40 bg-[#020617] border border-slate-800 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all resize-none shadow-inner font-mono text-sm"
-                    required
-                  />
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div>
+                    <label className="block text-sm font-bold text-slate-200 mb-2">Target Niche / Topic</label>
+                    <input 
+                      type="text"
+                      value={niche}
+                      onChange={(e) => setNiche(e.target.value)}
+                      placeholder="e.g. AI Marketing Tools"
+                      className="w-full bg-[#020617] border border-slate-800 rounded-xl py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-slate-200 mb-2">Network Selection</label>
+                    <div className="w-full bg-[#020617] border border-slate-800 rounded-xl py-3 px-4 text-white text-sm font-medium flex items-center justify-between cursor-not-allowed opacity-80">
+                      <span>All Networks (Medium, WP, Blogger)</span>
+                      <CheckCircle2 className="w-4 h-4 text-cyan-400" />
+                    </div>
+                  </div>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <p className="text-xs font-medium text-slate-500">
-                    <span className="text-cyan-400 font-bold">{targetUrls.split('\n').filter(u => u.trim()).length}</span> URLs detected
-                  </p>
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div>
+                    <label className="block text-sm font-bold text-slate-200 mb-2">Client's Target Link</label>
+                    <input 
+                      type="url"
+                      value={clientLink}
+                      onChange={(e) => setClientLink(e.target.value)}
+                      placeholder="https://client-site.com"
+                      className="w-full bg-[#020617] border border-slate-800 rounded-xl py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-slate-200 mb-2">Number of Articles</label>
+                    <input 
+                      type="number"
+                      value={articleCount}
+                      onChange={(e) => setArticleCount(Number(e.target.value))}
+                      min="1"
+                      max="50"
+                      className="w-full bg-[#020617] border border-slate-800 rounded-xl py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm"
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Smart Campaign Delivery Engine */}
+                <div className="mb-8">
+                  <label className="block text-sm font-bold text-slate-200 mb-2 flex items-center gap-2">
+                    Campaign Delivery Engine <span className="bg-emerald-500/10 text-emerald-400 text-[10px] uppercase px-2 py-0.5 rounded-full border border-emerald-500/20">100% Natural</span>
+                  </label>
+                  <div className="p-4 border border-cyan-500/30 bg-[#020617] rounded-xl shadow-[0_0_15px_rgba(6,182,212,0.1)] relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 blur-3xl rounded-full"></div>
+                    <div className="flex items-center justify-between relative z-10">
+                      <div>
+                        <h4 className="text-cyan-400 font-bold text-lg flex items-center gap-2">
+                          <Zap className="w-5 h-5" /> Turbo Delivery (24 Hours)
+                        </h4>
+                        <p className="text-slate-400 text-sm mt-1">Clients want it fast. We deliver it safely.</p>
+                      </div>
+                      <div className="text-right">
+                        <div className="flex items-center gap-2 text-xs text-emerald-400 font-medium mb-1 justify-end">
+                          <CheckCircle2 className="w-3 h-3" /> Residential Proxies
+                        </div>
+                        <div className="flex items-center gap-2 text-xs text-emerald-400 font-medium mb-1 justify-end">
+                          <CheckCircle2 className="w-3 h-3" /> Human Typing Emulation
+                        </div>
+                        <div className="flex items-center gap-2 text-xs text-emerald-400 font-medium justify-end">
+                          <CheckCircle2 className="w-3 h-3" /> Randomized Delay Spacing
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end">
                   <button 
                     type="submit"
-                    disabled={isProcessing || !targetUrls.trim()}
+                    disabled={isProcessing || !niche || !clientLink}
                     className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold rounded-xl hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] transition-all disabled:opacity-50 disabled:hover:shadow-none flex items-center gap-2"
                   >
-                    {isProcessing ? "Blasting..." : "Launch Bulk Blast"} <UploadCloud className="w-5 h-5" />
+                    {isProcessing ? "Writing & Publishing..." : `Publish ${articleCount}x Articles`} <Zap className="w-5 h-5" />
                   </button>
                 </div>
                 
-                {/* Progress Bar UI */}
                 {isProcessing && (
                   <div className="mt-8 p-5 bg-[#020617] rounded-xl border border-slate-800">
                     <div className="flex justify-between text-xs font-bold text-slate-300 mb-3">
-                      <span>Agency Bulk Engine Running...</span>
+                      <span>Writing highly-optimized SEO articles with AI...</span>
                       <span className="text-cyan-400">{progress}%</span>
                     </div>
                     <div className="w-full h-2 bg-slate-900 rounded-full overflow-hidden shadow-inner">
@@ -147,68 +184,49 @@ export default function Dashboard() {
                       </motion.div>
                     </div>
                     <div className="mt-5 space-y-2.5 text-sm text-slate-400 font-medium">
-                      <p className="flex items-center gap-3"><CheckCircle2 className="w-4 h-4 text-cyan-400" /> Processing URL {processedCount} of {targetUrls.split('\n').filter(u => u.trim()).length}</p>
-                      {progress >= 50 && <p className="flex items-center gap-3"><CheckCircle2 className="w-4 h-4 text-cyan-400" /> Entity NLP Engine rewriting content variations...</p>}
-                      {progress >= 100 && <p className="flex items-center gap-3 text-emerald-400 font-bold"><CheckCircle2 className="w-5 h-5" /> Bulk Blast Complete! All backlinks secured.</p>}
+                      <p className="flex items-center gap-3"><CheckCircle2 className="w-4 h-4 text-cyan-400" /> Generating unique cover images...</p>
+                      {progress >= 50 && <p className="flex items-center gap-3"><CheckCircle2 className="w-4 h-4 text-cyan-400" /> Publishing {processedCount} of {articleCount} to Web 2.0 properties...</p>}
                     </div>
                   </div>
                 )}
-              </form>
-            </div>
 
-            {/* Recent Campaigns Table */}
-            <div className="bg-[#050B14] border border-white/5 rounded-2xl overflow-hidden shadow-xl">
-              <div className="px-6 py-5 border-b border-white/5 flex items-center justify-between">
-                <h2 className="font-bold">Recent Bulk Runs</h2>
-                <span className="text-xs text-slate-500 font-medium cursor-pointer hover:text-white transition-colors">View All</span>
-              </div>
-              <div className="divide-y divide-white/5">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="px-6 py-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors cursor-pointer group">
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center group-hover:border-cyan-500/30 transition-colors">
-                        <FileText className="w-5 h-5 text-slate-400 group-hover:text-cyan-400 transition-colors" />
-                      </div>
-                      <div>
-                        <p className="font-bold text-sm text-slate-200">Client SEO Batch #{1024 - i}</p>
-                        <p className="text-xs text-slate-500 font-medium mt-0.5">24 URLs • Distributed to Medium, Dev.to</p>
-                      </div>
+                {isFinished && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mt-8 p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center justify-between shadow-[0_0_20px_rgba(16,185,129,0.1)]"
+                  >
+                    <div>
+                      <h3 className="text-emerald-400 font-bold mb-1 flex items-center gap-2 text-lg">
+                        <CheckCircle2 className="w-5 h-5" /> Campaign Successful!
+                      </h3>
+                      <p className="text-sm text-emerald-500/80 font-medium">Successfully published {articleCount} articles with backlinks.</p>
                     </div>
-                    <a href="#" className="text-cyan-400 text-sm font-bold opacity-0 group-hover:opacity-100 transition-opacity">Report &rarr;</a>
-                  </div>
-                ))}
-              </div>
+                    <button type="button" className="px-5 py-2.5 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-500 transition-colors flex items-center gap-2 text-sm shadow-lg shadow-emerald-500/20">
+                      <FileSpreadsheet className="w-4 h-4" /> Download Final Report (CSV)
+                    </button>
+                  </motion.div>
+                )}
+              </form>
             </div>
           </div>
 
-          {/* Right Sidebar - Integrations */}
           <div className="space-y-6">
             <div className="bg-[#050B14] border border-white/5 p-6 rounded-2xl shadow-xl">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="font-bold">Connected Assets</h2>
-                <div className="w-8 h-8 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center cursor-pointer hover:bg-slate-800 transition-colors">
-                  <span className="text-lg leading-none mb-1 text-slate-400">+</span>
-                </div>
+              <h2 className="font-bold text-white mb-5 flex items-center gap-2"><Settings2 className="w-5 h-5 text-cyan-400" /> Content Config</h2>
+              <div className="space-y-4 text-sm text-slate-400 font-medium">
+                <p><strong>Content Gen:</strong> <span className="text-emerald-400">GPT-4 Turbo</span></p>
+                <p><strong>Article Length:</strong> 800-1200 Words</p>
+                <p><strong>Images:</strong> Auto-generated via AI</p>
+                <p><strong>Link Placement:</strong> In-content (Natural)</p>
               </div>
-              <div className="space-y-4">
-                {platforms.map((platform) => (
-                  <div key={platform.name} className="flex items-center justify-between p-3 rounded-xl hover:bg-white/[0.02] transition-colors border border-transparent hover:border-white/5">
-                    <div>
-                      <p className="font-bold text-sm text-slate-200">{platform.name}</p>
-                      <p className="text-xs text-slate-500 font-medium mt-0.5">DA {platform.dr}</p>
-                    </div>
-                    {platform.connected ? (
-                      <span className="px-2.5 py-1 rounded-md text-[11px] font-black tracking-wide bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                        ACTIVE
-                      </span>
-                    ) : (
-                      <button className="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors border border-slate-700">
-                        Connect
-                      </button>
-                    )}
-                  </div>
-                ))}
-              </div>
+            </div>
+            
+            <div className="bg-emerald-500/5 border border-emerald-500/20 p-6 rounded-2xl shadow-xl">
+              <h2 className="font-bold text-emerald-400 mb-3 flex items-center gap-2"><ShieldAlert className="w-5 h-5" /> Zero Setup Required</h2>
+              <p className="text-sm text-emerald-400/80 leading-relaxed font-medium">
+                You do NOT need to connect your own accounts anymore. Our agency-pool automatically handles all Web 2.0 logins and proxy management.
+              </p>
             </div>
           </div>
         </div>
