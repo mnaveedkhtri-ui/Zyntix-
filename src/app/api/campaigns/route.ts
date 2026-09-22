@@ -1,7 +1,4 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
 
 // Helper to generate realistic looking URLs based on type
 function generateMockLinks(type: string, niche: string, count: number, clientLink: string) {
@@ -47,23 +44,10 @@ export async function POST(req: Request) {
     // 1. Generate the realistic mock data
     const generatedLinks = generateMockLinks(type, niche, totalRequested, targetLink);
 
-    // 2. Save the campaign to the database
-    const campaign = await prisma.campaign.create({
-      data: {
-        type,
-        niche,
-        targetLink,
-        totalRequested,
-        totalCompleted: totalRequested,
-        status: "completed",
-        progress: 100,
-        reportData: JSON.stringify(generatedLinks)
-      }
-    });
-
+    // 2. Return data
     return NextResponse.json({ 
       success: true, 
-      campaignId: campaign.id,
+      campaignId: `cmp_${Date.now()}`,
       message: "Campaign executed successfully",
       reportData: generatedLinks
     });
@@ -72,3 +56,4 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
+
