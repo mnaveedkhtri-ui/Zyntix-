@@ -50,7 +50,7 @@ export default function LandingPage() {
           <Link href="/features" className="hover:text-white transition-all duration-300 hover:scale-105">Platform</Link>
           <Link href="/how-it-works" className="hover:text-white transition-all duration-300 hover:scale-105">How it Works</Link>
           <Link href="/integrations" className="hover:text-white transition-all duration-300 hover:scale-105">Networks</Link>
-          <Link href="/pricing" className="hover:text-white transition-all duration-300 hover:scale-105">Pricing</Link>
+          
         </div>
         <div className="flex items-center gap-5">
           <Link href="/dashboard" className="text-sm font-bold text-slate-300 hover:text-white transition-colors">
@@ -94,7 +94,7 @@ export default function LandingPage() {
           </motion.h1>
 
           <motion.p variants={itemVariants} className="text-lg md:text-2xl text-slate-400 mb-12 max-w-3xl font-medium leading-relaxed">
-            Stop building links manually. Leverage our Instant Turbo Engine to automatically distribute Mixed Campaigns across Web 2.0, Forums, Profiles, and Comments with 14+ Geo-Targeted TLDs and 100% natural residential proxies.
+            Stop spamming. Build 100% safe, DA 90+ contextual backlinks using Official Free APIs. Automatically distribute content across GitHub, Dev.to, Hashnode, and Medium with zero proxy costs.
           </motion.p>
 
           <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center gap-6">
@@ -147,7 +147,7 @@ export default function LandingPage() {
                 </div>
                 <h3 className="text-3xl font-bold text-white mb-4">Instant Turbo Engine</h3>
                 <p className="text-slate-400 text-lg leading-relaxed max-w-xl">
-                  Our Turbo Engine ensures fast delivery while maintaining complete safety. We use residential proxies and randomized timing delays to mimic organic viral growth and prevent algorithmic penalties.
+                  Connect free official APIs from GitHub, Hashnode, Dev.to, and Medium. Zyntix publishes high-quality articles and profile updates instantly, creating safe Dofollow links without proxies.
                 </p>
                 
                 {/* Decorative UI inside card */}
@@ -221,5 +221,7 @@ export default function LandingPage() {
     </div>
   );
 }
+
+
 
 
