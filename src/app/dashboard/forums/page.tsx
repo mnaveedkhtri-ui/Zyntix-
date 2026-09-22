@@ -137,31 +137,29 @@ export default function ForumsDashboard() {
 
                 <div className="mb-8">
                   <label className="block text-sm font-bold text-slate-200 mb-2 flex items-center gap-2">
-                    Campaign Delivery Engine <span className="bg-emerald-500/10 text-emerald-400 text-[10px] uppercase px-2 py-0.5 rounded-full border border-emerald-500/20">Safe Mode</span>
+                    Campaign Delivery Engine <span className="bg-emerald-500/10 text-emerald-400 text-[10px] uppercase px-2 py-0.5 rounded-full border border-emerald-500/20">100% Natural</span>
                   </label>
-                  <div className="grid grid-cols-3 gap-3">
-                    <label className="cursor-pointer group">
-                      <input type="radio" name="velocity" className="peer sr-only" defaultChecked />
-                      <div className="p-3 text-center border border-slate-800 bg-[#020617] rounded-xl text-slate-400 peer-checked:border-emerald-500 peer-checked:text-emerald-400 peer-checked:bg-emerald-500/10 transition-all text-sm font-bold group-hover:border-slate-600 shadow-sm relative overflow-hidden">
-                        Natural Drip (30 Days)
-                        <div className="text-xs font-normal opacity-80 mt-1">Recommended</div>
-                        <div className="absolute top-0 right-0 w-8 h-8 bg-emerald-500/20 blur-xl rounded-full opacity-0 peer-checked:opacity-100"></div>
+                  <div className="p-4 border border-cyan-500/30 bg-[#020617] rounded-xl shadow-[0_0_15px_rgba(6,182,212,0.1)] relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 blur-3xl rounded-full"></div>
+                    <div className="flex items-center justify-between relative z-10">
+                      <div>
+                        <h4 className="text-cyan-400 font-bold text-lg flex items-center gap-2">
+                          <Zap className="w-5 h-5" /> Turbo Delivery (24 Hours)
+                        </h4>
+                        <p className="text-slate-400 text-sm mt-1">Clients want it fast. We deliver it safely.</p>
                       </div>
-                    </label>
-                    <label className="cursor-pointer group">
-                      <input type="radio" name="velocity" className="peer sr-only" />
-                      <div className="p-3 text-center border border-slate-800 bg-[#020617] rounded-xl text-slate-400 peer-checked:border-blue-500 peer-checked:text-blue-400 peer-checked:bg-blue-500/10 transition-all text-sm font-bold group-hover:border-slate-600 shadow-sm relative overflow-hidden">
-                        Balanced (7 Days)
-                        <div className="text-xs font-normal opacity-80 mt-1">Standard Speed</div>
+                      <div className="text-right">
+                        <div className="flex items-center gap-2 text-xs text-emerald-400 font-medium mb-1 justify-end">
+                          <CheckCircle2 className="w-3 h-3" /> Residential Proxies
+                        </div>
+                        <div className="flex items-center gap-2 text-xs text-emerald-400 font-medium mb-1 justify-end">
+                          <CheckCircle2 className="w-3 h-3" /> Human Typing Emulation
+                        </div>
+                        <div className="flex items-center gap-2 text-xs text-emerald-400 font-medium justify-end">
+                          <CheckCircle2 className="w-3 h-3" /> Randomized Delay Spacing
+                        </div>
                       </div>
-                    </label>
-                    <label className="cursor-pointer group">
-                      <input type="radio" name="velocity" className="peer sr-only" />
-                      <div className="p-3 text-center border border-slate-800 bg-[#020617] rounded-xl text-slate-400 peer-checked:border-cyan-500 peer-checked:text-cyan-400 peer-checked:bg-cyan-500/10 transition-all text-sm font-bold group-hover:border-slate-600 shadow-sm relative overflow-hidden">
-                        Turbo Blast (24h)
-                        <div className="text-xs font-normal opacity-80 mt-1">For Authority Sites</div>
-                      </div>
-                    </label>
+                    </div>
                   </div>
                 </div>
 
