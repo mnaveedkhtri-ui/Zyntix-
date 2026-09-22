@@ -5,7 +5,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Nexus Syndicator | AI Web 2.0 Automation",
+  title: "Zyntix | AI Web 2.0 Automation",
   description: "Automate your high-authority backlinks with 1-click semantic AI syndication.",
 };
 
@@ -22,3 +22,4 @@ export default function RootLayout({
     </html>
   );
 }
+

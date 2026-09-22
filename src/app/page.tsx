@@ -43,7 +43,7 @@ export default function LandingPage() {
             <Globe className="w-5 h-5 text-white" />
           </div>
           <span className="text-xl font-black tracking-tighter text-white">
-            Nexus<span className="text-cyan-400">Syndicator</span>
+            Zyn<span className="text-cyan-400">tix</span>
           </span>
         </div>
         <div className="hidden md:flex items-center gap-10 text-sm font-semibold tracking-wide text-slate-400">
@@ -94,7 +94,7 @@ export default function LandingPage() {
           </motion.h1>
 
           <motion.p variants={itemVariants} className="text-lg md:text-2xl text-slate-400 mb-12 max-w-3xl font-medium leading-relaxed">
-            Stop building links manually. Connect your Web 2.0 accounts once, drop your target URLs, and let our system automatically publish highly relevant, unique articles across your entire network.
+            Stop building links manually. Leverage our 12-Hour Turbo Engine to automatically distribute Mixed Campaigns across Web 2.0, Forums, Profiles, and Comments with 14+ Geo-Targeted TLDs and 100% natural residential proxies.
           </motion.p>
 
           <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center gap-6">
@@ -113,8 +113,8 @@ export default function LandingPage() {
           <motion.div variants={itemVariants} className="mt-28 w-full border-t border-white/10 pt-10 relative">
             <p className="text-xs font-bold text-slate-500 uppercase tracking-[0.2em] mb-8">Natively integrated platforms</p>
             <div className="flex flex-wrap justify-center gap-8 md:gap-20 opacity-40 hover:opacity-100 transition-opacity duration-500">
-              {['Medium', 'LinkedIn', 'Dev.to', 'Hashnode', 'Blogger', 'Substack'].map((platform) => (
-                <span key={platform} className="text-2xl md:text-3xl font-black tracking-tighter text-slate-300 hover:text-white transition-colors cursor-default drop-shadow-md">
+              {['DA90+ Profiles', 'Niche Forums', 'Web 2.0', 'Blog Comments', 'Mixed Strategy'].map((platform) => (
+                <span key={platform} className="text-xl md:text-3xl font-black tracking-tighter text-slate-300 hover:text-white transition-colors cursor-default drop-shadow-md">
                   {platform}
                 </span>
               ))}
@@ -127,8 +127,8 @@ export default function LandingPage() {
       <section className="py-32 bg-[#020617] relative z-20" id="features">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white mb-6">Built to Scale</h2>
-            <p className="text-lg text-slate-400 font-medium max-w-2xl mx-auto">Run bulk campaigns across hundreds of domains automatically. Save hours of manual labor every week.</p>
+            <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white mb-6">Built to Scale Safely</h2>
+            <p className="text-lg text-slate-400 font-medium max-w-2xl mx-auto">Run 100% natural, safe, and geo-targeted link building campaigns using residential proxies. Zero setup required.</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
@@ -145,9 +145,9 @@ export default function LandingPage() {
                 <div className="w-14 h-14 rounded-2xl bg-cyan-500/20 flex items-center justify-center mb-8 border border-cyan-500/20">
                   <Activity className="w-7 h-7 text-cyan-400" />
                 </div>
-                <h3 className="text-3xl font-bold text-white mb-4">Smart Content Rewriting</h3>
+                <h3 className="text-3xl font-bold text-white mb-4">12-Hour Turbo Engine</h3>
                 <p className="text-slate-400 text-lg leading-relaxed max-w-xl">
-                  We generate unique variations of your content for every single post. This prevents duplicate content penalties and ensures your target URLs get maximum SEO value from every placement.
+                  Our Turbo Engine ensures fast delivery while maintaining complete safety. We use residential proxies and randomized timing delays to mimic organic viral growth and prevent algorithmic penalties.
                 </p>
                 
                 {/* Decorative UI inside card */}
@@ -221,3 +221,4 @@ export default function LandingPage() {
     </div>
   );
 }
+

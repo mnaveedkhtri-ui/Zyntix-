@@ -72,7 +72,7 @@ export default function ProfilesDashboard() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", `syndicator_report_profiles_${Date.now()}.csv`);
+    link.setAttribute("download", `Zyntix_report_profiles_${Date.now()}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -86,7 +86,7 @@ export default function ProfilesDashboard() {
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-cyan-500/20">
             <Globe className="w-5 h-5 text-white" />
           </div>
-          <span className="text-xl font-black tracking-tighter">Syndicator</span>
+          <span className="text-xl font-black tracking-tighter">Zyntix</span>
         </div>
         
         <nav className="space-y-2">
@@ -306,4 +306,5 @@ export default function ProfilesDashboard() {
     </div>
   );
 }
+
 
