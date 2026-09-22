@@ -5,8 +5,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Zyntix | AI Web 2.0 Automation",
-  description: "Automate your high-authority backlinks with 1-click semantic AI syndication.",
+  title: "Zyntix | Automated Agency Backlink Engine",
+  description: "Automate your high-authority link building with our 12-Hour Turbo Engine. 100% natural, geo-targeted Web 2.0, Forums, and Profile backlinks for SEO Agencies.",
 };
 
 export default function RootLayout({
