@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Globe, FileText, UserPlus, FileSpreadsheet, Settings, Key, Save, CheckCircle2 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function SettingsPage() {
   const [githubKey, setGithubKey] = useState("");
@@ -10,6 +10,13 @@ export default function SettingsPage() {
   const [hashnodeKey, setHashnodeKey] = useState("");
   const [notionKey, setNotionKey] = useState("");
   const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    setGithubKey(localStorage.getItem("github_key") || "");
+    setDevtoKey(localStorage.getItem("devto_key") || "");
+    setHashnodeKey(localStorage.getItem("hashnode_key") || "");
+    setNotionKey(localStorage.getItem("notion_key") || "");
+  }, []);
 
   const handleSave = () => {
     // Basic local storage simulation for now
@@ -142,4 +149,5 @@ export default function SettingsPage() {
     </div>
   );
 }
+
 
