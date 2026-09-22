@@ -221,7 +221,7 @@ export default function ProfilesDashboard() {
               <h2 className="font-bold text-white mb-5 flex items-center gap-2"><Settings2 className="w-5 h-5 text-cyan-400" /> Bio Configuration</h2>
               <div className="space-y-4 text-sm text-slate-400 font-medium">
                 <p><strong>Persona Gen:</strong> <span className="text-emerald-400">AI Active</span></p>
-                <p><strong>Bio Length:</strong> 150-300 Words</p>
+                <p><strong>Bio Length:</strong> 160 Characters (Strict)</p>
                 <p><strong>Email Rotation:</strong> Catch-all domains</p>
                 <p><strong>Captcha Solver:</strong> 2Captcha API</p>
               </div>

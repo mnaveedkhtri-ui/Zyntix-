@@ -221,7 +221,7 @@ export default function ForumsDashboard() {
               <h2 className="font-bold text-white mb-5 flex items-center gap-2"><Settings2 className="w-5 h-5 text-cyan-400" /> Answer Config</h2>
               <div className="space-y-4 text-sm text-slate-400 font-medium">
                 <p><strong>Intent Matching:</strong> <span className="text-emerald-400">Strict</span></p>
-                <p><strong>Answer Length:</strong> 300-800 Words</p>
+                <p><strong>Answer Length:</strong> 50-120 Words (Concise)</p>
                 <p><strong>Link Placement:</strong> Contextual (Middle)</p>
                 <p><strong>Account Age:</strong> Aged Accounts Only</p>
               </div>
