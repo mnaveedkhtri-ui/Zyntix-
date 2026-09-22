@@ -27,9 +27,15 @@ export default function Dashboard() {
     
     try {
       // Fake progress bar while waiting for backend
+      // Dynamic timing based on link count (fewer links = faster completion)
+      const timePerLinkMs = 40;
+      const totalSimulationTime = Math.max(1500, articleCount * timePerLinkMs);
+      const updateInterval = 100;
+      const progressIncrement = 95 / (totalSimulationTime / updateInterval);
+
       const progressInterval = setInterval(() => {
-        setProgress(p => Math.min(p + 5, 95));
-      }, 150);
+        setProgress(p => Math.min(p + progressIncrement, 95));
+      }, updateInterval);
 
       const res = await fetch("/api/campaigns", {
         method: "POST",
@@ -295,5 +301,7 @@ export default function Dashboard() {
     </div>
   );
 }
+
+
 
 
