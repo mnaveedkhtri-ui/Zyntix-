@@ -66,11 +66,11 @@ export default function Dashboard() {
         </div>
         
         <nav className="space-y-2">
-          <a href="#" className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 text-cyan-400 rounded-xl font-medium border border-cyan-500/20 shadow-sm">
+          <a href="/dashboard" className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 text-cyan-400 rounded-xl font-medium border border-cyan-500/20 shadow-sm">
             <LayoutDashboard className="w-5 h-5" /> Campaigns
           </a>
-          <a href="#" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors">
-            <Activity className="w-5 h-5" /> Reports
+          <a href="/dashboard/comments" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors">
+            <Activity className="w-5 h-5" /> Blog Comments
           </a>
           <a href="#" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors">
             <Settings className="w-5 h-5" /> Integrations
