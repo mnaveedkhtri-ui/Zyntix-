@@ -104,10 +104,20 @@ export default function BulkComments() {
                       onChange={(e) => setTargetTld(e.target.value)}
                       className="w-full bg-[#020617] border border-slate-800 rounded-xl py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm appearance-none"
                     >
+                      <option value=".com (Global)">.com (Global / US)</option>
                       <option value=".de (Germany)">.de (Germany)</option>
                       <option value=".co.uk (UK)">.co.uk (UK)</option>
                       <option value=".fr (France)">.fr (France)</option>
-                      <option value=".com (Global)">.com (Global)</option>
+                      <option value=".es (Spain)">.es (Spain)</option>
+                      <option value=".it (Italy)">.it (Italy)</option>
+                      <option value=".nl (Netherlands)">.nl (Netherlands)</option>
+                      <option value=".ca (Canada)">.ca (Canada)</option>
+                      <option value=".au (Australia)">.au (Australia)</option>
+                      <option value=".in (India)">.in (India)</option>
+                      <option value=".jp (Japan)">.jp (Japan)</option>
+                      <option value=".br (Brazil)">.br (Brazil)</option>
+                      <option value=".ae (UAE)">.ae (UAE)</option>
+                      <option value=".sg (Singapore)">.sg (Singapore)</option>
                     </select>
                   </div>
                 </div>
@@ -125,7 +135,7 @@ export default function BulkComments() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-slate-200 mb-2">Number of Backlinks needed</label>
+                    <label className="block text-sm font-bold text-slate-200 mb-2">Total Backlinks</label>
                     <input 
                       type="number"
                       value={linkCount}
@@ -138,13 +148,41 @@ export default function BulkComments() {
                   </div>
                 </div>
 
+                {/* Natural Pacing / Drip Feed (Anti-Spam) */}
+                <div className="mb-8">
+                  <label className="block text-sm font-bold text-slate-200 mb-2">Link Velocity (Anti-Spam Pacing)</label>
+                  <div className="grid grid-cols-3 gap-3">
+                    <label className="cursor-pointer">
+                      <input type="radio" name="velocity" className="peer sr-only" defaultChecked />
+                      <div className="p-3 text-center border border-slate-800 bg-[#020617] rounded-xl text-slate-400 peer-checked:border-emerald-500 peer-checked:text-emerald-400 peer-checked:bg-emerald-500/10 transition-all text-sm font-bold">
+                        Drip (30 Days)
+                        <div className="text-xs font-normal opacity-80 mt-1">100% Natural</div>
+                      </div>
+                    </label>
+                    <label className="cursor-pointer">
+                      <input type="radio" name="velocity" className="peer sr-only" />
+                      <div className="p-3 text-center border border-slate-800 bg-[#020617] rounded-xl text-slate-400 peer-checked:border-cyan-500 peer-checked:text-cyan-400 peer-checked:bg-cyan-500/10 transition-all text-sm font-bold">
+                        Paced (7 Days)
+                        <div className="text-xs font-normal opacity-80 mt-1">Balanced</div>
+                      </div>
+                    </label>
+                    <label className="cursor-pointer">
+                      <input type="radio" name="velocity" className="peer sr-only" />
+                      <div className="p-3 text-center border border-slate-800 bg-[#020617] rounded-xl text-slate-400 peer-checked:border-red-500 peer-checked:text-red-400 peer-checked:bg-red-500/10 transition-all text-sm font-bold">
+                        Instant Blast
+                        <div className="text-xs font-normal opacity-80 mt-1">High Risk</div>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
                 <div className="flex justify-end">
                   <button 
                     type="submit"
                     disabled={isProcessing || !niche || !clientLink}
                     className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold rounded-xl hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] transition-all disabled:opacity-50 disabled:hover:shadow-none flex items-center gap-2"
                   >
-                    {isProcessing ? "Scraping & Blasting..." : `Start ${linkCount}x Blast`} <Zap className="w-5 h-5" />
+                    {isProcessing ? "Deploying Campaign..." : `Deploy ${linkCount}x Campaign`} <Zap className="w-5 h-5" />
                   </button>
                 </div>
                 
