@@ -1,15 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { Zap, CheckCircle2, Settings2, ShieldAlert, FileSpreadsheet, Globe, FileText, MessageSquare, UserPlus, HelpCircle , Layers, Settings, Activity, Cloud, Database} from "lucide-react";
+import { Zap, CheckCircle2, Settings2, ShieldAlert, FileSpreadsheet, Globe, FileText, MessageSquare, UserPlus, HelpCircle, User , Layers, Settings, Activity, Cloud, Database} from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 
-export default function Dashboard() {
+export default function ProfilesDashboard() {
   const [niche, setNiche] = useState("");
   const [clientLink, setClientLink] = useState("");
+  const [daTier, setDaTier] = useState("DA 90+ (Elite - GitHub, Adobe)");
   const [targetTld, setTargetTld] = useState(".com (Global)");
-  const [articleCount, setArticleCount] = useState(10);
+  const [profileCount, setProfileCount] = useState(1);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -26,10 +27,9 @@ export default function Dashboard() {
     setProcessedCount(0);
     
     try {
-      // Fake progress bar while waiting for backend
       // Dynamic timing based on link count (fewer links = faster completion)
       const timePerLinkMs = 40;
-      const totalSimulationTime = Math.max(1500, articleCount * timePerLinkMs);
+      const totalSimulationTime = Math.max(1500, profileCount * timePerLinkMs);
       const updateInterval = 100;
       const progressIncrement = 95 / (totalSimulationTime / updateInterval);
 
@@ -41,10 +41,10 @@ export default function Dashboard() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          type: "web20",
+          type: "profiles",
           niche,
           targetLink: clientLink,
-          totalRequested: articleCount
+          totalRequested: profileCount
         })
       });
 
@@ -53,7 +53,7 @@ export default function Dashboard() {
       
       if (data.success) {
         setProgress(100);
-        setProcessedCount(articleCount);
+        setProcessedCount(profileCount);
         setReportData(data.reportData);
         setTimeout(() => {
           setIsProcessing(false);
@@ -78,7 +78,7 @@ export default function Dashboard() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", `Zyntix_report_web20_${Date.now()}.csv`);
+    link.setAttribute("download", `Zyntix_report_profiles_${Date.now()}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -96,7 +96,7 @@ export default function Dashboard() {
         </div>
         
                         <nav className="space-y-2">
-          <Link href="/dashboard" className="flex items-center gap-3 bg-cyan-500/10 text-cyan-400 px-4 py-3 rounded-xl border border-cyan-500/20 font-bold transition-all shadow-[0_0_15px_rgba(6,182,212,0.15)]">
+          <Link href="/dashboard" className="flex items-center gap-3 text-slate-400 hover:text-white px-4 py-3 rounded-xl hover:bg-slate-800/50 transition-all font-medium">
             <FileText className="w-5 h-5" /> Web 2.0 Articles
           </Link>
           <Link href="/dashboard/profiles" className="flex items-center gap-3 text-slate-400 hover:text-white px-4 py-3 rounded-xl hover:bg-slate-800/50 transition-all font-medium">
@@ -105,7 +105,7 @@ export default function Dashboard() {
           <Link href="/dashboard/cloud" className="flex items-center gap-3 text-slate-400 hover:text-white px-4 py-3 rounded-xl hover:bg-slate-800/50 transition-all font-medium">
             <Cloud className="w-5 h-5" /> Cloud Authority
           </Link>
-          <Link href="/dashboard/google" className="flex items-center gap-3 text-slate-400 hover:text-white px-4 py-3 rounded-xl hover:bg-slate-800/50 transition-all font-medium">
+          <Link href="/dashboard/google" className="flex items-center gap-3 bg-emerald-500/10 text-emerald-400 px-4 py-3 rounded-xl border border-emerald-500/20 font-bold transition-all shadow-[0_0_15px_rgba(16,185,129,0.15)]">
             <Database className="w-5 h-5" /> Google Stacking
           </Link>
 
@@ -125,8 +125,8 @@ export default function Dashboard() {
       <main className="flex-1 p-8 max-w-5xl mx-auto">
         <header className="mb-10 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-black mb-2 tracking-tight">Web 2.0 AI Articles</h1>
-            <p className="text-slate-400 font-medium">Auto-generate and publish highly-optimized SEO articles to Medium, WordPress, Blogger, and Hashnode.</p>
+            <h1 className="text-3xl font-black mb-2 tracking-tight">High-DA Profile Creator</h1>
+            <p className="text-slate-400 font-medium">Automatically generate realistic user profiles on DA90+ sites with contextual bio links.</p>
           </div>
           <div className="flex items-center gap-2 px-3 py-1.5 bg-purple-500/10 border border-purple-500/20 rounded-full">
             <span className="text-xs font-bold text-purple-400 tracking-wide uppercase">Agency License</span>
@@ -137,17 +137,29 @@ export default function Dashboard() {
           <div className="md:col-span-2 space-y-6">
             <div className="bg-[#050B14] border border-white/5 p-6 rounded-2xl shadow-xl">
               <form onSubmit={handleBlast}>
-                <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="grid grid-cols-3 gap-4 mb-6">
                   <div>
-                    <label className="block text-sm font-bold text-slate-200 mb-2">Target Niche / Topic</label>
+                    <label className="block text-sm font-bold text-slate-200 mb-2">Target Niche</label>
                     <input 
                       type="text"
                       value={niche}
                       onChange={(e) => setNiche(e.target.value)}
-                      placeholder="e.g. AI Marketing Tools"
+                      placeholder="e.g. SaaS, eCommerce"
                       className="w-full bg-[#020617] border border-slate-800 rounded-xl py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm"
                       required
                     />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-slate-200 mb-2">Authority Tier</label>
+                    <select 
+                      value={daTier}
+                      onChange={(e) => setDaTier(e.target.value)}
+                      className="w-full bg-[#020617] border border-slate-800 rounded-xl py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm appearance-none"
+                    >
+                      <option>DA 90+ (Elite - GitHub, Adobe)</option>
+                      <option>DA 70+ (Premium - Behance, Disqus)</option>
+                      <option>DA 50+ (Standard)</option>
+                    </select>
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-slate-200 mb-2">Target TLD (Geo)</label>
@@ -187,20 +199,19 @@ export default function Dashboard() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-slate-200 mb-2">Number of Articles</label>
+                    <label className="block text-sm font-bold text-slate-200 mb-2">Number of Profiles</label>
                     <input 
                       type="number"
-                      value={articleCount}
-                      onChange={(e) => setArticleCount(Number(e.target.value))}
-                      min="1"
-                      max="50"
+                      value={profileCount}
+                      onChange={(e) => setProfileCount(Number(e.target.value))}
+                      min="5"
+                      max="300"
                       className="w-full bg-[#020617] border border-slate-800 rounded-xl py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm"
                       required
                     />
                   </div>
                 </div>
 
-                {/* Smart Campaign Delivery Engine */}
                 <div className="mb-8">
                   <label className="block text-sm font-bold text-slate-200 mb-2 flex items-center gap-2">
                     Campaign Delivery Engine <span className="bg-emerald-500/10 text-emerald-400 text-[10px] uppercase px-2 py-0.5 rounded-full border border-emerald-500/20">100% Natural</span>
@@ -235,14 +246,14 @@ export default function Dashboard() {
                     disabled={isProcessing || !niche || !clientLink}
                     className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold rounded-xl hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] transition-all disabled:opacity-50 disabled:hover:shadow-none flex items-center gap-2"
                   >
-                    {isProcessing ? "Writing & Publishing..." : `Publish ${articleCount}x Articles`} <Zap className="w-5 h-5" />
+                    {isProcessing ? "Creating Profiles..." : `Create ${profileCount} Profiles`} <User className="w-5 h-5" />
                   </button>
                 </div>
                 
                 {isProcessing && (
                   <div className="mt-8 p-5 bg-[#020617] rounded-xl border border-slate-800">
                     <div className="flex justify-between text-xs font-bold text-slate-300 mb-3">
-                      <span>Writing highly-optimized SEO articles with AI...</span>
+                      <span>Bypassing Captchas & registering emails...</span>
                       <span className="text-cyan-400">{progress}%</span>
                     </div>
                     <div className="w-full h-2 bg-slate-900 rounded-full overflow-hidden shadow-inner">
@@ -255,8 +266,8 @@ export default function Dashboard() {
                       </motion.div>
                     </div>
                     <div className="mt-5 space-y-2.5 text-sm text-slate-400 font-medium">
-                      <p className="flex items-center gap-3"><CheckCircle2 className="w-4 h-4 text-cyan-400" /> Generating unique cover images...</p>
-                      {progress >= 50 && <p className="flex items-center gap-3"><CheckCircle2 className="w-4 h-4 text-cyan-400" /> Publishing {processedCount} of {articleCount} to Web 2.0 properties...</p>}
+                      <p className="flex items-center gap-3"><CheckCircle2 className="w-4 h-4 text-cyan-400" /> Registered {processedCount} of {profileCount} accounts.</p>
+                      {progress >= 50 && <p className="flex items-center gap-3"><CheckCircle2 className="w-4 h-4 text-cyan-400" /> AI writing unique bios & inserting target link...</p>}
                     </div>
                   </div>
                 )}
@@ -269,12 +280,12 @@ export default function Dashboard() {
                   >
                     <div>
                       <h3 className="text-emerald-400 font-bold mb-1 flex items-center gap-2 text-lg">
-                        <CheckCircle2 className="w-5 h-5" /> Campaign Successful!
+                        <CheckCircle2 className="w-5 h-5" /> Profiles Created!
                       </h3>
-                      <p className="text-sm text-emerald-500/80 font-medium">Successfully published {articleCount} articles with backlinks.</p>
+                      <p className="text-sm text-emerald-500/80 font-medium">Successfully created {profileCount} Google Entity Stacks with backlinks.</p>
                     </div>
                     <button type="button" onClick={downloadCsv} className="px-5 py-2.5 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-500 transition-colors flex items-center gap-2 text-sm shadow-lg shadow-emerald-500/20">
-                      <FileSpreadsheet className="w-4 h-4" /> Download Final Report (CSV)
+                      <FileSpreadsheet className="w-4 h-4" /> Download CSV
                     </button>
                   </motion.div>
                 )}
@@ -284,19 +295,19 @@ export default function Dashboard() {
 
           <div className="space-y-6">
             <div className="bg-[#050B14] border border-white/5 p-6 rounded-2xl shadow-xl">
-              <h2 className="font-bold text-white mb-5 flex items-center gap-2"><Settings2 className="w-5 h-5 text-cyan-400" /> Content Config</h2>
+              <h2 className="font-bold text-white mb-5 flex items-center gap-2"><Settings2 className="w-5 h-5 text-cyan-400" /> Bio Configuration</h2>
               <div className="space-y-4 text-sm text-slate-400 font-medium">
-                <p><strong>Content Gen:</strong> <span className="text-emerald-400">GPT-4 Turbo</span></p>
-                <p><strong>Article Length:</strong> 800-1200 Words</p>
-                <p><strong>Images:</strong> Auto-generated via AI</p>
-                <p><strong>Link Placement:</strong> In-content (Natural)</p>
+                <p><strong>Persona Gen:</strong> <span className="text-emerald-400">AI Active</span></p>
+                <p><strong>Bio Length:</strong> 160 Characters (Strict)</p>
+                <p><strong>Email Rotation:</strong> Catch-all domains</p>
+                <p><strong>Captcha Solver:</strong> 2Captcha API</p>
               </div>
             </div>
             
-            <div className="bg-emerald-500/5 border border-emerald-500/20 p-6 rounded-2xl shadow-xl">
-              <h2 className="font-bold text-emerald-400 mb-3 flex items-center gap-2"><ShieldAlert className="w-5 h-5" /> Zero Setup Required</h2>
-              <p className="text-sm text-emerald-400/80 leading-relaxed font-medium">
-                Sit back and relax. You don't need to connect your own accounts or manage logins. Our <strong>Global Agency Pool</strong> automatically uses thousands of aged accounts and safe proxies to post your articles perfectly.
+            <div className="bg-cyan-500/5 border border-cyan-500/20 p-6 rounded-2xl shadow-xl">
+              <h2 className="font-bold text-cyan-400 mb-3 flex items-center gap-2"><ShieldAlert className="w-5 h-5" /> Best Practice</h2>
+              <p className="text-sm text-cyan-400/80 leading-relaxed font-medium">
+                Google Entity Stacks provide massive foundational trust to new domains. It's highly recommended to use the 30-Day Drip feature for these.
               </p>
             </div>
           </div>
@@ -305,6 +316,7 @@ export default function Dashboard() {
     </div>
   );
 }
+
 
 
 

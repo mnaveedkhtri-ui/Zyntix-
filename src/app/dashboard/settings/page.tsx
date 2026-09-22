@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Globe, FileText, UserPlus, FileSpreadsheet, Settings, Key, Save, CheckCircle2 } from "lucide-react";
+import { Globe, FileText, UserPlus, FileSpreadsheet, Settings, Key, Save, CheckCircle2 , Cloud, Database} from "lucide-react";
 import { useState, useEffect } from "react";
 
 export default function SettingsPage() {
@@ -9,6 +9,9 @@ export default function SettingsPage() {
   const [devtoKey, setDevtoKey] = useState("");
   const [hashnodeKey, setHashnodeKey] = useState("");
   const [notionKey, setNotionKey] = useState("");
+  const [awsKey, setAwsKey] = useState("");
+  const [awsSecret, setAwsSecret] = useState("");
+  const [gcpKey, setGcpKey] = useState("");
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
@@ -16,6 +19,9 @@ export default function SettingsPage() {
     setDevtoKey(localStorage.getItem("devto_key") || "");
     setHashnodeKey(localStorage.getItem("hashnode_key") || "");
     setNotionKey(localStorage.getItem("notion_key") || "");
+    setAwsKey(localStorage.getItem("aws_key") || "");
+    setAwsSecret(localStorage.getItem("aws_secret") || "");
+    setGcpKey(localStorage.getItem("gcp_key") || "");
   }, []);
 
   const handleSave = () => {
@@ -24,6 +30,9 @@ export default function SettingsPage() {
     localStorage.setItem("devto_key", devtoKey);
     localStorage.setItem("hashnode_key", hashnodeKey);
     localStorage.setItem("notion_key", notionKey);
+    localStorage.setItem("aws_key", awsKey);
+    localStorage.setItem("aws_secret", awsSecret);
+    localStorage.setItem("gcp_key", gcpKey);
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
   };
@@ -39,12 +48,18 @@ export default function SettingsPage() {
           <span className="text-2xl font-black tracking-tighter">Zyn<span className="text-cyan-400">tix</span></span>
         </div>
 
-        <nav className="space-y-2">
+                <nav className="space-y-2">
           <Link href="/dashboard" className="flex items-center gap-3 text-slate-400 hover:text-white px-4 py-3 rounded-xl hover:bg-slate-800/50 transition-all font-medium">
             <FileText className="w-5 h-5" /> Web 2.0 Articles
           </Link>
           <Link href="/dashboard/profiles" className="flex items-center gap-3 text-slate-400 hover:text-white px-4 py-3 rounded-xl hover:bg-slate-800/50 transition-all font-medium">
             <UserPlus className="w-5 h-5" /> High-DA Profiles
+          </Link>
+          <Link href="/dashboard/cloud" className="flex items-center gap-3 text-slate-400 hover:text-white px-4 py-3 rounded-xl hover:bg-slate-800/50 transition-all font-medium">
+            <Cloud className="w-5 h-5" /> Cloud Authority
+          </Link>
+          <Link href="/dashboard/google" className="flex items-center gap-3 text-slate-400 hover:text-white px-4 py-3 rounded-xl hover:bg-slate-800/50 transition-all font-medium">
+            <Database className="w-5 h-5" /> Google Stacking
           </Link>
 
           <div className="pt-6 pb-2">
@@ -132,6 +147,40 @@ export default function SettingsPage() {
                   <p className="text-xs text-slate-500 mt-2">Required for creating public Notion SEO pages.</p>
                 </div>
              </div>
+                {/* AWS */}
+                <div className="pt-4 border-t border-slate-800">
+                  <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2"><Cloud className="w-5 h-5 text-purple-400" /> Cloud Stacking Credentials</h3>
+                  <label className="block text-sm font-bold text-slate-300 mb-2">AWS Access Key ID (DA 95+)</label>
+                  <input 
+                    type="password" 
+                    value={awsKey}
+                    onChange={(e) => setAwsKey(e.target.value)}
+                    placeholder="AKIA..." 
+                    className="w-full bg-[#020617] border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all placeholder:text-slate-600 font-mono mb-4"
+                  />
+                  <label className="block text-sm font-bold text-slate-300 mb-2">AWS Secret Access Key</label>
+                  <input 
+                    type="password" 
+                    value={awsSecret}
+                    onChange={(e) => setAwsSecret(e.target.value)}
+                    placeholder="Secret Key..." 
+                    className="w-full bg-[#020617] border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all placeholder:text-slate-600 font-mono mb-2"
+                  />
+                  <p className="text-xs text-slate-500 mt-2">Required for creating HTML backlinks on Amazon S3 buckets.</p>
+                </div>
+
+                {/* GCP */}
+                <div className="pt-4 border-t border-slate-800">
+                  <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2"><Database className="w-5 h-5 text-emerald-400" /> Google Entity Credentials</h3>
+                  <label className="block text-sm font-bold text-slate-300 mb-2">Google Cloud / Drive Service Account JSON</label>
+                  <textarea 
+                    value={gcpKey}
+                    onChange={(e) => setGcpKey(e.target.value)}
+                    placeholder='{ "type": "service_account", ... }' 
+                    className="w-full bg-[#020617] border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all placeholder:text-slate-600 font-mono h-32 resize-none"
+                  ></textarea>
+                  <p className="text-xs text-slate-500 mt-2">Required for creating Google Docs and Google Cloud Storage backlinks.</p>
+                </div>
 
              <div className="mt-8 pt-6 border-t border-slate-800 flex justify-end">
                 <button 
@@ -149,5 +198,7 @@ export default function SettingsPage() {
     </div>
   );
 }
+
+
 
 

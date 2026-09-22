@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Globe, FileText, MessageSquare, UserPlus, HelpCircle, FileSpreadsheet, Download, ExternalLink, CheckCircle2 , Layers, Settings} from "lucide-react";
+import { Globe, FileText, MessageSquare, UserPlus, HelpCircle, FileSpreadsheet, Download, ExternalLink, CheckCircle2 , Layers, Settings, Cloud, Database} from "lucide-react";
 
 export default function ReportsPage() {
   return (
@@ -15,12 +15,18 @@ export default function ReportsPage() {
           <span className="text-xl font-black tracking-tighter">Zyntix</span>
         </div>
         
-                <nav className="space-y-2">
+                        <nav className="space-y-2">
           <Link href="/dashboard" className="flex items-center gap-3 text-slate-400 hover:text-white px-4 py-3 rounded-xl hover:bg-slate-800/50 transition-all font-medium">
             <FileText className="w-5 h-5" /> Web 2.0 Articles
           </Link>
           <Link href="/dashboard/profiles" className="flex items-center gap-3 text-slate-400 hover:text-white px-4 py-3 rounded-xl hover:bg-slate-800/50 transition-all font-medium">
             <UserPlus className="w-5 h-5" /> High-DA Profiles
+          </Link>
+          <Link href="/dashboard/cloud" className="flex items-center gap-3 text-slate-400 hover:text-white px-4 py-3 rounded-xl hover:bg-slate-800/50 transition-all font-medium">
+            <Cloud className="w-5 h-5" /> Cloud Authority
+          </Link>
+          <Link href="/dashboard/google" className="flex items-center gap-3 text-slate-400 hover:text-white px-4 py-3 rounded-xl hover:bg-slate-800/50 transition-all font-medium">
+            <Database className="w-5 h-5" /> Google Stacking
           </Link>
 
           <div className="pt-6 pb-2">
@@ -76,6 +82,7 @@ export default function ReportsPage() {
     </div>
   );
 }
+
 
 
 
