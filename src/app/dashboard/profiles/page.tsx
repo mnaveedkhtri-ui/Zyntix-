@@ -1,15 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { Zap, CheckCircle2, Search, Settings2, ShieldAlert, Download, FileSpreadsheet, Globe, FileText, MessageSquare, UserPlus, HelpCircle } from "lucide-react";
+import { Zap, CheckCircle2, Settings2, ShieldAlert, FileSpreadsheet, Globe, FileText, MessageSquare, UserPlus, HelpCircle, User } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 
-export default function BulkComments() {
+export default function ProfilesDashboard() {
   const [niche, setNiche] = useState("");
   const [clientLink, setClientLink] = useState("");
-  const [targetTld, setTargetTld] = useState(".de (Germany)");
-  const [linkCount, setLinkCount] = useState(500);
+  const [daTier, setDaTier] = useState("DA 90+ (Elite)");
+  const [profileCount, setProfileCount] = useState(50);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -25,11 +25,10 @@ export default function BulkComments() {
     setProcessedCount(0);
     
     try {
-      // Simulate Scraping and Processing
-      for (let i = 0; i < linkCount; i++) {
-        await new Promise(r => setTimeout(r, 20)); 
+      for (let i = 0; i < profileCount; i++) {
+        await new Promise(r => setTimeout(r, 40)); 
         setProcessedCount(i + 1);
-        setProgress(Math.round(((i + 1) / linkCount) * 100));
+        setProgress(Math.round(((i + 1) / profileCount) * 100));
       }
     } catch (err) {
       alert("Failed to connect to the server.");
@@ -56,10 +55,10 @@ export default function BulkComments() {
           <Link href="/dashboard" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors">
             <FileText className="w-5 h-5" /> Web 2.0 Articles
           </Link>
-          <Link href="/dashboard/comments" className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 text-cyan-400 rounded-xl font-medium border border-cyan-500/20 shadow-sm">
+          <Link href="/dashboard/comments" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors">
             <MessageSquare className="w-5 h-5" /> Blog Comments
           </Link>
-          <Link href="/dashboard/profiles" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors">
+          <Link href="/dashboard/profiles" className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 text-cyan-400 rounded-xl font-medium border border-cyan-500/20 shadow-sm">
             <UserPlus className="w-5 h-5" /> High-DA Profiles
           </Link>
           <Link href="/dashboard/forums" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors">
@@ -72,8 +71,8 @@ export default function BulkComments() {
       <main className="flex-1 p-8 max-w-5xl mx-auto">
         <header className="mb-10 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-black mb-2 tracking-tight">Auto-Scraper & Commenter</h1>
-            <p className="text-slate-400 font-medium">Automatically find target blogs by country and drop AI semantic comments.</p>
+            <h1 className="text-3xl font-black mb-2 tracking-tight">High-DA Profile Creator</h1>
+            <p className="text-slate-400 font-medium">Automatically generate realistic user profiles on DA90+ sites with contextual bio links.</p>
           </div>
           <div className="flex items-center gap-2 px-3 py-1.5 bg-purple-500/10 border border-purple-500/20 rounded-full">
             <span className="text-xs font-bold text-purple-400 tracking-wide uppercase">Agency License</span>
@@ -81,43 +80,31 @@ export default function BulkComments() {
         </header>
 
         <div className="grid md:grid-cols-3 gap-8">
-          {/* Main Action Area */}
           <div className="md:col-span-2 space-y-6">
             <div className="bg-[#050B14] border border-white/5 p-6 rounded-2xl shadow-xl">
               <form onSubmit={handleBlast}>
                 <div className="grid grid-cols-2 gap-4 mb-6">
                   <div>
-                    <label className="block text-sm font-bold text-slate-200 mb-2">Niche / Keyword</label>
+                    <label className="block text-sm font-bold text-slate-200 mb-2">Target Niche</label>
                     <input 
                       type="text"
                       value={niche}
                       onChange={(e) => setNiche(e.target.value)}
-                      placeholder="e.g. Technology, Health"
+                      placeholder="e.g. SaaS, eCommerce"
                       className="w-full bg-[#020617] border border-slate-800 rounded-xl py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-slate-200 mb-2">Target TLD (Geo)</label>
+                    <label className="block text-sm font-bold text-slate-200 mb-2">Authority Tier</label>
                     <select 
-                      value={targetTld}
-                      onChange={(e) => setTargetTld(e.target.value)}
+                      value={daTier}
+                      onChange={(e) => setDaTier(e.target.value)}
                       className="w-full bg-[#020617] border border-slate-800 rounded-xl py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm appearance-none"
                     >
-                      <option value=".com (Global)">.com (Global / US)</option>
-                      <option value=".de (Germany)">.de (Germany)</option>
-                      <option value=".co.uk (UK)">.co.uk (UK)</option>
-                      <option value=".fr (France)">.fr (France)</option>
-                      <option value=".es (Spain)">.es (Spain)</option>
-                      <option value=".it (Italy)">.it (Italy)</option>
-                      <option value=".nl (Netherlands)">.nl (Netherlands)</option>
-                      <option value=".ca (Canada)">.ca (Canada)</option>
-                      <option value=".au (Australia)">.au (Australia)</option>
-                      <option value=".in (India)">.in (India)</option>
-                      <option value=".jp (Japan)">.jp (Japan)</option>
-                      <option value=".br (Brazil)">.br (Brazil)</option>
-                      <option value=".ae (UAE)">.ae (UAE)</option>
-                      <option value=".sg (Singapore)">.sg (Singapore)</option>
+                      <option>DA 90+ (Elite - GitHub, Adobe)</option>
+                      <option>DA 70+ (Premium - Behance, Disqus)</option>
+                      <option>DA 50+ (Standard)</option>
                     </select>
                   </div>
                 </div>
@@ -129,26 +116,25 @@ export default function BulkComments() {
                       type="url"
                       value={clientLink}
                       onChange={(e) => setClientLink(e.target.value)}
-                      placeholder="https://client-site.de"
+                      placeholder="https://client-site.com"
                       className="w-full bg-[#020617] border border-slate-800 rounded-xl py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-slate-200 mb-2">Total Backlinks</label>
+                    <label className="block text-sm font-bold text-slate-200 mb-2">Number of Profiles</label>
                     <input 
                       type="number"
-                      value={linkCount}
-                      onChange={(e) => setLinkCount(Number(e.target.value))}
-                      min="10"
-                      max="1000"
+                      value={profileCount}
+                      onChange={(e) => setProfileCount(Number(e.target.value))}
+                      min="5"
+                      max="300"
                       className="w-full bg-[#020617] border border-slate-800 rounded-xl py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm"
                       required
                     />
                   </div>
                 </div>
 
-                {/* Campaign Delivery Engine */}
                 <div className="mb-8">
                   <label className="block text-sm font-bold text-slate-200 mb-2 flex items-center gap-2">
                     Campaign Delivery Engine <span className="bg-emerald-500/10 text-emerald-400 text-[10px] uppercase px-2 py-0.5 rounded-full border border-emerald-500/20">Safe Mode</span>
@@ -167,7 +153,6 @@ export default function BulkComments() {
                       <div className="p-3 text-center border border-slate-800 bg-[#020617] rounded-xl text-slate-400 peer-checked:border-blue-500 peer-checked:text-blue-400 peer-checked:bg-blue-500/10 transition-all text-sm font-bold group-hover:border-slate-600 shadow-sm relative overflow-hidden">
                         Balanced (7 Days)
                         <div className="text-xs font-normal opacity-80 mt-1">Standard Speed</div>
-                        <div className="absolute top-0 right-0 w-8 h-8 bg-blue-500/20 blur-xl rounded-full opacity-0 peer-checked:opacity-100"></div>
                       </div>
                     </label>
                     <label className="cursor-pointer group">
@@ -175,7 +160,6 @@ export default function BulkComments() {
                       <div className="p-3 text-center border border-slate-800 bg-[#020617] rounded-xl text-slate-400 peer-checked:border-cyan-500 peer-checked:text-cyan-400 peer-checked:bg-cyan-500/10 transition-all text-sm font-bold group-hover:border-slate-600 shadow-sm relative overflow-hidden">
                         Turbo Blast (24h)
                         <div className="text-xs font-normal opacity-80 mt-1">For Authority Sites</div>
-                        <div className="absolute top-0 right-0 w-8 h-8 bg-cyan-500/20 blur-xl rounded-full opacity-0 peer-checked:opacity-100"></div>
                       </div>
                     </label>
                   </div>
@@ -187,15 +171,14 @@ export default function BulkComments() {
                     disabled={isProcessing || !niche || !clientLink}
                     className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold rounded-xl hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] transition-all disabled:opacity-50 disabled:hover:shadow-none flex items-center gap-2"
                   >
-                    {isProcessing ? "Deploying Campaign..." : `Deploy ${linkCount}x Campaign`} <Zap className="w-5 h-5" />
+                    {isProcessing ? "Creating Profiles..." : `Create ${profileCount} Profiles`} <User className="w-5 h-5" />
                   </button>
                 </div>
                 
-                {/* Progress Bar UI */}
                 {isProcessing && (
                   <div className="mt-8 p-5 bg-[#020617] rounded-xl border border-slate-800">
                     <div className="flex justify-between text-xs font-bold text-slate-300 mb-3">
-                      <span>Dorking Google & bypassing spam filters...</span>
+                      <span>Bypassing Captchas & registering emails...</span>
                       <span className="text-cyan-400">{progress}%</span>
                     </div>
                     <div className="w-full h-2 bg-slate-900 rounded-full overflow-hidden shadow-inner">
@@ -208,13 +191,12 @@ export default function BulkComments() {
                       </motion.div>
                     </div>
                     <div className="mt-5 space-y-2.5 text-sm text-slate-400 font-medium">
-                      <p className="flex items-center gap-3"><CheckCircle2 className="w-4 h-4 text-cyan-400" /> Scraped {processedCount} of {linkCount} target {targetTld.split(' ')[0]} blogs.</p>
-                      {progress >= 50 && <p className="flex items-center gap-3"><CheckCircle2 className="w-4 h-4 text-cyan-400" /> AI writing natural semantic responses...</p>}
+                      <p className="flex items-center gap-3"><CheckCircle2 className="w-4 h-4 text-cyan-400" /> Registered {processedCount} of {profileCount} accounts.</p>
+                      {progress >= 50 && <p className="flex items-center gap-3"><CheckCircle2 className="w-4 h-4 text-cyan-400" /> AI writing unique bios & inserting target link...</p>}
                     </div>
                   </div>
                 )}
 
-                {/* Finished State / Report Download */}
                 {isFinished && (
                   <motion.div 
                     initial={{ opacity: 0, y: 10 }}
@@ -223,9 +205,9 @@ export default function BulkComments() {
                   >
                     <div>
                       <h3 className="text-emerald-400 font-bold mb-1 flex items-center gap-2 text-lg">
-                        <CheckCircle2 className="w-5 h-5" /> Blast Complete!
+                        <CheckCircle2 className="w-5 h-5" /> Profiles Created!
                       </h3>
-                      <p className="text-sm text-emerald-500/80 font-medium">Successfully posted {linkCount} comments. Ready for client delivery.</p>
+                      <p className="text-sm text-emerald-500/80 font-medium">Successfully created {profileCount} High-DA profiles with backlinks.</p>
                     </div>
                     <button type="button" className="px-5 py-2.5 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-500 transition-colors flex items-center gap-2 text-sm shadow-lg shadow-emerald-500/20">
                       <FileSpreadsheet className="w-4 h-4" /> Download CSV
@@ -236,22 +218,21 @@ export default function BulkComments() {
             </div>
           </div>
 
-          {/* Sidebar Info */}
           <div className="space-y-6">
             <div className="bg-[#050B14] border border-white/5 p-6 rounded-2xl shadow-xl">
-              <h2 className="font-bold text-white mb-5 flex items-center gap-2"><Settings2 className="w-5 h-5 text-cyan-400" /> Scraper Config</h2>
+              <h2 className="font-bold text-white mb-5 flex items-center gap-2"><Settings2 className="w-5 h-5 text-cyan-400" /> Bio Configuration</h2>
               <div className="space-y-4 text-sm text-slate-400 font-medium">
-                <p><strong>Dorks:</strong> <code className="bg-[#020617] px-2 py-1 rounded text-cyan-400 text-xs">site:{targetTld.split(' ')[0]} inurl:blog</code></p>
-                <p><strong>Proxy Rotation:</strong> <span className="text-emerald-400">Enabled</span></p>
-                <p><strong>Bypass:</strong> Akismet AI Evasion</p>
-                <p><strong>Report:</strong> Detailed (URL, DR, Anchor)</p>
+                <p><strong>Persona Gen:</strong> <span className="text-emerald-400">AI Active</span></p>
+                <p><strong>Bio Length:</strong> 150-300 Words</p>
+                <p><strong>Email Rotation:</strong> Catch-all domains</p>
+                <p><strong>Captcha Solver:</strong> 2Captcha API</p>
               </div>
             </div>
-
-            <div className="bg-red-500/5 border border-red-500/20 p-6 rounded-2xl shadow-xl">
-              <h2 className="font-bold text-red-400 mb-3 flex items-center gap-2"><ShieldAlert className="w-5 h-5" /> Agency Notice</h2>
-              <p className="text-sm text-red-400/80 leading-relaxed font-medium">
-                Reports are generated automatically in CSV format (Excel). You can send this directly to your clients via Fiverr/Upwork as proof of work.
+            
+            <div className="bg-cyan-500/5 border border-cyan-500/20 p-6 rounded-2xl shadow-xl">
+              <h2 className="font-bold text-cyan-400 mb-3 flex items-center gap-2"><ShieldAlert className="w-5 h-5" /> Best Practice</h2>
+              <p className="text-sm text-cyan-400/80 leading-relaxed font-medium">
+                High-DA Profiles provide massive foundational trust to new domains. It's highly recommended to use the 30-Day Drip feature for these.
               </p>
             </div>
           </div>
