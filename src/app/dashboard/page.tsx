@@ -13,6 +13,7 @@ export default function Dashboard() {
   const [isFinished, setIsFinished] = useState(false);
   const [progress, setProgress] = useState(0);
   const [processedCount, setProcessedCount] = useState(0);
+  const [reportData, setReportData] = useState<any[]>([]);
 
   const handleBlast = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,19 +25,56 @@ export default function Dashboard() {
     setProcessedCount(0);
     
     try {
-      for (let i = 0; i < articleCount; i++) {
-        await new Promise(r => setTimeout(r, 80)); 
-        setProcessedCount(i + 1);
-        setProgress(Math.round(((i + 1) / articleCount) * 100));
+      // Fake progress bar while waiting for backend
+      const progressInterval = setInterval(() => {
+        setProgress(p => Math.min(p + 5, 95));
+      }, 150);
+
+      const res = await fetch("/api/campaigns", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "web20",
+          niche,
+          targetLink: clientLink,
+          totalRequested: articleCount
+        })
+      });
+
+      const data = await res.json();
+      clearInterval(progressInterval);
+      
+      if (data.success) {
+        setProgress(100);
+        setProcessedCount(articleCount);
+        setReportData(data.reportData);
+        setTimeout(() => {
+          setIsProcessing(false);
+          setIsFinished(true);
+        }, 500);
+      } else {
+        alert("Server error: " + data.error);
+        setIsProcessing(false);
       }
     } catch (err) {
-      alert("Failed to connect to the server.");
-    }
-    
-    setTimeout(() => {
+      alert("Failed to connect to the backend server.");
       setIsProcessing(false);
-      setIsFinished(true);
-    }, 1000);
+    }
+  };
+
+  const downloadCsv = () => {
+    if (!reportData || reportData.length === 0) return;
+    const headers = ["Target Client URL", "Published Backlink URL", "Anchor Text", "Status"];
+    const rows = reportData.map(r => `"${r.target}","${r.url}","${r.anchor}","${r.status}"`);
+    const csvContent = [headers.join(","), ...rows].join("\n");
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `syndicator_report_web20_${Date.now()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
@@ -202,7 +240,7 @@ export default function Dashboard() {
                       </h3>
                       <p className="text-sm text-emerald-500/80 font-medium">Successfully published {articleCount} articles with backlinks.</p>
                     </div>
-                    <button type="button" className="px-5 py-2.5 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-500 transition-colors flex items-center gap-2 text-sm shadow-lg shadow-emerald-500/20">
+                    <button type="button" onClick={downloadCsv} className="px-5 py-2.5 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-500 transition-colors flex items-center gap-2 text-sm shadow-lg shadow-emerald-500/20">
                       <FileSpreadsheet className="w-4 h-4" /> Download Final Report (CSV)
                     </button>
                   </motion.div>
