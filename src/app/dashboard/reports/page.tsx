@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Globe, FileText, MessageSquare, UserPlus, HelpCircle, FileSpreadsheet, Download, ExternalLink, CheckCircle2 , Layers} from "lucide-react";
+import { Globe, FileText, MessageSquare, UserPlus, HelpCircle, FileSpreadsheet, Download, ExternalLink, CheckCircle2 , Layers, Settings} from "lucide-react";
 
 export default function ReportsPage() {
   return (
@@ -15,24 +15,22 @@ export default function ReportsPage() {
           <span className="text-xl font-black tracking-tighter">Zyntix</span>
         </div>
         
-        <nav className="space-y-2">
-          <Link href="/dashboard" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors">
+                <nav className="space-y-2">
+          <Link href="/dashboard" className="flex items-center gap-3 text-slate-400 hover:text-white px-4 py-3 rounded-xl hover:bg-slate-800/50 transition-all font-medium">
             <FileText className="w-5 h-5" /> Web 2.0 Articles
           </Link>
-          <Link href="/dashboard/comments" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors">
-            <MessageSquare className="w-5 h-5" /> Blog Comments
-          </Link>
-          <Link href="/dashboard/profiles" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors">
+          <Link href="/dashboard/profiles" className="flex items-center gap-3 text-slate-400 hover:text-white px-4 py-3 rounded-xl hover:bg-slate-800/50 transition-all font-medium">
             <UserPlus className="w-5 h-5" /> High-DA Profiles
           </Link>
-          <Link href="/dashboard/forums" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors">
-            <HelpCircle className="w-5 h-5" /> Q&A / Forums
-          </Link>
-          <Link href="/dashboard/mixed" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors">
-            <Layers className="w-5 h-5" /> Mixed Campaigns
-          </Link>
-          <Link href="/dashboard/reports" className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 text-emerald-400 rounded-xl font-medium border border-emerald-500/20 shadow-sm mt-8">
+
+          <div className="pt-6 pb-2">
+            <p className="text-xs font-bold text-slate-600 uppercase tracking-wider px-4">Analytics & Config</p>
+          </div>
+          <Link href="/dashboard/reports" className="flex items-center gap-3 bg-slate-800 text-white px-4 py-3 rounded-xl font-bold transition-all border border-slate-700 shadow-sm">
             <FileSpreadsheet className="w-5 h-5" /> Detailed Reports
+          </Link>
+          <Link href="/dashboard/settings" className="flex items-center gap-3 text-slate-400 hover:text-white px-4 py-3 rounded-xl hover:bg-slate-800/50 transition-all font-medium">
+            <Settings className="w-5 h-5" /> API Settings
           </Link>
         </nav>
       </aside>
@@ -78,5 +76,7 @@ export default function ReportsPage() {
     </div>
   );
 }
+
+
 
 

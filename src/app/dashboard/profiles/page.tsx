@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Zap, CheckCircle2, Settings2, ShieldAlert, FileSpreadsheet, Globe, FileText, MessageSquare, UserPlus, HelpCircle, User , Layers} from "lucide-react";
+import { Zap, CheckCircle2, Settings2, ShieldAlert, FileSpreadsheet, Globe, FileText, MessageSquare, UserPlus, HelpCircle, User , Layers, Settings} from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 
@@ -95,24 +95,22 @@ export default function ProfilesDashboard() {
           <span className="text-xl font-black tracking-tighter">Zyntix</span>
         </div>
         
-        <nav className="space-y-2">
-          <Link href="/dashboard" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors">
+                <nav className="space-y-2">
+          <Link href="/dashboard" className="flex items-center gap-3 text-slate-400 hover:text-white px-4 py-3 rounded-xl hover:bg-slate-800/50 transition-all font-medium">
             <FileText className="w-5 h-5" /> Web 2.0 Articles
           </Link>
-          <Link href="/dashboard/comments" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors">
-            <MessageSquare className="w-5 h-5" /> Blog Comments
-          </Link>
-          <Link href="/dashboard/profiles" className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 text-cyan-400 rounded-xl font-medium border border-cyan-500/20 shadow-sm">
+          <Link href="/dashboard/profiles" className="flex items-center gap-3 bg-blue-500/10 text-blue-400 px-4 py-3 rounded-xl border border-blue-500/20 font-bold transition-all shadow-[0_0_15px_rgba(59,130,246,0.15)]">
             <UserPlus className="w-5 h-5" /> High-DA Profiles
           </Link>
-          <Link href="/dashboard/forums" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors">
-            <HelpCircle className="w-5 h-5" /> Q&A / Forums
-          </Link>
-          <Link href="/dashboard/mixed" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors">
-            <Layers className="w-5 h-5" /> Mixed Campaigns
-          </Link>
-          <Link href="/dashboard/reports" className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl font-medium transition-colors mt-8 border border-slate-800/50">
+
+          <div className="pt-6 pb-2">
+            <p className="text-xs font-bold text-slate-600 uppercase tracking-wider px-4">Analytics & Config</p>
+          </div>
+          <Link href="/dashboard/reports" className="flex items-center gap-3 text-slate-400 hover:text-white px-4 py-3 rounded-xl hover:bg-slate-800/50 transition-all font-medium">
             <FileSpreadsheet className="w-5 h-5" /> Detailed Reports
+          </Link>
+          <Link href="/dashboard/settings" className="flex items-center gap-3 text-slate-400 hover:text-white px-4 py-3 rounded-xl hover:bg-slate-800/50 transition-all font-medium">
+            <Settings className="w-5 h-5" /> API Settings
           </Link>
         </nav>
       </aside>
@@ -312,6 +310,8 @@ export default function ProfilesDashboard() {
     </div>
   );
 }
+
+
 
 
 
