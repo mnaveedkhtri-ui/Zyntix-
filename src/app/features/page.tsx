@@ -32,8 +32,8 @@ export default function Features() {
               <Zap className="w-6 h-6 text-blue-400" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold mb-3 text-white">12-Hour Turbo Delivery</h2>
-              <p className="text-slate-400 leading-relaxed">Fast doesn't mean unsafe. Our residential proxy network ensures your links are placed globally within 12 hours while mimicking real human browser behavior to avoid any anti-bot detection.</p>
+              <h2 className="text-2xl font-bold mb-3 text-white">Instant Turbo Delivery</h2>
+              <p className="text-slate-400 leading-relaxed">Fast doesn't mean unsafe. Our residential proxy network ensures your links are placed globally within seconds while mimicking real human browser behavior to avoid any anti-bot detection.</p>
             </div>
           </div>
 
@@ -51,4 +51,6 @@ export default function Features() {
     </div>
   );
 }
+
+
 

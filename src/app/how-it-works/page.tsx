@@ -40,7 +40,7 @@ export default function HowItWorks() {
               <PlayCircle className="w-6 h-6 text-emerald-400" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold mb-3 text-white">3. 12-Hour Turbo Delivery</h2>
+              <h2 className="text-2xl font-bold mb-3 text-white">3. Instant Turbo Delivery</h2>
               <p className="text-slate-400 leading-relaxed">Zyntix takes over. Using residential proxies and human-emulation delays, it safely builds your entire link profile and generates a pristine white-label CSV report for you to hand to your clients.</p>
             </div>
           </div>
@@ -49,4 +49,5 @@ export default function HowItWorks() {
     </div>
   );
 }
+
 

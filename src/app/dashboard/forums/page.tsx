@@ -217,7 +217,7 @@ export default function ForumsDashboard() {
                     <div className="flex items-center justify-between relative z-10">
                       <div>
                         <h4 className="text-cyan-400 font-bold text-lg flex items-center gap-2">
-                          <Zap className="w-5 h-5" /> Turbo Delivery (12 Hours)
+                          <Zap className="w-5 h-5" /> Instant Turbo Delivery
                         </h4>
                         <p className="text-slate-400 text-sm mt-1">Clients want it fast. We deliver it safely.</p>
                       </div>
@@ -312,6 +312,7 @@ export default function ForumsDashboard() {
     </div>
   );
 }
+
 
 
 

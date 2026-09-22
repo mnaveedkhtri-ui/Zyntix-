@@ -94,7 +94,7 @@ export default function LandingPage() {
           </motion.h1>
 
           <motion.p variants={itemVariants} className="text-lg md:text-2xl text-slate-400 mb-12 max-w-3xl font-medium leading-relaxed">
-            Stop building links manually. Leverage our 12-Hour Turbo Engine to automatically distribute Mixed Campaigns across Web 2.0, Forums, Profiles, and Comments with 14+ Geo-Targeted TLDs and 100% natural residential proxies.
+            Stop building links manually. Leverage our Instant Turbo Engine to automatically distribute Mixed Campaigns across Web 2.0, Forums, Profiles, and Comments with 14+ Geo-Targeted TLDs and 100% natural residential proxies.
           </motion.p>
 
           <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center gap-6">
@@ -145,7 +145,7 @@ export default function LandingPage() {
                 <div className="w-14 h-14 rounded-2xl bg-cyan-500/20 flex items-center justify-center mb-8 border border-cyan-500/20">
                   <Activity className="w-7 h-7 text-cyan-400" />
                 </div>
-                <h3 className="text-3xl font-bold text-white mb-4">12-Hour Turbo Engine</h3>
+                <h3 className="text-3xl font-bold text-white mb-4">Instant Turbo Engine</h3>
                 <p className="text-slate-400 text-lg leading-relaxed max-w-xl">
                   Our Turbo Engine ensures fast delivery while maintaining complete safety. We use residential proxies and randomized timing delays to mimic organic viral growth and prevent algorithmic penalties.
                 </p>
@@ -221,4 +221,5 @@ export default function LandingPage() {
     </div>
   );
 }
+
 
