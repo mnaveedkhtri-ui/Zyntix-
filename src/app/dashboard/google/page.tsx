@@ -44,7 +44,7 @@ function GoogleDashboardContent() {
 
   const handlePublish = async () => {
     setIsProcessing(true);
-    setProgressMsg(Starting robust generation of  docs...);
+    setProgressMsg(`Starting robust generation of ${bulkCount} docs...`);
     
     // Pre-generate AI Content ONCE to avoid API rate limits during bulk generation
     let baseIntro = '';
