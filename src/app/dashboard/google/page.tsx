@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react"; import { useSearchParams, Suspense } from "next/navigation";
+import { useState, useEffect, Suspense } from "react"; import { useSearchParams } from "next/navigation";
 import { Database, AlertTriangle } from "lucide-react";
 import DashboardSidebar from "@/components/DashboardSidebar";
 
@@ -217,3 +217,4 @@ function GoogleDashboardContent() {
 
 
 export default function GoogleDashboard() { return <Suspense fallback={<div>Loading...</div>}><GoogleDashboardContent /></Suspense>; }
+
