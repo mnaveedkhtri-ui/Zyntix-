@@ -1,57 +1,50 @@
 import Link from "next/link";
-import { ArrowLeft, Sparkles, Zap, Image as ImageIcon } from "lucide-react";
+import { Database, Cloud, Zap, ShieldCheck, ArrowRight, Server, Layers } from "lucide-react";
 
 export default function Features() {
   return (
-    <div className="min-h-screen bg-[#020617] text-slate-50 font-sans p-12 relative overflow-hidden">
-      {/* Background Glow */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none"></div>
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-[100px] pointer-events-none"></div>
-
-      <div className="relative z-10 max-w-4xl mx-auto">
-        <Link href="/" className="inline-flex items-center gap-2 text-cyan-400 hover:text-cyan-300 font-bold mb-12 transition-colors">
-          <ArrowLeft className="w-4 h-4" /> Back to home
+    <div className="min-h-screen bg-[#020617] text-slate-50 font-sans">
+      <nav className="flex items-center justify-between px-8 py-6 max-w-7xl mx-auto border-b border-slate-800/50">
+        <Link href="/" className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-500/20">
+            <Database className="w-6 h-6 text-white" />
+          </div>
+          <span className="text-2xl font-black tracking-tight text-white">Zyntix</span>
         </Link>
+        <Link href="/dashboard" className="text-emerald-400 font-bold hover:text-emerald-300">Access Dashboard</Link>
+      </nav>
+
+      <main className="max-w-7xl mx-auto px-8 py-24">
+        <h1 className="text-4xl font-black mb-16 text-center">The <span className="text-emerald-400">Cloud Stacking</span> Arsenal</h1>
         
-        <h1 className="text-5xl font-black tracking-tight mb-6 text-white">Platform Features</h1>
-        <p className="text-xl text-slate-400 font-medium mb-16">Everything you need to automate content syndication at scale.</p>
-        
-        <div className="space-y-8">
-          <div className="bg-[#050B14] border border-white/5 p-8 rounded-2xl shadow-xl flex gap-6 items-start">
-            <div className="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center shrink-0 border border-cyan-500/20">
-              <Sparkles className="w-6 h-6 text-cyan-400" />
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold mb-3 text-white">Official API Integrations</h2>
-              <p className="text-slate-400 leading-relaxed">Connect directly to the core infrastructure of the internet. Zyntix uses official Developer APIs to syndicate your content across GitHub, Dev.to, Hashnode, and Notion. No blackhat scripts, just pure, authenticated publishing.</p>
-            </div>
+        <div className="grid md:grid-cols-2 gap-12">
+          <div className="bg-[#050B14] p-10 rounded-3xl border border-slate-800">
+            <Database className="w-12 h-12 text-emerald-400 mb-6" />
+            <h2 className="text-2xl font-bold mb-4">Google Entity Networks</h2>
+            <p className="text-slate-400 mb-6 leading-relaxed">
+              Google loves Google. We use official Google Service Accounts (GCP) to generate hundreds of interlinked Google Docs, Sheets, and Slides. These properties boast a DA of 99 and are practically immune to algorithm penalties.
+            </p>
+            <ul className="space-y-3 text-slate-300">
+              <li className="flex items-center gap-3"><Zap className="w-5 h-5 text-emerald-500" /> Bulk Document Generation</li>
+              <li className="flex items-center gap-3"><Zap className="w-5 h-5 text-emerald-500" /> Public Permissions Automated</li>
+              <li className="flex items-center gap-3"><Zap className="w-5 h-5 text-emerald-500" /> Zero Rate-Limit Architecture</li>
+            </ul>
           </div>
 
-          <div className="bg-[#050B14] border border-white/5 p-8 rounded-2xl shadow-xl flex gap-6 items-start">
-            <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center shrink-0 border border-blue-500/20">
-              <Zap className="w-6 h-6 text-blue-400" />
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold mb-3 text-white">Zero Proxy Infrastructure</h2>
-              <p className="text-slate-400 leading-relaxed">Never pay for a residential proxy or Captcha solver again. By utilizing Official APIs, Zyntix bypasses Cloudflare and bot-protection natively. Your content goes live globally in seconds with a 100% success rate.</p>
-            </div>
-          </div>
-
-          <div className="bg-[#050B14] border border-white/5 p-8 rounded-2xl shadow-xl flex gap-6 items-start">
-            <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center shrink-0 border border-purple-500/20">
-              <ImageIcon className="w-6 h-6 text-purple-400" />
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold mb-3 text-white">Premium DA 90+ Authority</h2>
-              <p className="text-slate-400 leading-relaxed">Stop wasting time on spammy forums. We exclusively target the highest Domain Authority platforms in the world. Generate contextual Web 2.0 articles and Profile Backlinks on DA 90+ domains that actually move the needle for your clients.</p>
-            </div>
+          <div className="bg-[#050B14] p-10 rounded-3xl border border-slate-800">
+            <Cloud className="w-12 h-12 text-cyan-400 mb-6" />
+            <h2 className="text-2xl font-bold mb-4">AWS HTML Stacks</h2>
+            <p className="text-slate-400 mb-6 leading-relaxed">
+              Host thousands of SEO-optimized HTML pages directly on Amazon S3 buckets. AWS provides unparalleled domain authority and blazing fast load times, instantly validating your local entities.
+            </p>
+            <ul className="space-y-3 text-slate-300">
+              <li className="flex items-center gap-3"><Zap className="w-5 h-5 text-cyan-500" /> Direct S3 API Integration</li>
+              <li className="flex items-center gap-3"><Zap className="w-5 h-5 text-cyan-500" /> Dynamic HTML Generation</li>
+              <li className="flex items-center gap-3"><Zap className="w-5 h-5 text-cyan-500" /> Built-in Schema Injection</li>
+            </ul>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
-
-
-
-
