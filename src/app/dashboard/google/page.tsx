@@ -42,39 +42,39 @@ function GoogleDashboardContent() {
     }
   };
 
+  
   const handlePublish = async () => {
     setIsProcessing(true);
     setProgressMsg(`Starting robust generation of ${bulkCount} docs...`);
     
+    const appsScriptUrl = localStorage.getItem("apps_script_url");
+    if (!appsScriptUrl || !appsScriptUrl.includes("script.google.com")) {
+      setIsProcessing(false);
+      setProgressMsg('');
+      return;
+    }
+
     // Pre-generate AI Content ONCE to avoid API rate limits during bulk generation
     let baseIntro = '';
     let baseBullets = '';
     try {
       setProgressMsg('Generating Premium AI Content Blueprint...');
-      const p1 = encodeURIComponent(Write a highly professional, 150-word SEO introduction paragraph explaining the services and importance of . Make it sound like an expert industry report. Do not use quotes or markdown.);
-      const p2 = encodeURIComponent(Write 5 highly actionable bullet points (key takeaways) regarding . Keep it professional and short. Do not include numbers, just the text. No markdown.);
+      const p1 = encodeURIComponent(`Write a highly professional, 150-word SEO introduction paragraph explaining the services and importance of ${keyword}. Make it sound like an expert industry report. Do not use quotes or markdown.`);
+      const p2 = encodeURIComponent(`Write 5 highly actionable bullet points (key takeaways) regarding ${keyword}. Keep it professional and short. Do not include numbers, just the text. No markdown.`);
       const [res1, res2] = await Promise.all([
-        fetch(https://text.pollinations.ai/prompt/).catch(() => null),
-        fetch(https://text.pollinations.ai/prompt/).catch(() => null)
+        fetch(`https://text.pollinations.ai/prompt/${p1}`).catch(() => null),
+        fetch(`https://text.pollinations.ai/prompt/${p2}`).catch(() => null)
       ]);
       if (res1 && res1.ok) baseIntro = await res1.text();
       if (res2 && res2.ok) baseBullets = await res2.text();
     } catch (e) {
       console.error('Failed to pre-generate AI blueprint', e);
     }
-    
-    const appsScriptUrl = localStorage.getItem("apps_script_url");
-    if (!appsScriptUrl || !appsScriptUrl.includes("script.google.com")) {
-      alert("Error: Please add your Google Apps Script Web App URL in the Settings page first!");
-      setIsProcessing(false);
-      setProgressMsg('');
-      return;
-    }
 
     const maxDocs = Math.min(bulkCount, 500); 
     let successCount = 0;
-    const generatedUrls: string[] = [];
-    const newReportData: any[] = [];
+    const generatedUrls = [];
+    const newReportData = [];
 
     for (let i = 1; i <= maxDocs; i++) {
       setProgressMsg(`Generating document ${i} of ${maxDocs}...`);
@@ -83,7 +83,7 @@ function GoogleDashboardContent() {
       
       if (result && result.success) {
          newReportData.push(...result.data);
-         generatedUrls.push(...result.data.map((d: any) => d.url));
+         generatedUrls.push(...result.data.map(d => d.url));
          successCount++;
          setReportData(prev => [...result.data, ...prev]);
       } else {
@@ -91,14 +91,13 @@ function GoogleDashboardContent() {
          setProgressMsg(`Warning: Document ${i} failed due to Google limits. Continuing...`);
       }
       
-      // Mandatory 3-second delay between docs to prevent Google API Rate Limiting
       if (i < maxDocs) {
         setProgressMsg(`Document ${i} complete. Cooling down API for 3 seconds...`);
         await new Promise(resolve => setTimeout(resolve, 3000));
       }
     }
 
-    setProgressMsg(`? Task Complete! Successfully generated ${successCount} out of ${maxDocs} documents.`);
+    setProgressMsg(`Task Complete! Successfully generated ${successCount} out of ${maxDocs} documents.`);
     
     if (successCount > 0) {
       const newCampaign = {
@@ -115,7 +114,7 @@ function GoogleDashboardContent() {
     }
 
     setIsProcessing(false);
-  } 
+  }
 
   return (
     <div className="min-h-screen bg-[#020617] text-slate-50 font-sans flex overflow-hidden">
