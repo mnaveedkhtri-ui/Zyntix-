@@ -60,10 +60,7 @@ export default function GoogleDashboard() {
 
     setProgressMsg(`? Successfully generated ${successCount} out of ${maxDocs} documents!`);
     setIsProcessing(false);
-  }
-  }
-
-  return (
+  } `n`n  return (
     <div className="min-h-screen bg-[#020617] text-slate-50 font-sans p-8">
       <div className="max-w-6xl mx-auto flex gap-8">
         <div className="w-64 shrink-0">
@@ -174,5 +171,6 @@ export default function GoogleDashboard() {
     </div>
   );
 }
+
 
 
