@@ -1,4 +1,4 @@
-import Link from "next/link";
+ï»¿import Link from "next/link";
 import { Database, Mail, Phone, MapPin } from "lucide-react";
 
 export default function Footer() {
@@ -62,7 +62,7 @@ export default function Footer() {
 
         <div className="border-t border-slate-800/50 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-slate-500 text-sm">
-            © {new Date().getFullYear()} Zyntix SEO. All rights reserved.
+            &copy; {new Date().getFullYear()} Zyntix SEO. All rights reserved.
           </p>
           <div className="flex items-center gap-4 text-sm text-slate-500">
             <span>Built for scale.</span>
@@ -72,3 +72,4 @@ export default function Footer() {
     </footer>
   );
 }
+
