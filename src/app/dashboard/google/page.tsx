@@ -1,10 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react"; import { useSearchParams, Suspense } from "next/navigation";
 import { Database, AlertTriangle } from "lucide-react";
 import DashboardSidebar from "@/components/DashboardSidebar";
 
-export default function GoogleDashboard() {
+function GoogleDashboardContent() {
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    const k = searchParams.get('keyword');
+    if(k) { setKeyword(k); setBulkCount(50); }
+  }, [searchParams]);
   const [keyword, setKeyword] = useState('');
   const [bulkCount, setBulkCount] = useState(1);
   const [progressMsg, setProgressMsg] = useState('');
@@ -209,3 +214,6 @@ export default function GoogleDashboard() {
     </div>
   );
 }
+
+
+export default function GoogleDashboard() { return <Suspense fallback={<div>Loading...</div>}><GoogleDashboardContent /></Suspense>; }

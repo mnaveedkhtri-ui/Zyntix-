@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState } from "react"; import { useRouter } from "next/navigation";
 import { Target, Search, BrainCircuit, MessageSquareText, CodeXml, ChevronRight, Zap, ExternalLink, ShieldAlert } from "lucide-react";
 import DashboardSidebar from "@/components/DashboardSidebar";
 
@@ -8,6 +8,7 @@ export default function AuditDashboard() {
   const [keyword, setKeyword] = useState("");
   const [isScanning, setIsScanning] = useState(false);
   const [report, setReport] = useState<any>(null);
+  const router = useRouter();
 
   const handleScan = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -122,13 +123,13 @@ export default function AuditDashboard() {
                   </p>
                   <div className="bg-[#020617]/50 border border-red-500/20 p-5 rounded-2xl">
                     <h4 className="text-white font-bold mb-2 flex items-center gap-2">
-                      <Zap className="w-4 h-4 text-amber-400" /> How to Destroy Their Rankings in 14 Days:
+                      <Zap className="w-4 h-4 text-amber-400" /> How to Hijack Their Rankings in 48-72 Hours (SGE Injection):
                     </h4>
                     <ol className="list-decimal list-inside space-y-2 text-slate-300">
                       <li>The competitors have weak Semantic HTML. You must inject exactly <strong>{report.recommendationWordCount} words</strong> on your target page.</li>
                       <li>Use the <strong>Google Entity Stacking (DA-99)</strong> tool on the sidebar to generate 50-100 backlinks.</li>
                       <li>In the Stacking tool, use the exact <strong>NLP Keywords & FAQs</strong> listed below as the content of the generated files.</li>
-                      <li>This creates a massive Google-trusted entity loop that forces Google's SGE algorithm to bypass the current competitors and rank your client #1.</li>
+                      <li>This creates a massive Google-trusted entity loop that forces Google's AI algorithm to instantly index your entity and bypass competitors within 48-72 hours.</li>
                     </ol>
                   </div>
                 </div>
@@ -175,3 +176,4 @@ export default function AuditDashboard() {
     </div>
   );
 }
+
