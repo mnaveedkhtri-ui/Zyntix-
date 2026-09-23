@@ -5,7 +5,7 @@ https.get("https://text.pollinations.ai/models", (res) => {
   res.on("end", () => {
     const models = JSON.parse(data);
     models.forEach(m => {
-       if (m.reasoning === false) console.log(m.name, "Reasoning:", m.reasoning);
+       console.log(m.name, "Reasoning:", m.reasoning);
     });
   });
 });

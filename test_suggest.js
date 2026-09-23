@@ -1,10 +1,9 @@
-async function testGoogleSuggest() {
-  try {
-    const res = await fetch("http://suggestqueries.google.com/complete/search?client=chrome&q=emergency+roof+repair");
-    const data = await res.json();
-    console.log("Real Google Search Suggestions:", data[1]);
-  } catch (err) {
-    console.error("Error:", err.message);
-  }
-}
-testGoogleSuggest();
+const https = require("https");
+const keyword = "best plumbers in london";
+https.get(`https://suggestqueries.google.com/complete/search?client=firefox&q=${encodeURIComponent(keyword)}`, (res) => {
+  let data = "";
+  res.on("data", d => data += d);
+  res.on("end", () => {
+    console.log(data);
+  });
+});
