@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     if (realFaqs.length === 0) realFaqs = [`What is the best way to choose ${keyword}?`, `How much does ${keyword} cost?`];
 
     // 3. Fetch REAL Top Competitors via DuckDuckGo HTML
-    let competitors = [];
+    let competitors: string[] = [];
     try {
       const ddgRes = await fetch(`https://html.duckduckgo.com/html/?q=${encodeURIComponent(keyword)}`, {
         headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" }
@@ -65,3 +65,4 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: error.message || "Failed to analyze SERP." }, { status: 500 });
   }
 }
+
