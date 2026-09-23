@@ -1,31 +1,49 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FileSpreadsheet, FileText, Download, ExternalLink } from "lucide-react";
+import { FileText, Download, ExternalLink, Copy, CheckCircle2 } from "lucide-react";
 import DashboardSidebar from "@/components/DashboardSidebar";
 
 export default function ReportsDashboard() {
   const [reports, setReports] = useState<any[]>([]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   useEffect(() => {
     const savedReports = JSON.parse(localStorage.getItem("zyntix_reports") || "[]");
     setReports(savedReports);
   }, []);
 
-  const handleDownloadCSV = (campaign: any) => {
-    let csvContent = "data:text/csv;charset=utf-8,";
-    csvContent += "Live URL\n";
-    campaign.urls.forEach((url: string) => {
-      csvContent += `${url}\n`;
+  const handleDownloadTXT = (campaign: any) => {
+    let txtContent = "ZYNTIX - CAMPAIGN REPORT\n";
+    txtContent += "==================================\n";
+    txtContent += `Campaign ID: ${campaign.id}\n`;
+    txtContent += `Target Client: ${campaign.client}\n`;
+    txtContent += `Date: ${campaign.date}\n`;
+    txtContent += `Total Links: ${campaign.links} (DA-99)\n`;
+    txtContent += "==================================\n\n";
+    txtContent += "LIVE URLs:\n";
+    
+    campaign.urls.forEach((url: string, index: number) => {
+      txtContent += `${index + 1}. ${url}\n`;
     });
-    const encodedUri = encodeURI(csvContent);
+    
+    const blob = new Blob([txtContent], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `${campaign.id}_report.csv`);
+    link.href = url;
+    link.download = `${campaign.id}_Zyntix_Report.txt`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleCopyLinks = (campaign: any) => {
+    const links = campaign.urls.join("\n");
+    navigator.clipboard.writeText(links);
+    setCopiedId(campaign.id);
+    setTimeout(() => setCopiedId(null), 2000);
   };
 
   return (
@@ -36,10 +54,10 @@ export default function ReportsDashboard() {
         <div className="max-w-6xl">
           <div className="mb-8">
             <h1 className="text-3xl font-black text-white flex items-center gap-3">
-              <FileSpreadsheet className="w-8 h-8 text-emerald-400" />
+              <FileText className="w-8 h-8 text-emerald-400" />
               Campaign Reports
             </h1>
-            <p className="text-slate-400 mt-2 text-lg">View, analyze, and download detailed CSV reports for your clients.</p>
+            <p className="text-slate-400 mt-2 text-lg">View, copy, and download TXT reports for your clients.</p>
           </div>
 
           <div className="bg-[#050B14] border border-slate-800 rounded-3xl overflow-hidden shadow-2xl relative">
@@ -76,10 +94,17 @@ export default function ReportsDashboard() {
                             View URLs
                           </button>
                           <button 
-                            onClick={() => handleDownloadCSV(report)}
+                            onClick={() => handleCopyLinks(report)}
+                            className="bg-slate-700 hover:bg-slate-600 text-white text-xs px-3 py-1.5 rounded-lg transition-colors font-medium flex items-center gap-1"
+                          >
+                            {copiedId === report.id ? <CheckCircle2 className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                            Copy
+                          </button>
+                          <button 
+                            onClick={() => handleDownloadTXT(report)}
                             className="bg-emerald-500 hover:bg-emerald-400 text-slate-900 text-xs px-3 py-1.5 rounded-lg transition-colors font-bold flex items-center gap-1"
                           >
-                            <Download className="w-3 h-3" /> CSV
+                            <Download className="w-3 h-3" /> TXT
                           </button>
                         </div>
                       </td>
@@ -119,7 +144,6 @@ export default function ReportsDashboard() {
                 </div>
               </div>
             )}
-
           </div>
         </div>
       </div>
