@@ -74,12 +74,8 @@ export default function GoogleDashboard() {
           </div>
 
           <nav className="space-y-2">
-            <Link href="/dashboard" className="flex items-center gap-3 text-slate-400 hover:text-white px-4 py-3 rounded-xl hover:bg-slate-800/50 transition-all font-medium">
-              <FileText className="w-5 h-5" /> Web 2.0 Articles
-            </Link>
-            <Link href="/dashboard/profiles" className="flex items-center gap-3 text-slate-400 hover:text-white px-4 py-3 rounded-xl hover:bg-slate-800/50 transition-all font-medium">
-              <UserPlus className="w-5 h-5" /> High-DA Profiles
-            </Link>
+            
+            
             <Link href="/dashboard/cloud" className="flex items-center gap-3 text-slate-400 hover:text-white px-4 py-3 rounded-xl hover:bg-slate-800/50 transition-all font-medium">
               <Cloud className="w-5 h-5" /> Cloud Authority
             </Link>
@@ -173,6 +169,7 @@ export default function GoogleDashboard() {
     </div>
   );
 }
+
 
 
 

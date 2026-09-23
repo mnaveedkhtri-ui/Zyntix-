@@ -96,12 +96,8 @@ export default function ProfilesDashboard() {
         </div>
         
                         <nav className="space-y-2">
-          <Link href="/dashboard" className="flex items-center gap-3 text-slate-400 hover:text-white px-4 py-3 rounded-xl hover:bg-slate-800/50 transition-all font-medium">
-            <FileText className="w-5 h-5" /> Web 2.0 Articles
-          </Link>
-          <Link href="/dashboard/profiles" className="flex items-center gap-3 text-slate-400 hover:text-white px-4 py-3 rounded-xl hover:bg-slate-800/50 transition-all font-medium">
-            <UserPlus className="w-5 h-5" /> High-DA Profiles
-          </Link>
+          
+          
           <Link href="/dashboard/cloud" className="flex items-center gap-3 bg-purple-500/10 text-purple-400 px-4 py-3 rounded-xl border border-purple-500/20 font-bold transition-all shadow-[0_0_15px_rgba(168,85,247,0.15)]">
             <Cloud className="w-5 h-5" /> Cloud Authority
           </Link>
@@ -316,6 +312,7 @@ export default function ProfilesDashboard() {
     </div>
   );
 }
+
 
 
 
