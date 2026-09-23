@@ -46,7 +46,7 @@ export async function POST(req: Request) {
     const textData = await response.text();
     try {
       const data = JSON.parse(textData);
-      return NextResponse.json(data);
+      if (data.success && data.url) { return NextResponse.json({ success: true, data: [{ url: data.url }] }); } return NextResponse.json(data);
     } catch (e) {
       return NextResponse.json({ error: `Apps Script returned HTML instead of JSON: ${textData.substring(0, 100)}` }, { status: 500 });
     }
