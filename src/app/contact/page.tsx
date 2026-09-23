@@ -1,4 +1,4 @@
-import NavBar from "@/components/NavBar";
+"use client";`nimport NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import { Mail, Phone, MapPin, Send } from "lucide-react";
 
@@ -73,4 +73,5 @@ export default function Contact() {
     </div>
   );
 }
+
 
