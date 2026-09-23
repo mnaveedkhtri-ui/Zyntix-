@@ -16,10 +16,9 @@ export default function GoogleDashboard() {
     setIsProcessing(true);
     setProgressMsg(`Starting bulk generation of ${bulkCount} docs...`);
     
-    const gcpKey = localStorage.getItem("gcp_key");
-    const folderId = localStorage.getItem("gcp_folder_id");
-    if (!gcpKey) {
-      alert("Error: Please add your Google Cloud JSON Key in the Settings page first!");
+    const appsScriptUrl = localStorage.getItem("apps_script_url");
+    if (!appsScriptUrl || !appsScriptUrl.includes("script.google.com")) {
+      alert("Error: Please add your Google Apps Script Web App URL in the Settings page first!");
       setIsProcessing(false);
       setProgressMsg('');
       return;
@@ -38,8 +37,7 @@ export default function GoogleDashboard() {
           body: JSON.stringify({
             targetUrl,
             keyword: `${keyword} (Variation ${i})`,
-            gcpKey,
-            folderId
+            appsScriptUrl
           })
         });
 
@@ -104,9 +102,9 @@ export default function GoogleDashboard() {
                   <Database className="w-5 h-5 text-emerald-400" />
                 </div>
                 <div>
-                  <h3 className="text-emerald-400 font-bold text-lg mb-1">Authenticated Google API</h3>
+                  <h3 className="text-emerald-400 font-bold text-lg mb-1">Apps Script Engine (0-Cost Bypass)</h3>
                   <p className="text-slate-300 leading-relaxed">
-                    Zyntix uses your official Service Account to create Google Docs directly on Google's infrastructure. These links are public, permanent, and indexable.
+                    Zyntix securely communicates with your Google Apps Script to auto-generate DA-99 links directly inside your Google Drive, bypassing all quota limits.
                   </p>
                 </div>
               </div>
@@ -182,4 +180,3 @@ export default function GoogleDashboard() {
     </div>
   );
 }
-

@@ -10,33 +10,17 @@ const credentials = {
 
 const auth = new google.auth.GoogleAuth({
   credentials,
-  scopes: [
-    "https://www.googleapis.com/auth/drive",
-    "https://www.googleapis.com/auth/documents"
-  ],
+  scopes: ["https://www.googleapis.com/auth/blogger"],
 });
 
-const drive = google.drive({ version: "v3", auth });
-const docs = google.docs({ version: "v1", auth });
+const blogger = google.blogger({ version: 'v3', auth });
 
-async function testCreate() {
+async function testBlogger() {
   try {
-    console.log("Creating doc inside the provided Folder ID...");
-    const driveFile = await drive.files.create({
-      requestBody: {
-        name: "Test Zyntix Auto-Verification",
-        mimeType: "application/vnd.google-apps.document",
-        parents: ["1KZyj0eLVO8DtHhH23gRszgiInqa314TI"]
-      },
-      fields: "id"
-    });
-    console.log("Doc created:", driveFile.data.id);
-    
-    console.log("Docs Edited successfully!");
-    
+    const res = await blogger.users.get({ userId: 'self' });
+    console.log("Blogger User:", res.data);
   } catch (error) {
-    console.error("API Error details:", JSON.stringify(error.response?.data, null, 2) || error.message);
+    console.error("Blogger API Error:", error.message);
   }
 }
-
-testCreate();
+testBlogger();

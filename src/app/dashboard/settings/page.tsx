@@ -1,23 +1,20 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Settings, CheckCircle2, ShieldAlert, Key, Database, FolderOpen } from "lucide-react";
+import { Settings, CheckCircle2, ShieldAlert, Key, Zap } from "lucide-react";
 import DashboardSidebar from "@/components/DashboardSidebar";
 
 export default function SettingsDashboard() {
-  const [gcpKey, setGcpKey] = useState("");
-  const [folderId, setFolderId] = useState("");
+  const [appsScriptUrl, setAppsScriptUrl] = useState("");
   const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
-    setGcpKey(localStorage.getItem("gcp_key") || "");
-    setFolderId(localStorage.getItem("gcp_folder_id") || "");
+    setAppsScriptUrl(localStorage.getItem("apps_script_url") || "");
   }, []);
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    localStorage.setItem("gcp_key", gcpKey);
-    localStorage.setItem("gcp_folder_id", folderId);
+    localStorage.setItem("apps_script_url", appsScriptUrl);
     setIsSaved(true);
     setTimeout(() => setIsSaved(false), 3000);
   };
@@ -33,7 +30,7 @@ export default function SettingsDashboard() {
               <Settings className="w-8 h-8 text-emerald-400" />
               API Settings & Keys
             </h1>
-            <p className="text-slate-400 mt-2 text-lg">Connect Zyntix securely to your Cloud Providers for bulk stacking.</p>
+            <p className="text-slate-400 mt-2 text-lg">Connect Zyntix securely to your Cloud Engine.</p>
           </div>
 
           <form onSubmit={handleSave} className="space-y-6">
@@ -43,38 +40,22 @@ export default function SettingsDashboard() {
               
               <div className="flex items-center gap-3 mb-6 pb-6 border-b border-slate-800/50 relative z-10">
                 <div className="w-10 h-10 bg-emerald-500/10 rounded-lg flex items-center justify-center">
-                  <Database className="w-5 h-5 text-emerald-400" />
+                  <Zap className="w-5 h-5 text-emerald-400" />
                 </div>
-                <h2 className="text-xl font-bold text-white">Google Entity Stacking (GCP)</h2>
+                <h2 className="text-xl font-bold text-white">Google Apps Script Engine (0-Cost Bypass)</h2>
               </div>
               
               <div className="space-y-6 relative z-10">
                 <div>
-                  <label className="block text-sm font-bold text-slate-300 mb-2">Google Cloud Service Account (JSON)</label>
-                  <textarea 
-                    value={gcpKey} 
-                    onChange={(e) => setGcpKey(e.target.value)} 
-                    placeholder="{ `json`: `key` }" 
-                    rows={6}
-                    className="w-full bg-[#020617] border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 transition-all font-mono text-sm leading-relaxed"
-                  ></textarea>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-bold text-slate-300 mb-2 flex items-center gap-2">
-                    <FolderOpen className="w-4 h-4 text-emerald-500" />
-                    Google Drive Folder ID (To bypass Quota Limits)
-                  </label>
+                  <label className="block text-sm font-bold text-slate-300 mb-2">Web App URL</label>
                   <input 
-                    type="text" 
-                    value={folderId} 
-                    onChange={(e) => setFolderId(e.target.value)} 
-                    placeholder="e.g. 1A2b3C4d5E6f7G8h9I0j" 
-                    className="w-full bg-[#020617] border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 transition-colors font-mono text-sm"
+                    type="url"
+                    value={appsScriptUrl} 
+                    onChange={(e) => setAppsScriptUrl(e.target.value)} 
+                    placeholder="https://script.google.com/macros/s/.../exec" 
+                    className="w-full bg-[#020617] border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 transition-all font-mono text-sm"
                   />
-                  <p className="text-xs text-slate-400 mt-2">
-                    Create a folder in your personal Gmail Drive, share it with your Service Account email as an Editor, and paste the Folder ID here.
-                  </p>
+                  <p className="text-xs text-emerald-500/80 mt-2 font-medium">Paste the URL generated from your Google Apps Script deployment.</p>
                 </div>
               </div>
             </div>
@@ -86,11 +67,10 @@ export default function SettingsDashboard() {
               </div>
               <button type="submit" className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3 px-8 rounded-xl transition-all flex items-center gap-2">
                 {isSaved ? <CheckCircle2 className="w-5 h-5" /> : <Key className="w-5 h-5" />}
-                {isSaved ? "Saved Securely" : "Save Settings"}
+                {isSaved ? "Saved Securely" : "Save Web App URL"}
               </button>
             </div>
           </form>
-
         </div>
       </div>
     </div>
