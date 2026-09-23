@@ -17,7 +17,7 @@ function toTitleCase(str: string) {
 
 export async function POST(req: Request) {
   try {
-    const { keyword, targetUrl, appsScriptUrl } = await req.json();
+    const { keyword, targetUrl, appsScriptUrl, aiIntro, aiBullets } = await req.json();
 
     if (!keyword || !targetUrl || !appsScriptUrl) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -30,8 +30,8 @@ export async function POST(req: Request) {
 
     const fallbackBulletsTemplate = `{24/7 Rapid Response & Support|Emergency Assistance & Quick Deployment|Fast Turnaround & Priority Service}: {Ensuring immediate assistance|Providing lightning-fast solutions|Guaranteeing minimal wait times} and {minimal downtime|maximum efficiency|prompt resolutions} for all ${cleanKeyword} needs.\n{Licensed, Insured & Certified Experts|Highly Trained & Vetted Professionals|Verified Industry Specialists}: {Guaranteeing strict adherence|Ensuring 100% compliance|Maintaining total alignment} with {local building codes|industry safety standards|municipal regulations} and quality guidelines.\n{Transparent Pricing & Upfront Quotes|No Hidden Fees & Clear Estimates|Honest & Competitive Pricing}: {Providing detailed cost breakdowns|Delivering clear financial estimates|Offering straightforward pricing models} with {zero hidden fees|complete transparency|no surprise charges} for maximum {trust and reliability|client peace of mind|customer satisfaction}.\n{Comprehensive Maintenance & Advanced Solutions|Full-Service Diagnostics & Repairs|End-to-End Expert Solutions}: {Utilizing state-of-the-art diagnostic tools|Leveraging premium equipment and techniques|Deploying modern technology} for {precision and long-lasting results|durability and guaranteed fixes|flawless execution}.\n{Verified Customer Satisfaction & 5-Star Reviews|Proven Track Record of Excellence|Award-Winning Client Care}: Backed by {hundreds of 5-star reviews|a solid reputation in the community|years of outstanding feedback} and a {relentless commitment|dedicated approach|steadfast dedication} to exceptional service quality in the ${cleanKeyword} sector.`;
 
-    const finalIntro = spintax(fallbackIntroTemplate);
-    const finalBullets = spintax(fallbackBulletsTemplate);
+    const finalIntro = aiIntro || spintax(fallbackIntroTemplate);
+    const finalBullets = aiBullets || spintax(fallbackBulletsTemplate);
 
     const response = await fetch(appsScriptUrl, {
       method: "POST",
