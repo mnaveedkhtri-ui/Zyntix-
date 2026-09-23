@@ -45,7 +45,7 @@ export default function AuditDashboard() {
                 <Target className="w-8 h-8 text-emerald-400" />
                 AEO & SERP Intelligence
               </h1>
-              <p className="text-slate-400 mt-2 text-lg">Analyze Google SGE & ChatGPT intent to extract semantic keywords.</p>
+              <p className="text-slate-400 mt-2 text-lg">Extract REAL LIVE Search Intent & LSI Keywords directly from Google Search Data.</p>
             </div>
             {report && (
               <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2">
@@ -84,7 +84,7 @@ export default function AuditDashboard() {
           {isScanning && (
             <div className="bg-[#050B14] border border-slate-800 rounded-3xl p-12 flex flex-col items-center justify-center text-center shadow-2xl">
               <BrainCircuit className="w-16 h-16 text-emerald-500 animate-pulse mb-6" />
-              <h3 className="text-xl font-bold text-white mb-2">Analyzing Google Generative Engine...</h3>
+              <h3 className="text-xl font-bold text-white mb-2">Extracting REAL Google Search Data...</h3>
               <p className="text-slate-400">Extracting competitor data, LSI keywords, and FAQs.</p>
               <div className="w-64 h-1 bg-slate-800 rounded-full mt-6 overflow-hidden">
                 <div className="h-full bg-emerald-500 w-full animate-[pulse_1.5s_ease-in-out_infinite]"></div>
@@ -189,4 +189,5 @@ function ExternalLink(props: any) {
     </svg>
   );
 }
+
 
