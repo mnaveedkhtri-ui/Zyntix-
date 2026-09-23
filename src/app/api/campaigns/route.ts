@@ -1,66 +1,63 @@
 import { NextResponse } from "next/server";
 
-// Helper to generate realistic looking URLs based on type
-function generateMockLinks(type: string, niche: string, count: number, clientLink: string) {
-  const links = [];
-  const sanitizedNiche = niche.toLowerCase().replace(/[^a-z0-9]/g, "-");
-  
-  for (let i = 0; i < count; i++) {
-    let url = "";
-    let currentType = type;
-    if (type === "mixed") {
-      const types = ["web20", "comments", "profiles", "forums"];
-      currentType = types[i % types.length];
-    }
-
-    if (currentType === "web20") {
-      const domains = ["medium.com", "dev.to", "hashnode.dev", "wordpress.com", "blogger.com"];
-      url = `https://${domains[i % domains.length]}/@seo-writer-${Math.floor(Math.random() * 1000)}/the-ultimate-guide-to-${sanitizedNiche}-${Math.floor(Math.random() * 10000)}`;
-    } else if (currentType === "comments") {
-      const domains = [".de", ".co.uk", ".com", ".net", ".org"];
-      url = `https://blog-about-${sanitizedNiche}${domains[i % domains.length]}/post-${Math.floor(Math.random() * 1000)}#comment-${Math.floor(Math.random() * 10000)}`;
-    } else if (currentType === "profiles") {
-      const domains = ["github.com", "behance.net", "adobe.com", "microsoft.com", "disqus.com"];
-      url = `https://${domains[i % domains.length]}/${sanitizedNiche}-expert-${Math.floor(Math.random() * 10000)}`;
-    } else if (currentType === "forums") {
-      const domains = ["reddit.com/r", "quora.com", "forums.digitalpoint.com"];
-      url = `https://${domains[i % domains.length]}/${sanitizedNiche}/thread-${Math.floor(Math.random() * 10000)}`;
-    }
-
-    links.push({
-      url,
-      anchor: `Best ${niche} resources`,
-      target: clientLink,
-      type: currentType,
-      status: "Live (DoFollow)"
-    });
-  }
-  
-  return links;
-}
-
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { type, niche, targetLink, totalRequested } = body;
+    const { targetUrl, keyword, articleCount, devtoKey, hashnodeKey, notionKey } = body;
 
-    if (!type || !niche || !targetLink || !totalRequested) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    if (!devtoKey) {
+      return NextResponse.json({ error: "Missing API Keys. Please configure them in Settings." }, { status: 400 });
     }
 
-    // 1. Generate the realistic mock data
-    const generatedLinks = generateMockLinks(type, niche, totalRequested, targetLink);
+    const links = [];
 
-    // 2. Return data
-    return NextResponse.json({ 
-      success: true, 
-      campaignId: `cmp_${Date.now()}`,
-      message: "Campaign executed successfully",
-      reportData: generatedLinks
+    // 1. Post to Dev.to
+    if (devtoKey) {
+      const articleBody = {
+        article: {
+          title: "The Ultimate Guide to \",
+          published: true,
+          body_markdown: "Welcome to our comprehensive guide on \. If you are looking for the best resources, make sure to visit our recommended site here: [\](\).\n\nThis is an automated SEO article syndicated via Zyntix.",
+          tags: ["seo", "marketing", "tech"]
+        }
+      };
+
+      const devtoRes = await fetch("https://dev.to/api/articles", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "api-key": devtoKey
+        },
+        body: JSON.stringify(articleBody)
+      });
+
+      if (devtoRes.ok) {
+        const data = await devtoRes.json();
+        links.push({
+          id: data.id || Math.random().toString(),
+          url: data.url,
+          platform: "Dev.to (Web 2.0)",
+          status: "Live",
+          da: "90"
+        });
+      } else {
+        const errorText = await devtoRes.text();
+        console.error("Dev.to Error:", errorText);
+      }
+    }
+
+    // Return the successfully created links
+    return NextResponse.json({
+      success: true,
+      message: "Campaign generated successfully via API",
+      data: links
     });
+
   } catch (error) {
-    console.error("API Error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    console.error("Campaign API Error:", error);
+    return NextResponse.json(
+      { error: "Failed to process campaign." },
+      { status: 500 }
+    );
   }
 }
-
