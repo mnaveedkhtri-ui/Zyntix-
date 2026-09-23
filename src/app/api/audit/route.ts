@@ -42,7 +42,7 @@ export async function POST(req: Request) {
       competitors = [
         `https://www.google.com/search?q=allintitle:%22${encodeURIComponent(keyword)}%22`, 
         `https://www.google.com/search?q=${encodeURIComponent(keyword)}+%22reviews%22`,  
-        `https://www.google.com/search?q=inurl:%22${encodeURIComponent(keyword.split(" ")[0])}%22`
+        `https://www.google.com/search?q=inurl:${encodeURIComponent(keyword.toLowerCase().replace(/\s+/g, "-"))}`
       ];
     }
 
@@ -65,3 +65,4 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: error.message || "Failed to analyze SERP." }, { status: 500 });
   }
 }
+
