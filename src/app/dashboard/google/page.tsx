@@ -17,13 +17,13 @@ function GoogleDashboardContent() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [reportData, setReportData] = useState<any[]>([]);
 
-  const generateDocWithRetry = async (appsScriptUrl: string, targetUrl: string, keyword: string, maxRetries = 3) => {
+  const generateDocWithRetry = async (appsScriptUrl: string, targetUrl: string, keyword: string, preGeneratedIntro: string, preGeneratedBullets: string, maxRetries = 3) => {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
         const response = await fetch('/api/google', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ targetUrl, keyword, appsScriptUrl })
+          body: JSON.stringify({ targetUrl, keyword, appsScriptUrl, preGeneratedIntro, preGeneratedBullets })
         });
         const data = await response.json();
         if (data.success && data.data.length > 0) {
@@ -44,7 +44,24 @@ function GoogleDashboardContent() {
 
   const handlePublish = async () => {
     setIsProcessing(true);
-    setProgressMsg(`Starting robust generation of ${bulkCount} docs...`);
+    setProgressMsg(Starting robust generation of  docs...);
+    
+    // Pre-generate AI Content ONCE to avoid API rate limits during bulk generation
+    let baseIntro = '';
+    let baseBullets = '';
+    try {
+      setProgressMsg('Generating Premium AI Content Blueprint...');
+      const p1 = encodeURIComponent(Write a highly professional, 150-word SEO introduction paragraph explaining the services and importance of . Make it sound like an expert industry report. Do not use quotes or markdown.);
+      const p2 = encodeURIComponent(Write 5 highly actionable bullet points (key takeaways) regarding . Keep it professional and short. Do not include numbers, just the text. No markdown.);
+      const [res1, res2] = await Promise.all([
+        fetch(https://text.pollinations.ai/prompt/).catch(() => null),
+        fetch(https://text.pollinations.ai/prompt/).catch(() => null)
+      ]);
+      if (res1 && res1.ok) baseIntro = await res1.text();
+      if (res2 && res2.ok) baseBullets = await res2.text();
+    } catch (e) {
+      console.error('Failed to pre-generate AI blueprint', e);
+    }
     
     const appsScriptUrl = localStorage.getItem("apps_script_url");
     if (!appsScriptUrl || !appsScriptUrl.includes("script.google.com")) {
@@ -62,7 +79,7 @@ function GoogleDashboardContent() {
     for (let i = 1; i <= maxDocs; i++) {
       setProgressMsg(`Generating document ${i} of ${maxDocs}...`);
       
-      const result = await generateDocWithRetry(appsScriptUrl, targetUrl, `${keyword} (Variation ${i})`, 3);
+      const result = await generateDocWithRetry(appsScriptUrl, targetUrl, `${keyword} (Variation ${i})`, baseIntro, baseBullets, 3);
       
       if (result && result.success) {
          newReportData.push(...result.data);
@@ -217,6 +234,7 @@ function GoogleDashboardContent() {
 
 
 export default function GoogleDashboard() { return <Suspense fallback={<div>Loading...</div>}><GoogleDashboardContent /></Suspense>; }
+
 
 
 
