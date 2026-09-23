@@ -17,6 +17,7 @@ export default function GoogleDashboard() {
     setProgressMsg(`Starting bulk generation of ${bulkCount} docs...`);
     
     const gcpKey = localStorage.getItem("gcp_key");
+    const folderId = localStorage.getItem("gcp_folder_id");
     if (!gcpKey) {
       alert("Error: Please add your Google Cloud JSON Key in the Settings page first!");
       setIsProcessing(false);
@@ -37,7 +38,8 @@ export default function GoogleDashboard() {
           body: JSON.stringify({
             targetUrl,
             keyword: `${keyword} (Variation ${i})`,
-            gcpKey
+            gcpKey,
+            folderId
           })
         });
 
@@ -180,3 +182,4 @@ export default function GoogleDashboard() {
     </div>
   );
 }
+

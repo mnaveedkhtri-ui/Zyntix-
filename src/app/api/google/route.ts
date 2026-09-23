@@ -4,10 +4,14 @@ import { google } from "googleapis";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { targetUrl, keyword, gcpKey } = body;
+    const { targetUrl, keyword, gcpKey, folderId } = body;
 
     if (!gcpKey) {
       return NextResponse.json({ error: "Missing Google Cloud JSON Key." }, { status: 400 });
+    }
+
+    if (!folderId) {
+      return NextResponse.json({ error: "Missing Folder ID. Please add it in Settings." }, { status: 400 });
     }
 
     let credentials;
@@ -17,7 +21,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid JSON format for GCP Key." }, { status: 400 });
     }
 
-    // Authenticate with Google Drive & Docs APIs
     const auth = new google.auth.GoogleAuth({
       credentials,
       scopes: [
@@ -29,18 +32,22 @@ export async function POST(req: Request) {
     const docs = google.docs({ version: "v1", auth });
     const drive = google.drive({ version: "v3", auth });
 
-    // 1. Create a new blank document
     const title = `Best ${keyword} Strategies and Resources`;
-    const doc = await docs.documents.create({
+
+    // 1. Create a new document inside the user's shared folder via Drive API (bypasses service account quota limits)
+    const driveFile = await drive.files.create({
       requestBody: {
-        title: title,
+        name: title,
+        mimeType: "application/vnd.google-apps.document",
+        parents: [folderId]
       },
+      fields: "id"
     });
 
-    const documentId = doc.data.documentId;
-    if (!documentId) throw new Error("Failed to create document.");
+    const documentId = driveFile.data.id;
+    if (!documentId) throw new Error("Failed to create document in Drive.");
 
-    // 2. Insert text and link into the document
+    // 2. Insert text and link into the document using Docs API
     const textToInsert = `Welcome to the official SEO guide for ${keyword}.\nIf you are looking for top-tier services, we highly recommend visiting our main resource page below.\n\nClick here for more info: `;
     
     await docs.documents.batchUpdate({
@@ -97,9 +104,10 @@ export async function POST(req: Request) {
     });
 
   } catch (error: any) {
-    console.error("Google API Error:", error.message || error);
+    const errorDetail = error.response?.data?.error?.message || error.message;
+    console.error("Google API Error:", errorDetail);
     return NextResponse.json(
-      { error: error.message || "Failed to process Google Stacking." },
+      { error: errorDetail || "Failed to process Google Stacking." },
       { status: 500 }
     );
   }
