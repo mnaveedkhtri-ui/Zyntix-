@@ -15,9 +15,9 @@ export async function POST(req: Request) {
     if (devtoKey) {
       const articleBody = {
         article: {
-          title: "The Ultimate Guide to \",
+          title: `The Ultimate Guide to ${keyword}`,
           published: true,
-          body_markdown: "Welcome to our comprehensive guide on \. If you are looking for the best resources, make sure to visit our recommended site here: [\](\).\n\nThis is an automated SEO article syndicated via Zyntix.",
+          body_markdown: `Welcome to our comprehensive guide on ${keyword}. If you are looking for the best resources, make sure to visit our recommended site here: [${keyword}](${targetUrl}).\n\nThis is an automated SEO article syndicated via Zyntix.`,
           tags: ["seo", "marketing", "tech"]
         }
       };
