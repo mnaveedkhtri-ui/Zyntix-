@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const { keyword } = await req.json();
+    const { keyword, targetUrl, appsScriptUrl } = await req.json();
 
-    if (!keyword) {
-      return NextResponse.json({ error: "Missing keyword" }, { status: 400 });
+    if (!keyword || !targetUrl || !appsScriptUrl) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
     let aiIntro = "";
@@ -13,6 +13,7 @@ export async function POST(req: Request) {
     
     try {
       const cleanKeyword = keyword.replace(/\s*\(Variation \d+\)/g, '').trim();
+      
       const p1 = `Write a highly professional, 100-word SEO introduction paragraph explaining the services and importance of ${cleanKeyword}. Make it sound like an expert industry report. Do not use quotes or markdown.`;
       const p2 = `Write 3 highly actionable bullet points (key takeaways) regarding ${cleanKeyword}. Keep it professional and short. Do not include numbers, just the text. No markdown.`;
       
@@ -33,10 +34,27 @@ export async function POST(req: Request) {
       console.error("AI Generation failed on Vercel", err);
     }
 
-    // Return the AI content to the frontend, let the frontend ping Google Apps Script directly
-    return NextResponse.json({ success: true, aiIntro, aiBullets });
+    // Proxy the request to Apps Script (This works perfectly from Node.js)
+    const response = await fetch(appsScriptUrl, {
+      method: "POST",
+      body: JSON.stringify({ keyword, targetUrl, aiIntro, aiBullets }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const textData = await response.text();
+    try {
+      const data = JSON.parse(textData);
+      return NextResponse.json(data);
+    } catch (e) {
+      return NextResponse.json({ error: `Apps Script returned HTML instead of JSON: ${textData.substring(0, 100)}` }, { status: 500 });
+    }
 
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Failed to generate AI content" }, { status: 500 });
+    return NextResponse.json(
+      { error: error.message || "Failed to generate document" },
+      { status: 500 }
+    );
   }
 }
