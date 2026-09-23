@@ -8,16 +8,15 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Keyword is required." }, { status: 400 });
     }
 
-    // Advanced dynamic mock response for the AEO/SGE Engine
     const words = keyword.split(" ");
     const coreEntity = words[words.length - 1] || "services";
     const localEntity = words.includes("in") ? words[words.indexOf("in") + 1] : "your area";
     
-    // Simulate complex NLP generation processing time
     await new Promise(resolve => setTimeout(resolve, 2500));
 
     const report = {
-      competitor: `https://www.top-local-services.com/${keyword.toLowerCase().replace(/[^a-z0-9]+/g, '-')}/`,
+      // Return a REAL Google Search link so it actually opens!
+      competitor: `https://www.google.com/search?q=${encodeURIComponent(keyword)}`,
       wordCount: Math.floor(Math.random() * (2200 - 1200) + 1200),
       nlpKeywords: [
         `${coreEntity} experts`,

@@ -96,9 +96,9 @@ export default function AuditDashboard() {
             <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
               <div className="bg-slate-800/20 border border-emerald-500/30 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div>
-                  <div className="text-sm text-slate-400 mb-1">Top Ranking Competitor</div>
+                  <div className="text-sm text-slate-400 mb-1">Live SERP Competitors (Google)</div>
                   <a href={report.competitor} target="_blank" className="text-emerald-400 hover:underline font-medium text-lg flex items-center gap-2">
-                    {report.competitor} <ExternalLink className="w-4 h-4" />
+                    View on Google <ExternalLink className="w-4 h-4" />
                   </a>
                 </div>
                 <div className="text-right">
@@ -189,3 +189,4 @@ function ExternalLink(props: any) {
     </svg>
   );
 }
+
