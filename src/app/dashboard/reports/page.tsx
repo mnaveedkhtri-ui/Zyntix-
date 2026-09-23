@@ -18,9 +18,7 @@ export default function ReportsPage() {
                         <nav className="space-y-2">
           
           
-          <Link href="/dashboard/cloud" className="flex items-center gap-3 text-slate-400 hover:text-white px-4 py-3 rounded-xl hover:bg-slate-800/50 transition-all font-medium">
-            <Cloud className="w-5 h-5" /> Cloud Authority
-          </Link>
+          
           <Link href="/dashboard/google" className="flex items-center gap-3 text-slate-400 hover:text-white px-4 py-3 rounded-xl hover:bg-slate-800/50 transition-all font-medium">
             <Database className="w-5 h-5" /> Google Stacking
           </Link>
@@ -78,6 +76,7 @@ export default function ReportsPage() {
     </div>
   );
 }
+
 
 
 

@@ -15,7 +15,7 @@ export default function Features() {
       </nav>
 
       <main className="max-w-7xl mx-auto px-8 py-24">
-        <h1 className="text-4xl font-black mb-16 text-center">The <span className="text-emerald-400">Cloud Stacking</span> Arsenal</h1>
+        <h1 className="text-4xl font-black mb-16 text-center">The <span className="text-emerald-400">Google Stacking</span> Arsenal</h1>
         
         <div className="grid md:grid-cols-2 gap-12">
           <div className="bg-[#050B14] p-10 rounded-3xl border border-slate-800">
@@ -31,20 +31,10 @@ export default function Features() {
             </ul>
           </div>
 
-          <div className="bg-[#050B14] p-10 rounded-3xl border border-slate-800">
-            <Cloud className="w-12 h-12 text-cyan-400 mb-6" />
-            <h2 className="text-2xl font-bold mb-4">AWS HTML Stacks</h2>
-            <p className="text-slate-400 mb-6 leading-relaxed">
-              Host thousands of SEO-optimized HTML pages directly on Amazon S3 buckets. AWS provides unparalleled domain authority and blazing fast load times, instantly validating your local entities.
-            </p>
-            <ul className="space-y-3 text-slate-300">
-              <li className="flex items-center gap-3"><Zap className="w-5 h-5 text-cyan-500" /> Direct S3 API Integration</li>
-              <li className="flex items-center gap-3"><Zap className="w-5 h-5 text-cyan-500" /> Dynamic HTML Generation</li>
-              <li className="flex items-center gap-3"><Zap className="w-5 h-5 text-cyan-500" /> Built-in Schema Injection</li>
-            </ul>
-          </div>
+          
         </div>
       </main>
     </div>
   );
 }
+

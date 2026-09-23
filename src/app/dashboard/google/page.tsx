@@ -76,9 +76,7 @@ export default function GoogleDashboard() {
           <nav className="space-y-2">
             
             
-            <Link href="/dashboard/cloud" className="flex items-center gap-3 text-slate-400 hover:text-white px-4 py-3 rounded-xl hover:bg-slate-800/50 transition-all font-medium">
-              <Cloud className="w-5 h-5" /> Cloud Authority
-            </Link>
+            
             <Link href="/dashboard/google" className="flex items-center gap-3 bg-emerald-500/10 text-emerald-400 px-4 py-3 rounded-xl border border-emerald-500/20 font-bold transition-all shadow-[0_0_15px_rgba(16,185,129,0.15)]">
               <Database className="w-5 h-5" /> Google Stacking
             </Link>
@@ -169,6 +167,7 @@ export default function GoogleDashboard() {
     </div>
   );
 }
+
 
 
 

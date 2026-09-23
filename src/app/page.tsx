@@ -27,16 +27,16 @@ export default function Home() {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
           </span>
-          V2.0: The Cloud Stacking Era
+          V2.0: The Google Stacking Era
         </div>
         
         <h1 className="text-5xl md:text-7xl font-black tracking-tight mb-8 leading-tight">
-          Build <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">DA 99 Cloud Networks</span> <br className="hidden md:block"/>
+          Build <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">DA 99 Google Networks</span> <br className="hidden md:block"/>
           in Minutes.
         </h1>
         
         <p className="text-xl text-slate-400 max-w-3xl mx-auto mb-12 leading-relaxed">
-          Zyntix automates massive Entity Stacking campaigns directly on Google Cloud and AWS infrastructure. Dofollow, public, and indexable DA 99 links at scale. No proxies required.
+          Zyntix automates massive Entity Stacking campaigns directly on Google infrastructure. Dofollow, public, and indexable DA 99 links at scale. No proxies required.
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -58,13 +58,7 @@ export default function Home() {
             <p className="text-slate-400 leading-relaxed">Auto-generate interconnected Google Docs and Sheets natively using Google's API. Permanent DA 99 properties.</p>
           </div>
           
-          <div className="bg-[#050B14] p-8 rounded-3xl border border-slate-800 hover:border-cyan-500/50 transition-all group">
-            <div className="w-14 h-14 bg-cyan-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-              <Cloud className="w-7 h-7 text-cyan-400" />
-            </div>
-            <h3 className="text-xl font-bold text-white mb-3">AWS Cloud Authority</h3>
-            <p className="text-slate-400 leading-relaxed">Deploy bulk HTML networks on Amazon S3 buckets. Leverage the raw domain authority of AWS for local rankings.</p>
-          </div>
+          
 
           <div className="bg-[#050B14] p-8 rounded-3xl border border-slate-800 hover:border-blue-500/50 transition-all group">
             <div className="w-14 h-14 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
@@ -78,3 +72,4 @@ export default function Home() {
     </div>
   );
 }
+

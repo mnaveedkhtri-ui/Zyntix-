@@ -5,21 +5,21 @@ import { Settings, CheckCircle2, ShieldAlert, Key, Cloud, Database, FileSpreadsh
 import Link from "next/link";
 
 export default function SettingsDashboard() {
-  const [awsKey, setAwsKey] = useState("");
-  const [awsSecret, setAwsSecret] = useState("");
+  
+  
   const [gcpKey, setGcpKey] = useState("");
   const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
-    setAwsKey(localStorage.getItem("aws_key") || "");
-    setAwsSecret(localStorage.getItem("aws_secret") || "");
+    
+    
     setGcpKey(localStorage.getItem("gcp_key") || "");
   }, []);
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    localStorage.setItem("aws_key", awsKey);
-    localStorage.setItem("aws_secret", awsSecret);
+    
+    
     localStorage.setItem("gcp_key", gcpKey);
     setIsSaved(true);
     setTimeout(() => setIsSaved(false), 3000);
@@ -42,9 +42,7 @@ export default function SettingsDashboard() {
             <Link href="/dashboard/google" className="flex items-center gap-3 text-slate-400 hover:text-white px-4 py-3 rounded-xl hover:bg-slate-800/50 transition-all font-medium">
               <Database className="w-5 h-5" /> Google Stacking
             </Link>
-            <Link href="/dashboard/cloud" className="flex items-center gap-3 text-slate-400 hover:text-white px-4 py-3 rounded-xl hover:bg-slate-800/50 transition-all font-medium">
-              <Cloud className="w-5 h-5" /> Cloud Authority
-            </Link>
+            
 
             <div className="pt-6 pb-2">
               <p className="text-xs font-bold text-slate-600 uppercase tracking-wider px-4">Analytics & Config</p>
@@ -90,23 +88,7 @@ export default function SettingsDashboard() {
               </div>
             </div>
 
-            {/* AWS Section */}
-            <div className="bg-[#050B14] border border-slate-800 rounded-2xl p-6 shadow-xl">
-              <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-800/50">
-                <Cloud className="w-6 h-6 text-blue-400" />
-                <h2 className="text-xl font-bold text-white">Amazon Web Services (AWS)</h2>
-              </div>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-bold text-slate-300 mb-2">AWS Access Key ID</label>
-                  <input type="text" value={awsKey} onChange={(e) => setAwsKey(e.target.value)} placeholder="AKIAIOSFODNN7EXAMPLE" className="w-full bg-[#020617] border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 transition-all font-mono" />
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-slate-300 mb-2">AWS Secret Access Key</label>
-                  <input type="password" value={awsSecret} onChange={(e) => setAwsSecret(e.target.value)} placeholder="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" className="w-full bg-[#020617] border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 transition-all font-mono" />
-                </div>
-              </div>
-            </div>
+            
 
             {/* Save Button */}
             <div className="flex items-center justify-between bg-[#050B14] border border-slate-800 p-6 rounded-2xl shadow-xl">
@@ -126,3 +108,5 @@ export default function SettingsDashboard() {
     </div>
   );
 }
+
+
