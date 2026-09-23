@@ -6,12 +6,10 @@ export async function POST(req: Request) {
     const { keyword } = await req.json();
     if (!keyword) return NextResponse.json({ error: "Keyword is required." }, { status: 400 });
 
-    // 1. Fetch Real LSI Keywords (Google Suggest API)
     const lsiRes = await fetch(`http://suggestqueries.google.com/complete/search?client=chrome&q=${encodeURIComponent(keyword)}`);
     const lsiData = await lsiRes.json();
     let realLsiKeywords = lsiData[1] || [];
     
-    // 2. Fetch Real FAQs (Google Suggest API)
     const faqRes = await fetch(`http://suggestqueries.google.com/complete/search?client=chrome&q=${encodeURIComponent("how to " + keyword)}`);
     const faqData = await faqRes.json();
     let realFaqs = faqData[1] || [];
@@ -22,7 +20,6 @@ export async function POST(req: Request) {
     if (realLsiKeywords.length === 0) realLsiKeywords = [`best ${keyword}`, `affordable ${keyword}`, `${keyword} services`];
     if (realFaqs.length === 0) realFaqs = [`What is the best way to choose ${keyword}?`, `How much does ${keyword} cost?`];
 
-    // 3. Fetch REAL Top Competitors via DuckDuckGo HTML
     let competitors: string[] = [];
     try {
       const ddgRes = await fetch(`https://html.duckduckgo.com/html/?q=${encodeURIComponent(keyword)}`, {
@@ -43,14 +40,13 @@ export async function POST(req: Request) {
 
     if (competitors.length === 0) {
       competitors = [
-        `https://www.google.com/search?q=allintitle:%22${encodeURIComponent(keyword)}%22`, // Exact Title Match
-        `https://www.google.com/search?q=${encodeURIComponent(keyword)}+%22reviews%22`,  // Review Entities
-        `https://www.google.com/search?q=inurl:%22${encodeURIComponent(keyword.split(" ")[0])}%22` // URL Match
+        `https://www.google.com/search?q=allintitle:%22${encodeURIComponent(keyword)}%22`, 
+        `https://www.google.com/search?q=${encodeURIComponent(keyword)}+%22reviews%22`,  
+        `https://www.google.com/search?q=inurl:%22${encodeURIComponent(keyword.split(" ")[0])}%22`
       ];
     }
 
-    // Prepare dynamic loophole data
-    const competitorName = "Top SERP Competitors"(/https?:\/\/(www\.)?/, '').split('/')[0];
+    const competitorName = "Top SERP Competitors";
 
     const report = {
       competitor: competitors[0],
@@ -69,7 +65,3 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: error.message || "Failed to analyze SERP." }, { status: 500 });
   }
 }
-
-
-
-
