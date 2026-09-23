@@ -59,7 +59,7 @@ export default function Contact() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-400 mb-1">Message</label>
-                <textarea rows="4" className="w-full bg-[#020617] border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 transition-colors" placeholder="How can we help you?"></textarea>
+                <textarea rows={4} className="w-full bg-[#020617] border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 transition-colors" placeholder="How can we help you?"></textarea>
               </div>
               <button className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all">
                 Send Message <Send className="w-4 h-4" />
@@ -73,3 +73,4 @@ export default function Contact() {
     </div>
   );
 }
+
