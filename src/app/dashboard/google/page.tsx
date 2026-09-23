@@ -5,44 +5,62 @@ import { Database, Activity, ExternalLink, Globe, FileText, UserPlus, Cloud, Fil
 import Link from "next/link";
 
 export default function GoogleDashboard() {
-  const [keyword, setKeyword] = useState("");
+  const [keyword, setKeyword] = useState('');
+  const [bulkCount, setBulkCount] = useState(1);
+  const [progressMsg, setProgressMsg] = useState('');
   const [targetUrl, setTargetUrl] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [reportData, setReportData] = useState<any[]>([]);
 
-  const handlePublish = async () => {
+    const handlePublish = async () => {
     setIsProcessing(true);
+    setProgressMsg(`Starting bulk generation of ${bulkCount} docs...`);
     
     const gcpKey = localStorage.getItem("gcp_key");
     if (!gcpKey) {
       alert("Error: Please add your Google Cloud JSON Key in the Settings page first!");
       setIsProcessing(false);
+      setProgressMsg('');
       return;
     }
 
-    try {
-      const response = await fetch('/api/google', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          targetUrl,
-          keyword,
-          gcpKey
-        })
-      });
+    const maxDocs = Math.min(bulkCount, 500); // Limit to 500 to be safe
+    let successCount = 0;
 
-      const data = await response.json();
-      
-      if (data.success && data.data.length > 0) {
-         setReportData(prev => [...data.data, ...prev]);
-      } else {
-         alert("Failed to publish: " + (data.error || "Unknown error"));
+    for (let i = 1; i <= maxDocs; i++) {
+      setProgressMsg(`Generating document ${i} of ${maxDocs}... Please keep this tab open.`);
+      try {
+        const response = await fetch('/api/google', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            targetUrl,
+            keyword: `${keyword} (Variation ${i})`,
+            gcpKey
+          })
+        });
+
+        const data = await response.json();
+        
+        if (data.success && data.data.length > 0) {
+           setReportData(prev => [...data.data, ...prev]);
+           successCount++;
+        } else {
+           console.error(`Failed on doc ${i}:`, data.error);
+        }
+      } catch (err) {
+        console.error(`Error on doc ${i}:`, err);
       }
-    } catch (err) {
-      alert("Server error occurred.");
-    } finally {
-      setIsProcessing(false);
+      
+      // Delay to avoid hitting Google Drive API rate limits (e.g., 2 seconds)
+      if (i < maxDocs) {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
     }
+
+    setProgressMsg(`? Successfully generated ${successCount} out of ${maxDocs} documents!`);
+    setIsProcessing(false);
+  }
   }
 
   return (
@@ -109,19 +127,27 @@ export default function GoogleDashboard() {
                   <label className="block text-sm font-bold text-slate-300 mb-2">Target URL (Client's Website)</label>
                   <input type="url" value={targetUrl} onChange={(e) => setTargetUrl(e.target.value)} placeholder="https://client-website.com" className="w-full bg-[#020617] border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 transition-all placeholder:text-slate-600" />
                 </div>
-                <div>
+                                <div>
                   <label className="block text-sm font-bold text-slate-300 mb-2">Primary Keyword / Entity</label>
                   <input type="text" value={keyword} onChange={(e) => setKeyword(e.target.value)} placeholder="e.g. Best Plumber in London" className="w-full bg-[#020617] border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 transition-all placeholder:text-slate-600" />
                 </div>
+                <div>
+                  <label className="block text-sm font-bold text-slate-300 mb-2">Bulk Quantity (Number of Docs)</label>
+                  <input type="number" min="1" max="500" value={bulkCount} onChange={(e) => setBulkCount(Number(e.target.value))} className="w-full bg-[#020617] border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 transition-all placeholder:text-slate-600" />
+                  <p className="text-xs text-emerald-500/70 mt-2">Zyntix will automatically generate variations and delay requests to keep your API safe.</p>
+                </div>
              </div>
 
-             <div className="mt-8 pt-6 border-t border-slate-800 flex justify-end items-center">
+                          <div className="mt-8 pt-6 border-t border-slate-800 flex justify-between items-center">
+               <div className="text-sm font-bold text-emerald-400">
+                  {progressMsg}
+               </div>
                <button 
                   onClick={handlePublish}
                   disabled={isProcessing || !targetUrl || !keyword}
                   className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3 px-8 rounded-xl transition-all disabled:opacity-50 flex items-center gap-2"
                 >
-                  {isProcessing ? "Generating Doc..." : "Generate Public Doc"}
+                  {isProcessing ? "Processing Bulk..." : "Generate Bulk Docs"}
                 </button>
              </div>
           </div>
@@ -148,4 +174,5 @@ export default function GoogleDashboard() {
     </div>
   );
 }
+
 
