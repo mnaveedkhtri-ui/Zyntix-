@@ -98,11 +98,11 @@ export default function AuditDashboard() {
               
               {/* REAL COMPETITORS */}
               <div className="bg-slate-800/20 border border-slate-700/50 rounded-2xl p-6">
-                <div className="text-sm text-slate-400 mb-3 font-bold uppercase tracking-wider">Live Top 3 Competitors (Real Data)</div>
+                <div className="text-sm text-slate-400 mb-3 font-bold uppercase tracking-wider">Deep SERP Intelligence (Advanced Operators)</div>
                 <div className="flex flex-col gap-2">
                   {report.top3?.map((compUrl: string, idx: number) => (
                     <a key={idx} href={compUrl} target="_blank" className="text-blue-400 hover:underline text-lg flex items-center gap-2 bg-[#020617] p-3 rounded-xl border border-slate-800 w-fit">
-                      <span className="text-slate-500 font-bold">#{idx+1}</span> {compUrl} <ExternalLink className="w-4 h-4" />
+                      <span className="text-slate-500 font-bold">#{idx+1}</span> {compUrl.includes("allintitle") ? "Exact Title Competitors (AllInTitle)" : compUrl.includes("reviews") ? "Competitor Review Entities" : compUrl.includes("inurl") ? "URL Match Competitors (InUrl)" : compUrl} <ExternalLink className="w-4 h-4" />
                     </a>
                   ))}
                 </div>
@@ -176,4 +176,5 @@ export default function AuditDashboard() {
     </div>
   );
 }
+
 

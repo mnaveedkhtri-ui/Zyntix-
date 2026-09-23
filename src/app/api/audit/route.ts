@@ -42,11 +42,15 @@ export async function POST(req: Request) {
     }
 
     if (competitors.length === 0) {
-      competitors = [`https://www.google.com/search?q=${encodeURIComponent(keyword)}`]; // Fallback
+      competitors = [
+        https://www.google.com/search?q=allintitle:%22%22, // Exact Title Match
+        https://www.google.com/search?q=+%22reviews%22,  // Review Entities
+        https://www.google.com/search?q=inurl:%22%22 // URL Match
+      ];
     }
 
     // Prepare dynamic loophole data
-    const competitorName = competitors[0].replace(/https?:\/\/(www\.)?/, '').split('/')[0];
+    const competitorName = "Top SERP Competitors"(/https?:\/\/(www\.)?/, '').split('/')[0];
 
     const report = {
       competitor: competitors[0],
@@ -65,4 +69,5 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: error.message || "Failed to analyze SERP." }, { status: 500 });
   }
 }
+
 
