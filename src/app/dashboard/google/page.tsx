@@ -26,6 +26,7 @@ export default function GoogleDashboard() {
 
     const maxDocs = Math.min(bulkCount, 500); 
     let successCount = 0;
+    const generatedUrls: string[] = [];
 
     for (let i = 1; i <= maxDocs; i++) {
       setProgressMsg(`Generating document ${i} of ${maxDocs}... Please keep this tab open.`);
@@ -44,6 +45,7 @@ export default function GoogleDashboard() {
         
         if (data.success && data.data.length > 0) {
            setReportData(prev => [...data.data, ...prev]);
+           generatedUrls.push(...data.data.map((d: any) => d.url));
            successCount++;
         } else {
            console.error(`Failed on doc ${i}:`, data.error);
@@ -58,6 +60,22 @@ export default function GoogleDashboard() {
     }
 
     setProgressMsg(`? Successfully generated ${successCount} out of ${maxDocs} documents!`);
+    
+    // Save campaign to localStorage for Reports page
+    if (successCount > 0) {
+      const newCampaign = {
+        id: `CMP-${Date.now().toString().slice(-6)}`,
+        type: 'Google Entity Stack',
+        client: targetUrl || "Unknown Client",
+        links: successCount,
+        date: new Date().toLocaleDateString(),
+        status: 'Completed',
+        urls: generatedUrls
+      };
+      const existingReports = JSON.parse(localStorage.getItem("zyntix_reports") || "[]");
+      localStorage.setItem("zyntix_reports", JSON.stringify([newCampaign, ...existingReports]));
+    }
+
     setIsProcessing(false);
   } 
 
@@ -65,7 +83,6 @@ export default function GoogleDashboard() {
     <div className="min-h-screen bg-[#020617] text-slate-50 font-sans flex overflow-hidden">
       <DashboardSidebar />
 
-      {/* Main Content */}
       <div className="flex-1 p-8 overflow-y-auto h-screen">
         <div className="max-w-4xl">
           <div className="mb-8">
@@ -126,7 +143,6 @@ export default function GoogleDashboard() {
                   onChange={(e) => setBulkCount(parseInt(e.target.value))}
                   className="w-full bg-[#020617] border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 transition-colors" 
                 />
-                <p className="text-xs text-emerald-500/80 mt-2 font-medium">Zyntix will automatically generate variations and delay requests to keep your API safe.</p>
               </div>
             </div>
 
