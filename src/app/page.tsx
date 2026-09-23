@@ -1,28 +1,20 @@
 import Link from "next/link";
 import { ArrowRight, Database, Cloud, Zap, ShieldCheck } from "lucide-react";
+import NavBar from "@/components/NavBar";
+import Footer from "@/components/Footer";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[#020617] text-slate-50 font-sans selection:bg-emerald-500/30">
+    <div className="relative min-h-screen bg-[#020617] text-slate-50 font-sans selection:bg-emerald-500/30 overflow-hidden">
       
-      {/* Navigation */}
-      <nav className="flex items-center justify-between px-8 py-6 max-w-7xl mx-auto border-b border-slate-800/50">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-500/20">
-            <Database className="w-6 h-6 text-white" />
-          </div>
-          <span className="text-2xl font-black tracking-tight text-white">Zyntix</span>
-        </div>
-        <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
-          <Link href="/features" className="hover:text-white transition-colors">Features</Link>
-          <Link href="/how-it-works" className="hover:text-white transition-colors">How it Works</Link>
-          <Link href="/dashboard" className="text-emerald-400 hover:text-emerald-300 transition-colors">Access Dashboard</Link>
-        </div>
-      </nav>
+      {/* Background glow effects */}
+      <div className="absolute top-0 right-0 -translate-y-12 translate-x-1/3 w-[800px] h-[600px] bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none"></div>
+      <div className="absolute bottom-0 left-0 translate-y-1/3 -translate-x-1/3 w-[600px] h-[600px] bg-cyan-600/10 blur-[120px] rounded-full pointer-events-none"></div>
+      
+      <NavBar />
 
-      {/* Hero Section */}
-      <main className="max-w-7xl mx-auto px-8 pt-24 pb-32 text-center">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-bold mb-8">
+      <main className="max-w-7xl mx-auto px-8 pt-24 pb-32 text-center relative z-10">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-bold mb-8 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
@@ -40,36 +32,36 @@ export default function Home() {
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link href="/dashboard" className="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-8 py-4 rounded-xl flex items-center justify-center gap-2 transition-all transform hover:scale-105">
+          <Link href="/dashboard" className="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-400 hover:to-emerald-300 text-slate-950 font-black px-8 py-4 rounded-xl flex items-center justify-center gap-2 transition-all transform hover:scale-105 shadow-[0_0_30px_rgba(16,185,129,0.3)]">
             Launch Engine <ArrowRight className="w-5 h-5" />
           </Link>
-          <Link href="/how-it-works" className="w-full sm:w-auto bg-slate-800 hover:bg-slate-700 text-white font-bold px-8 py-4 rounded-xl transition-all">
+          <Link href="/how-it-works" className="w-full sm:w-auto bg-[#050B14] border border-slate-800 hover:border-slate-700 text-white font-bold px-8 py-4 rounded-xl transition-all hover:bg-slate-800/50">
             View Methodology
           </Link>
         </div>
 
-        {/* Feature Grid */}
-        <div className="grid md:grid-cols-3 gap-8 mt-32 text-left">
-          <div className="bg-[#050B14] p-8 rounded-3xl border border-slate-800 hover:border-emerald-500/50 transition-all group">
-            <div className="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+        <div className="grid md:grid-cols-2 gap-8 mt-32 text-left max-w-5xl mx-auto">
+          <div className="bg-[#050B14] p-8 rounded-3xl border border-slate-800 hover:border-emerald-500/50 transition-all group relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div className="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform relative z-10">
               <Database className="w-7 h-7 text-emerald-400" />
             </div>
-            <h3 className="text-xl font-bold text-white mb-3">Google Entity Stacks</h3>
-            <p className="text-slate-400 leading-relaxed">Auto-generate interconnected Google Docs and Sheets natively using Google's API. Permanent DA 99 properties.</p>
+            <h3 className="text-xl font-bold text-white mb-3 relative z-10">Google Entity Stacks</h3>
+            <p className="text-slate-400 leading-relaxed relative z-10">Auto-generate interconnected Google Docs and Sheets natively using Google's API. Permanent DA 99 properties.</p>
           </div>
           
-          
-
-          <div className="bg-[#050B14] p-8 rounded-3xl border border-slate-800 hover:border-blue-500/50 transition-all group">
-            <div className="w-14 h-14 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+          <div className="bg-[#050B14] p-8 rounded-3xl border border-slate-800 hover:border-blue-500/50 transition-all group relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div className="w-14 h-14 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform relative z-10">
               <ShieldCheck className="w-7 h-7 text-blue-400" />
             </div>
-            <h3 className="text-xl font-bold text-white mb-3">Zero Proxies</h3>
-            <p className="text-slate-400 leading-relaxed">Because you authenticate directly with official cloud APIs via your own Service Accounts, you never need proxies or captcha breakers.</p>
+            <h3 className="text-xl font-bold text-white mb-3 relative z-10">Zero Proxies</h3>
+            <p className="text-slate-400 leading-relaxed relative z-10">Because you authenticate directly with official cloud APIs via your own Service Accounts, you never need proxies or captcha breakers.</p>
           </div>
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 }
-

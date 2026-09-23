@@ -5,8 +5,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Zyntix | Automated Agency Backlink Engine",
-  description: "Automate your high-authority link building with our Instant Turbo Engine. 100% natural, geo-targeted Web 2.0, Forums, and Profile backlinks for SEO Agencies.",
+  title: "Zyntix | Google Entity Stacking for Agencies",
+  description: "Automate your high-authority link building with Zyntix. Bulk generate public, indexable DA-99 Google Docs and Sheets directly via API.",
 };
 
 export default function RootLayout({
@@ -16,11 +16,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${inter.className} bg-slate-950 text-slate-50 antialiased selection:bg-blue-500/30`}>
+      <body className={`${inter.className} bg-[#020617] text-slate-50 antialiased selection:bg-emerald-500/30`}>
         {children}
       </body>
     </html>
   );
 }
-
-
