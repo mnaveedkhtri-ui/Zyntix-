@@ -83,7 +83,7 @@ function GoogleDashboardContent() {
       
       if (result && result.success) {
          newReportData.push(...result.data);
-         generatedUrls.push(...result.data.map(d => d.url));
+         generatedUrls.push(...result.data.map((d: any) => d.url));
          successCount++;
          setReportData(prev => [...result.data, ...prev]);
       } else {
