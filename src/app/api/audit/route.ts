@@ -43,9 +43,9 @@ export async function POST(req: Request) {
 
     if (competitors.length === 0) {
       competitors = [
-        https://www.google.com/search?q=allintitle:%22%22, // Exact Title Match
-        https://www.google.com/search?q=+%22reviews%22,  // Review Entities
-        https://www.google.com/search?q=inurl:%22%22 // URL Match
+        `https://www.google.com/search?q=allintitle:%22${encodeURIComponent(keyword)}%22`, // Exact Title Match
+        `https://www.google.com/search?q=${encodeURIComponent(keyword)}+%22reviews%22`,  // Review Entities
+        `https://www.google.com/search?q=inurl:%22${encodeURIComponent(keyword.split(" ")[0])}%22` // URL Match
       ];
     }
 
@@ -69,5 +69,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: error.message || "Failed to analyze SERP." }, { status: 500 });
   }
 }
+
 
 
