@@ -16,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider appearance={{ baseTheme: undefined, variables: { colorPrimary: '#10b981', colorBackground: '#050B14', colorInputBackground: '#020617', colorInputText: '#f8fafc' } }}>
+    <ClerkProvider>
       <html lang="en" className="dark">
         <body className={`${inter.className} bg-[#020617] text-slate-50 antialiased selection:bg-emerald-500/30`}>
           {children}
