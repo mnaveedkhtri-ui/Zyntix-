@@ -1,0 +1,10 @@
+const fs = require("fs");
+let content = fs.readFileSync("src/app/dashboard/google/page.tsx", "utf8");
+
+content = content.replace(
+  /const appsScriptUrl = localStorage\.getItem\("apps_script_url"\);\s*if \(!appsScriptUrl \|\| !appsScriptUrl\.includes\("script\.google\.com"\)\) \{\s*setIsProcessing\(false\);\s*setProgressMsg\(''\);\s*return;\s*\}/,
+  `const savedUrl = localStorage.getItem("apps_script_url");
+      const appsScriptUrl = (savedUrl && savedUrl.trim() !== "") ? savedUrl : "https://script.google.com/macros/s/AKfycbxAbCVzFukUcqrtJwWdjuFeq8qgaY7dQ5ELJUm_xoPS2fnQWTeWMfjPiHoVKia4C0rbQQ/exec";`
+);
+
+fs.writeFileSync("src/app/dashboard/google/page.tsx", content, "utf8");

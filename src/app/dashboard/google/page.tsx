@@ -51,12 +51,8 @@ function GoogleDashboardContent() {
     setIsProcessing(true);
     setProgressMsg(`Initializing AI Blueprint for ${keyword}...`);
     
-    const appsScriptUrl = localStorage.getItem("apps_script_url");
-    if (!appsScriptUrl || !appsScriptUrl.includes("script.google.com")) {
-      setIsProcessing(false);
-      setProgressMsg('');
-      return;
-    }
+    const savedUrl = localStorage.getItem("apps_script_url");
+      const appsScriptUrl = (savedUrl && savedUrl.trim() !== "") ? savedUrl : "https://script.google.com/macros/s/AKfycbxAbCVzFukUcqrtJwWdjuFeq8qgaY7dQ5ELJUm_xoPS2fnQWTeWMfjPiHoVKia4C0rbQQ/exec";
 
     const maxDocs = Math.min(bulkCount, 500); 
     
