@@ -16,6 +16,15 @@ export default function AdminCreditTopup() {
   const [scriptStatus, setScriptStatus] = useState<any>(null);
   const [scriptLoading, setScriptLoading] = useState(false);
 
+  useEffect(() => {
+    // Load current script URL (only if admin)
+    if (user?.primaryEmailAddress?.emailAddress === "moderntrendz98@gmail.com") {
+      fetch("/api/admin/script-url")
+        .then(r => r.json())
+        .then(d => setScriptUrl(d.url || ""));
+    }
+  }, [user]);
+
   // Security Check: Only you can see this!
   if (user?.primaryEmailAddress?.emailAddress !== "moderntrendz98@gmail.com") {
     return (
@@ -26,13 +35,6 @@ export default function AdminCreditTopup() {
       </div>
     );
   }
-
-  useEffect(() => {
-    // Load current script URL
-    fetch("/api/admin/script-url")
-      .then(r => r.json())
-      .then(d => setScriptUrl(d.url || ""));
-  }, []);
 
   const handleTopup = async (e: any) => {
     e.preventDefault();
