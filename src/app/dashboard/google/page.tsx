@@ -71,7 +71,7 @@ export default function GoogleStackingDashboard() {
     addLog("Connection Established", "Master API key validated. Connecting to Google servers...", "success");
     await new Promise(r => setTimeout(r, 1000));
 
-    let successfulLinks = [];
+    let successfulLinks: string[] = [];
 
     for (let i = 1; i <= count; i++) {
       addLog(`Generating Asset ${i}/${count}`, `Creating Google Doc for "${keyword}"...`, "info");
