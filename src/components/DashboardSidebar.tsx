@@ -46,7 +46,7 @@ export default function DashboardSidebar() {
             <Activity className="w-4 h-4 text-emerald-500 animate-pulse" />
             <span className="text-sm font-medium text-slate-300">System Online</span>
           </div>
-          <UserButton afterSignOutUrl="/" />
+          <UserButton />
         </div>
       </div>
     </div>

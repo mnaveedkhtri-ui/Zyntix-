@@ -18,7 +18,7 @@ export default function NavBar() {
         <Link href="/contact" className="hover:text-white transition-colors">Contact</Link>
         <SignedIn>
           <Link href="/dashboard" className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500 hover:text-slate-950 px-5 py-2.5 rounded-lg transition-all font-bold">Dashboard</Link>
-          <UserButton afterSignOutUrl="/" />
+          <UserButton />
         </SignedIn>
         <SignedOut>
           <div className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-5 py-2.5 rounded-lg transition-all font-bold cursor-pointer">
