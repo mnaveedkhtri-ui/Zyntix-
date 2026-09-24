@@ -7,7 +7,7 @@ export async function POST(req: Request) {
     const { userId } = await auth();
     if (!userId) return new NextResponse("Unauthorized", { status: 401 });
 
-    const user = await clerkClient().users.getUser(userId);
+    const user = await (await clerkClient()).users.getUser(userId);
     const currentCredits = (user.publicMetadata.credits as number) || 0;
 
     if (currentCredits <= 0) {
@@ -16,7 +16,7 @@ export async function POST(req: Request) {
 
     const newBalance = currentCredits - 1;
 
-    await clerkClient().users.updateUserMetadata(userId, {
+    await (await clerkClient()).users.updateUserMetadata(userId, {
       publicMetadata: {
         ...user.publicMetadata,
         credits: newBalance,

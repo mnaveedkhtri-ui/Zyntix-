@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     }
 
     // 1. Find user by email in Clerk
-    const users = await clerkClient().users.getUserList({ emailAddress: [email] });
+    const users = await (await clerkClient()).users.getUserList({ emailAddress: [email] });
     
     if (users.data.length === 0) {
       return NextResponse.json({ error: "No user found with this email" }, { status: 404 });
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
     const newBalance = currentCredits + credits;
 
     // 2. Update their publicMetadata
-    await clerkClient().users.updateUserMetadata(targetUser.id, {
+    await (await clerkClient()).users.updateUserMetadata(targetUser.id, {
       publicMetadata: {
         ...targetUser.publicMetadata,
         credits: newBalance,
