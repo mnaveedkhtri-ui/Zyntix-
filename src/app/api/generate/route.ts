@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     if (!userId) return new NextResponse("Unauthorized", { status: 401 });
 
     const body = await req.json();
-    const { keyword, targetUrl, previousUrl, previousUrls, generateDocs, generateSlides, generateForms } = body;
+    const { keyword, targetUrl, previousUrl, previousUrls, generateDocs, generateSlides, generateForms, language } = body;
 
     // Always fetch the master URL from DB — users never control this
     const db = getDbClient();
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     const response = await fetch(scriptUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ keyword, targetUrl, previousUrl, previousUrls, generateDocs, generateSlides, generateForms })
+      body: JSON.stringify({ keyword, targetUrl, previousUrl, previousUrls, generateDocs, generateSlides, generateForms, language: language || "en" })
     });
 
     const text = await response.text();
