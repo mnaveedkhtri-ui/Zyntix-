@@ -7,12 +7,12 @@ export async function POST(req: Request) {
     if (!userId) return new NextResponse("Unauthorized", { status: 401 });
 
     const body = await req.json();
-    const { scriptUrl, keyword, targetUrl } = body;
+    const { scriptUrl, keyword, targetUrl, previousUrl } = body;
 
     const response = await fetch(scriptUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ keyword, targetUrl })
+      body: JSON.stringify({ keyword, targetUrl, previousUrl })
     });
 
     const text = await response.text();

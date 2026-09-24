@@ -83,7 +83,8 @@ export default function GoogleStackingDashboard() {
           body: JSON.stringify({
             scriptUrl: savedKey,
             keyword: keyword + (i > 1 ? ` Part ${i}` : ""),
-            targetUrl: targetUrl || "https://example.com"
+            targetUrl: targetUrl || "https://example.com",
+            previousUrl: i > 1 ? successfulLinks[i - 2] : null
           }),
         });
         
