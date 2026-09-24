@@ -17,7 +17,7 @@ function GoogleDashboardContent() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [reportData, setReportData] = useState<any[]>([]);
 
-  const generateDocWithRetry = async (appsScriptUrl: string, targetUrl: string, keyword: string, preGeneratedIntro: string, preGeneratedBullets: string, maxRetries = 3) => {
+  const generateDocWithRetry = async (appsScriptUrl: string, targetUrl: string, keyword: string, preGeneratedIntro: string, preGeneratedBullets: string, previousUrl: string = "", maxRetries = 3) => {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
         const response = await fetch('/api/google', {
