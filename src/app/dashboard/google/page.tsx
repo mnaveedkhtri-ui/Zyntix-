@@ -91,12 +91,14 @@ export default function GoogleStackingDashboard() {
         if (data.url) {
           addLog(`Asset ${i} Successfully Generated`, "Entity document published and live on Google infrastructure.", "success");
           successfulLinks.push(data.url);
+        } else if (data.error) {
+          throw new Error(data.error);
         } else {
-          throw new Error("Invalid response from proxy");
+          throw new Error("Invalid response from Google Servers");
         }
         
-      } catch (error) {
-        addLog(`Asset ${i} Failed`, "Google rate limit hit. Retrying in 5 seconds...", "error");
+      } catch (error: any) {
+        addLog(`Asset ${i} Failed`, error.message || "Unknown error occurred.", "error");
       }
     }
 

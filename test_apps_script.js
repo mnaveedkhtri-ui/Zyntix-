@@ -1,8 +1,17 @@
-fetch("https://script.google.com/macros/s/AKfycbxY7i0AxC8bsgj2yt8WH6BzIVJ4Gn2eLT7coEj1dtLZd538W66WMYRAqI_A-FfaGRvwEQ/exec", {
-  method: "POST",
-  headers: { "Content-Type": "text/plain" },
-  body: JSON.stringify({ targetUrl: "https://zyntix-seo-test.com", keyword: "Best Zyntix Testing Agent" })
-})
-.then(res => res.json())
-.then(data => console.log("Response:", data))
-.catch(err => console.error("Error:", err));
+async function test() {
+  const url = "https://script.google.com/macros/s/AKfycbxAbCVzFukUcqrtJwWdjuFeq8qgaY7dQ5ELJUm_xoPS2fnQWTeWMfjPiHoVKia4C0rbQQ/exec";
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ keyword: "Test Plumber", targetUrl: "https://example.com" }),
+      redirect: "follow"
+    });
+    const text = await res.text();
+    console.log("Status:", res.status);
+    console.log("Body:", text.substring(0, 200));
+  } catch (e) {
+    console.error(e);
+  }
+}
+test();
