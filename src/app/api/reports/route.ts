@@ -74,7 +74,7 @@ export async function DELETE(req: Request) {
 
     if (ids) {
       const idArray = ids.split(",");
-      await client.query("DELETE FROM reports WHERE id = ANY($1::uuid[]) AND user_id = $2", [idArray, userId]);
+      await client.query("DELETE FROM reports WHERE id = ANY($1::int[]) AND user_id = $2", [idArray.map(Number), userId]);
     } else {
       await client.query("DELETE FROM reports WHERE id = $1 AND user_id = $2", [id, userId]);
     }
