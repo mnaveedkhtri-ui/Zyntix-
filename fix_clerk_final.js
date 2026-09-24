@@ -1,4 +1,6 @@
-import Link from "next/link";
+const fs = require("fs");
+
+let navContent = `import Link from "next/link";
 import { Database } from "lucide-react";
 import { UserButton } from "@clerk/nextjs";
 
@@ -24,3 +26,6 @@ export default function NavBar() {
     </nav>
   );
 }
+`;
+
+fs.writeFileSync("src/components/NavBar.tsx", navContent, "utf8");
