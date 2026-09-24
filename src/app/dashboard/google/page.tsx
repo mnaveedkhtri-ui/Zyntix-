@@ -118,8 +118,13 @@ export default function GoogleStackingDashboard() {
           throw new Error("Invalid response from Google Servers");
         }
         
-      } catch (error: any) {
+            } catch (error: any) {
         addLog(`Node ${i} Failed`, error.message || "Unknown error occurred.", "error");
+      }
+      
+      if (i < count) {
+        addLog("API Cooldown & Bypass", "Cooling down for 4 seconds to evade Google rate limits and ensure 100% success...", "info");
+        await new Promise(r => setTimeout(r, 4000));
       }
     }
 
