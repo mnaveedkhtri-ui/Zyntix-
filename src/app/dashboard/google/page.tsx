@@ -46,6 +46,7 @@ function GoogleDashboardContent() {
   
   
   
+  
   const handlePublish = async () => {
     setIsProcessing(true);
     setProgressMsg(`Initializing AI Blueprint for ${keyword}...`);
@@ -59,31 +60,24 @@ function GoogleDashboardContent() {
 
     const maxDocs = Math.min(bulkCount, 500); 
     
-    // PRE-GENERATE AI CONTENT ONCE TO SAVE TIME AND API LIMITS
     let globalAiIntro = "";
     let globalAiBullets = "";
     try {
-      const p1 = encodeURIComponent(`IMPORTANT: DO NOT USE REASONING. DO NOT THINK OUT LOUD. DIRECTLY OUTPUT THE TEXT. Write a highly professional, 100-word SEO introduction paragraph for ${keyword}. Make it specific to this exact niche. Do not use quotes or markdown.`);
-      const p2 = encodeURIComponent(`IMPORTANT: DO NOT USE REASONING. DO NOT THINK OUT LOUD. DIRECTLY OUTPUT THE TEXT. Write 4 highly actionable bullet points regarding ${keyword}. Keep it specific to the niche. Do not include numbers, just the text. No markdown.`);
-      
-      const controller = new AbortController();
-      // Increase timeout to 45 seconds for slow AI!
-      const timeoutId = setTimeout(() => controller.abort(), 45000);
-      
       setProgressMsg("Writing highly-niche SEO content using Premium AI... (Takes ~15 seconds)");
       
-      const [res1, res2] = await Promise.all([
-        fetch(`https://text.pollinations.ai/prompt/${p1}`, { signal: controller.signal }).catch(() => null),
-        fetch(`https://text.pollinations.ai/prompt/${p2}`, { signal: controller.signal }).catch(() => null)
-      ]);
+      const res = await fetch("/api/ai", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ keyword })
+      });
       
-      clearTimeout(timeoutId);
-      
-      if (res1 && res1.ok) globalAiIntro = await res1.text();
-      if (res2 && res2.ok) globalAiBullets = await res2.text();
-      
+      if (res.ok) {
+        const data = await res.json();
+        globalAiIntro = data.aiIntro || "";
+        globalAiBullets = data.aiBullets || "";
+      }
     } catch (e) {
-      console.warn("AI timeout, using robust backend Spintax fallback");
+      console.warn("Server AI timeout, using robust backend Spintax fallback");
     }
 
     let successCount = 0;
