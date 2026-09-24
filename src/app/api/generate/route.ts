@@ -32,8 +32,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: true, url: data.docUrl });
     } else {
       return NextResponse.json({ error: "No valid URL returned from script." }, { status: 500 });
-    } else {
-      return NextResponse.json({ error: "No URL returned from script" }, { status: 500 });
     }
   } catch (error: any) {
     console.error("Generation failed:", error);
