@@ -1,3 +1,4 @@
+
 "use client";
 import Link from "next/link";
 import { useState } from "react";
@@ -10,10 +11,9 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = (e) => {
     e.preventDefault();
     setIsLoading(true);
-    // Mock login for demo purposes
     setTimeout(() => {
       localStorage.setItem("zyntix_auth", "true");
       router.push("/dashboard");
@@ -31,7 +31,6 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-[#020617] text-slate-50 flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Background glow effects */}
       <div className="absolute top-0 right-0 -translate-y-12 translate-x-1/3 w-[600px] h-[600px] bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none"></div>
       <div className="absolute bottom-0 left-0 translate-y-1/3 -translate-x-1/3 w-[400px] h-[400px] bg-blue-600/10 blur-[120px] rounded-full pointer-events-none"></div>
       
@@ -92,7 +91,7 @@ export default function Login() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)} 
-                placeholder="••••••••"
+                placeholder="********"
                 className="w-full bg-[#020617] border border-slate-800 focus:border-emerald-500 rounded-xl py-3 pl-10 pr-4 text-white outline-none transition-all"
                 required
               />
