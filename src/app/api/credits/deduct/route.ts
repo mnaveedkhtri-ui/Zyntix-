@@ -7,16 +7,20 @@ export async function POST(req: Request) {
     const { userId } = await auth();
     if (!userId) return new NextResponse("Unauthorized", { status: 401 });
 
-    const user = await (await clerkClient()).users.getUser(userId);
+    const body = await req.json();
+    const amount = body.amount || 1;
+
+    const client = await clerkClient();
+    const user = await client.users.getUser(userId);
     const currentCredits = (user.publicMetadata.credits as number) || 0;
 
-    if (currentCredits <= 0) {
+    if (currentCredits < amount) {
       return NextResponse.json({ error: "Insufficient credits" }, { status: 403 });
     }
 
-    const newBalance = currentCredits - 1;
+    const newBalance = currentCredits - amount;
 
-    await (await clerkClient()).users.updateUserMetadata(userId, {
+    await client.users.updateUserMetadata(userId, {
       publicMetadata: {
         ...user.publicMetadata,
         credits: newBalance,
