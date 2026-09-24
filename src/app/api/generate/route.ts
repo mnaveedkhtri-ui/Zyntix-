@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     if (!userId) return new NextResponse("Unauthorized", { status: 401 });
 
     const body = await req.json();
-    const { keyword, targetUrl, previousUrl } = body;
+    const { keyword, targetUrl, previousUrl, generateDocs, generateSlides, generateForms } = body;
 
     // Always fetch the master URL from DB — users never control this
     const db = getDbClient();
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     const response = await fetch(scriptUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ keyword, targetUrl, previousUrl })
+      body: JSON.stringify({ keyword, targetUrl, previousUrl, generateDocs, generateSlides, generateForms })
     });
 
     const text = await response.text();
@@ -47,9 +47,10 @@ export async function POST(req: Request) {
       data = { url: text.trim() };
     }
 
-    const finalUrl = data.docUrl || data.url;
-    if (finalUrl && finalUrl.startsWith("http")) {
-      return NextResponse.json({ success: true, url: finalUrl });
+    if (data.urls) {
+      return NextResponse.json({ success: true, urls: data.urls });
+    } else if (data.url || data.docUrl) {
+      return NextResponse.json({ success: true, urls: { doc: data.url || data.docUrl } });
     } else {
       return NextResponse.json({ error: data.error || "No valid URL returned from script." }, { status: 500 });
     }

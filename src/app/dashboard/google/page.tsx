@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth, useUser } from "@clerk/nextjs";
-import { FileText, Loader2, PlayCircle, ExternalLink, Activity, Target, Link as LinkIcon, Database, CheckCircle2, Lock, KeySquare, ShieldCheck, Crown } from "lucide-react";
+import { FileText, Loader2, PlayCircle, ExternalLink, Activity, Target, Link as LinkIcon, Database, CheckCircle2, Lock, KeySquare, ShieldCheck, Crown, MonitorPlay, ListTodo } from "lucide-react";
 import Link from "next/link";
 import DashboardSidebar from "@/components/DashboardSidebar";
 
@@ -17,6 +17,16 @@ export default function GoogleStackingDashboard() {
   const [generatedUrls, setGeneratedUrls] = useState<string[]>([]);
   
   const [displayCredits, setDisplayCredits] = useState<number>(0);
+
+  // Asset Toggles
+  const [generateDocs, setGenerateDocs] = useState(true);
+  const [generateSlides, setGenerateSlides] = useState(false);
+  const [generateForms, setGenerateForms] = useState(false);
+
+  // 1 Campaign Node = 1 Credit, or 1 Asset = 1 Credit?
+  // User asked "1 Link = 1 Credit". Let's calculate cost:
+  const totalAssetsPerRun = (generateDocs ? 1 : 0) + (generateSlides ? 1 : 0) + (generateForms ? 1 : 0);
+  const totalCost = count * totalAssetsPerRun;
 
   useEffect(() => {
     if (user) {
@@ -40,9 +50,13 @@ export default function GoogleStackingDashboard() {
       addLog("Validation Error", "Please enter a target keyword.", "error");
       return;
     }
+    if (totalAssetsPerRun === 0) {
+      addLog("Validation Error", "Please select at least one Google Asset to generate.", "error");
+      return;
+    }
     
-    if (displayCredits < count) {
-      addLog("System Alert", "Insufficient Credits. Please recharge.", "error");
+    if (displayCredits < totalCost) {
+      addLog("System Alert", `Insufficient Credits. Need ${totalCost} but have ${displayCredits}.`, "error");
       return;
     }
 
@@ -54,7 +68,7 @@ export default function GoogleStackingDashboard() {
       const creditRes = await fetch("/api/credits/deduct", { 
         method: "POST", 
         headers: { "Content-Type": "application/json" }, 
-        body: JSON.stringify({ amount: count }) 
+        body: JSON.stringify({ amount: totalCost }) 
       });
       if (!creditRes.ok) throw new Error("Out of credits");
     } catch (e) {
@@ -63,18 +77,16 @@ export default function GoogleStackingDashboard() {
       return;
     }
 
+    setDisplayCredits(prev => prev - totalCost);
     addLog("System Initialization", "Booting Zyntix Engine... Checking API keys...", "info");
-    
-    // Fallback to the master key if none exists in localStorage
-    const savedKey = localStorage.getItem("apps_script_url") || "https://script.google.com/macros/s/AKfycbxAbCVzFukUcqrtJwWdjuFeq8qgaY7dQ5ELJUm_xoPS2fnQWTeWMfjPiHoVKia4C0rbQQ/exec";
-    
     addLog("Connection Established", "Master API key validated. Connecting to Google servers...", "success");
     await new Promise(r => setTimeout(r, 1000));
 
     let successfulLinks: string[] = [];
+    let allUrlsObject: any[] = [];
 
     for (let i = 1; i <= count; i++) {
-      addLog(`Generating Asset ${i}/${count}`, `Creating Google Doc for "${keyword}"...`, "info");
+      addLog(`Generating Node ${i}/${count}`, `Creating selected entities for "${keyword}"...`, "info");
       
       try {
         const response = await fetch("/api/generate", {
@@ -83,14 +95,22 @@ export default function GoogleStackingDashboard() {
           body: JSON.stringify({
             keyword: keyword + (i > 1 ? ` Part ${i}` : ""),
             targetUrl: targetUrl || "https://example.com",
-            previousUrl: i > 1 ? successfulLinks[i - 2] : null
+            previousUrl: i > 1 ? successfulLinks[successfulLinks.length - 1] : null,
+            generateDocs,
+            generateSlides,
+            generateForms
           }),
         });
         
         const data = await response.json();
-        if (data.url) {
-          addLog(`Asset ${i} Successfully Generated`, "Entity document published and live on Google infrastructure.", "success");
-          successfulLinks.push(data.url);
+        if (data.urls) {
+          let createdCount = 0;
+          if (data.urls.doc) { successfulLinks.push(data.urls.doc); setGeneratedUrls(p => [...p, data.urls.doc]); createdCount++; }
+          if (data.urls.slides) { successfulLinks.push(data.urls.slides); setGeneratedUrls(p => [...p, data.urls.slides]); createdCount++; }
+          if (data.urls.form) { successfulLinks.push(data.urls.form); setGeneratedUrls(p => [...p, data.urls.form]); createdCount++; }
+          
+          allUrlsObject.push(data.urls);
+          addLog(`Node ${i} Successfully Generated`, `${createdCount} Cloud Assets published and interlinked.`, "success");
         } else if (data.error) {
           throw new Error(data.error);
         } else {
@@ -98,12 +118,11 @@ export default function GoogleStackingDashboard() {
         }
         
       } catch (error: any) {
-        addLog(`Asset ${i} Failed`, error.message || "Unknown error occurred.", "error");
+        addLog(`Node ${i} Failed`, error.message || "Unknown error occurred.", "error");
       }
     }
 
-    setGeneratedUrls(successfulLinks);
-    addLog("Campaign Completed", `Successfully generated ${successfulLinks.length} DA-99 assets!`, "success");
+    addLog("Campaign Completed", `Successfully generated ${successfulLinks.length} DA-99+ assets!`, "success");
 
     // Save to Cloud Database
     try {
@@ -113,8 +132,8 @@ export default function GoogleStackingDashboard() {
         body: JSON.stringify({
           keyword: keyword,
           totalLinks: successfulLinks.length,
-          status: "Completed",
-          urls: successfulLinks
+          status: successfulLinks.length > 0 ? "Completed" : "Failed",
+          urls: allUrlsObject // we save the JSON object array instead of strings for better parsing
         })
       });
     } catch (err) {
@@ -163,6 +182,35 @@ export default function GoogleStackingDashboard() {
                 </div>
 
                 <div className="space-y-5 relative z-10">
+                  
+                  {/* ASSET SELECTORS */}
+                  <div>
+                    <label className="block text-sm font-bold text-slate-400 mb-3">Select Entity Assets</label>
+                    <div className="grid grid-cols-3 gap-3">
+                      <div 
+                        onClick={() => setGenerateDocs(!generateDocs)}
+                        className={`cursor-pointer border rounded-xl p-3 flex flex-col items-center justify-center gap-2 transition-all ${generateDocs ? 'bg-blue-500/20 border-blue-500/50 text-blue-400' : 'bg-[#020617] border-slate-800 text-slate-500 hover:border-slate-600'}`}
+                      >
+                        <FileText className="w-6 h-6" />
+                        <span className="text-xs font-bold">G-Docs</span>
+                      </div>
+                      <div 
+                        onClick={() => setGenerateSlides(!generateSlides)}
+                        className={`cursor-pointer border rounded-xl p-3 flex flex-col items-center justify-center gap-2 transition-all ${generateSlides ? 'bg-amber-500/20 border-amber-500/50 text-amber-400' : 'bg-[#020617] border-slate-800 text-slate-500 hover:border-slate-600'}`}
+                      >
+                        <MonitorPlay className="w-6 h-6" />
+                        <span className="text-xs font-bold">G-Slides</span>
+                      </div>
+                      <div 
+                        onClick={() => setGenerateForms(!generateForms)}
+                        className={`cursor-pointer border rounded-xl p-3 flex flex-col items-center justify-center gap-2 transition-all ${generateForms ? 'bg-purple-500/20 border-purple-500/50 text-purple-400' : 'bg-[#020617] border-slate-800 text-slate-500 hover:border-slate-600'}`}
+                      >
+                        <ListTodo className="w-6 h-6" />
+                        <span className="text-xs font-bold">G-Forms</span>
+                      </div>
+                    </div>
+                  </div>
+
                   <div>
                     <label className="block text-sm font-bold text-slate-400 mb-2">Target URL (Client's Website)</label>
                     <div className="relative">
