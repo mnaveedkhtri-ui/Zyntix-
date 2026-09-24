@@ -66,7 +66,7 @@ export default function GoogleStackingDashboard() {
     addLog("System Initialization", "Booting Zyntix Engine... Checking API keys...", "info");
     
     // Fallback to the master key if none exists in localStorage
-    const savedKey = localStorage.getItem("zyntix_google_key") || "https://script.google.com/macros/s/AKfycbwPq-iE8x7Q3XfT-J1Z1Xv6H7K2A_qWvC7M-8yB_J-D/exec";
+    const savedKey = localStorage.getItem("apps_script_url") || "https://script.google.com/macros/s/AKfycbxAbCVzFukUcqrtJwWdjuFeq8qgaY7dQ5ELJUm_xoPS2fnQWTeWMfjPiHoVKia4C0rbQQ/exec";
     
     addLog("Connection Established", "Master API key validated. Connecting to Google servers...", "success");
     await new Promise(r => setTimeout(r, 1000));
