@@ -53,6 +53,19 @@ export default function ReportsDashboard() {
     URL.revokeObjectURL(url);
   };
 
+  
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this report?")) return;
+    try {
+      const res = await fetch(`/api/reports?id=${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        setReports(reports.filter(r => r.id !== id));
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const handleCopyLinks = (campaign: any) => {
     if (!campaign.urls) return;
     const links = campaign.urls.join("\n");
@@ -143,8 +156,17 @@ export default function ReportsDashboard() {
                             >
                               <Download className="w-3 h-3" /> TXT
                             </button>
+                          
+                            <button 
+                              onClick={() => handleDelete(report.id)}
+                              className="bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs px-2 py-1.5 rounded-lg transition-colors font-medium flex items-center justify-center"
+                              title="Delete Report"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
                           </div>
                         </td>
+
                       </tr>
                     ))
                   )}
