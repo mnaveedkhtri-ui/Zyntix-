@@ -3,9 +3,12 @@ import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 const getClient = () => {
-  // Use the connection string we know works (port 6543 for pooling)
+  // Strip ?sslmode=require from the connection string so it doesn't override our ssl setting
+  let connStr = process.env.POSTGRES_PRISMA_URL || "postgres://postgres.cxgbgswhqjeglwhoihei:gFbTqFFr3w1izUYT@aws-0-us-east-1.pooler.supabase.com:6543/postgres";
+  connStr = connStr.replace("?sslmode=require", "").replace("&supa=base-pooler.x", "").replace("&pgbouncer=true", "");
+  
   return new Client({
-    connectionString: process.env.POSTGRES_PRISMA_URL || "postgres://postgres.cxgbgswhqjeglwhoihei:gFbTqFFr3w1izUYT@aws-0-us-east-1.pooler.supabase.com:6543/postgres?sslmode=require",
+    connectionString: connStr,
     ssl: { rejectUnauthorized: false }
   });
 };
