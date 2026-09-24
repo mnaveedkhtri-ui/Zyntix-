@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FileText, Download, ExternalLink, Copy, CheckCircle2, Loader2 } from "lucide-react";
+import { FileText, Download, ExternalLink, Copy, CheckCircle2, Loader2 , Trash2} from "lucide-react";
 import DashboardSidebar from "@/components/DashboardSidebar";
 
 export default function ReportsDashboard() {
