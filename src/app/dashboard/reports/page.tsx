@@ -129,8 +129,6 @@ export default function ReportsDashboard() {
               </button>
             </div>
           )}
-          
-          </div>
 
           <div className="bg-[#050B14] border border-slate-800 rounded-3xl overflow-hidden shadow-2xl relative">
             <div className="overflow-x-auto">
