@@ -15,18 +15,23 @@ export async function POST(req: Request) {
       body: JSON.stringify({ keyword, targetUrl })
     });
 
-    // It's a text/plain response usually containing JSON from apps script
     const text = await response.text();
+    
+    if (text.trim().toLowerCase().startsWith("<!doctype") || text.includes("<html")) {
+      return NextResponse.json({ error: "Google Script returned an HTML page (Login required). Please set 'Who has access' to 'Anyone' in Apps Script." }, { status: 403 });
+    }
+
     let data;
     try {
       data = JSON.parse(text);
     } catch(e) {
-      // If the apps script just returned plain text URL
       data = { docUrl: text.trim() };
     }
 
-    if (data.docUrl) {
+    if (data.docUrl && data.docUrl.startsWith("http")) {
       return NextResponse.json({ success: true, url: data.docUrl });
+    } else {
+      return NextResponse.json({ error: "No valid URL returned from script." }, { status: 500 });
     } else {
       return NextResponse.json({ error: "No URL returned from script" }, { status: 500 });
     }
