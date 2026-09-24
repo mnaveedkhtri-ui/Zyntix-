@@ -95,7 +95,7 @@ export default function GoogleStackingDashboard() {
           body: JSON.stringify({
             keyword: keyword + (i > 1 ? ` Part ${i}` : ""),
             targetUrl: targetUrl || "https://example.com",
-            previousUrl: i > 1 ? successfulLinks[successfulLinks.length - 1] : null,
+            previousUrls: i > 1 ? allUrlsObject[allUrlsObject.length - 1] : null,
             generateDocs,
             generateSlides,
             generateForms
