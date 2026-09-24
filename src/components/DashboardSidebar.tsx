@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Database, Settings, FileSpreadsheet, Activity, Target } from "lucide-react";
+import { UserButton } from "@clerk/nextjs";
 
 export default function DashboardSidebar() {
   const pathname = usePathname();
@@ -40,9 +41,12 @@ export default function DashboardSidebar() {
       </nav>
 
       <div className="mt-auto pt-6 border-t border-slate-800">
-        <div className="flex items-center gap-3 px-4 py-3 bg-slate-800/30 rounded-xl">
-          <Activity className="w-4 h-4 text-emerald-500 animate-pulse" />
-          <span className="text-sm font-medium text-slate-300">System Online</span>
+        <div className="flex items-center justify-between px-4 py-3 bg-slate-800/30 rounded-xl">
+          <div className="flex items-center gap-3">
+            <Activity className="w-4 h-4 text-emerald-500 animate-pulse" />
+            <span className="text-sm font-medium text-slate-300">System Online</span>
+          </div>
+          <UserButton afterSignOutUrl="/" />
         </div>
       </div>
     </div>

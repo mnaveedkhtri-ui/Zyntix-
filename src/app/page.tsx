@@ -32,7 +32,7 @@ export default function Home() {
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link href="/auth/login" className="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-400 hover:to-emerald-300 text-slate-950 font-black px-8 py-4 rounded-xl flex items-center justify-center gap-2 transition-all transform hover:scale-105 shadow-[0_0_30px_rgba(16,185,129,0.3)]">
+          <Link href="/sign-in" className="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-400 hover:to-emerald-300 text-slate-950 font-black px-8 py-4 rounded-xl flex items-center justify-center gap-2 transition-all transform hover:scale-105 shadow-[0_0_30px_rgba(16,185,129,0.3)]">
             Start Free Trial <ArrowRight className="w-5 h-5" />
           </Link>
           <Link href="/how-it-works" className="w-full sm:w-auto bg-[#050B14] border border-slate-800 hover:border-slate-700 text-white font-bold px-8 py-4 rounded-xl transition-all hover:bg-slate-800/50">
