@@ -135,11 +135,21 @@ export default function ReportsDashboard() {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="border-b border-slate-800/50 bg-[#020617]/50">
+                    <th className="p-4 w-12">
+                      <div className="flex items-center justify-center">
+                        <input 
+                          type="checkbox" 
+                          className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-slate-900 cursor-pointer"
+                          checked={reports.length > 0 && selectedIds.length === reports.length}
+                          onChange={toggleSelectAll}
+                        />
+                      </div>
+                    </th>
                     <th className="p-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Campaign Keyword</th>
                     <th className="p-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Links Built</th>
                     <th className="p-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Date</th>
                     <th className="p-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Status</th>
-                    <th className="p-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Action</th>
+                    <th className="p-4 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -168,16 +178,18 @@ export default function ReportsDashboard() {
                     reports.map((report) => (
                       <tr key={report.id} className="border-b border-slate-800/30 hover:bg-[#020617] transition-colors">
                         <td className="p-4">
-                          <input 
-                            type="checkbox" 
-                            className="w-4 h-4 rounded border-slate-700 bg-slate-800 checked:bg-emerald-500 cursor-pointer"
-                            checked={selectedIds.includes(report.id)}
-                            onChange={() => toggleSelect(report.id)}
-                          />
+                          <div className="flex items-center justify-center">
+                            <input 
+                              type="checkbox" 
+                              className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-slate-900 cursor-pointer"
+                              checked={selectedIds.includes(report.id)}
+                              onChange={() => toggleSelect(report.id)}
+                            />
+                          </div>
                         </td>
                         <td className="p-4 font-bold text-sm text-emerald-400">{report.keyword}</td>
                         <td className="p-4">
-                          <span className="bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full text-xs font-bold border border-emerald-500/20">
+                          <span className="bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full text-xs font-bold border border-emerald-500/20 whitespace-nowrap inline-block">
                             {report.total_links} DA-99
                           </span>
                         </td>
@@ -186,7 +198,7 @@ export default function ReportsDashboard() {
                           <span className="flex items-center gap-1"><CheckCircle2 className="w-3 h-3 text-emerald-400" /> {report.status}</span>
                         </td>
                         <td className="p-4">
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 justify-end">
                             <button 
                               onClick={() => setExpandedId(expandedId === report.id ? null : report.id)}
                               className="bg-slate-800 hover:bg-slate-700 text-white text-xs px-3 py-1.5 rounded-lg transition-colors font-medium"
