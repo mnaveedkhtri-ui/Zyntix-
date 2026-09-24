@@ -12,7 +12,7 @@ export default function Register() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handleRegister = (e) => {
+  const handleRegister = (e: any) => {
     e.preventDefault();
     setIsLoading(true);
     setTimeout(() => {
