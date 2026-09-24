@@ -23,7 +23,7 @@ function GoogleDashboardContent() {
         const response = await fetch('/api/google', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ targetUrl, keyword, appsScriptUrl, preGeneratedIntro, preGeneratedBullets })
+          body: JSON.stringify({ targetUrl, keyword, appsScriptUrl, aiIntro: preGeneratedIntro, aiBullets: preGeneratedBullets, previousUrl })
         });
         const data = await response.json();
         if (data.success && data.data.length > 0) {
