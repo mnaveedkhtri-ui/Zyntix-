@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
-import { ShieldAlert, Coins, Search, CheckCircle2, AlertTriangle, Loader2 } from "lucide-react";
+import { ShieldAlert, Coins, Search, CheckCircle2, AlertTriangle, Loader2, Link2, RefreshCw } from "lucide-react";
 
 export default function AdminCreditTopup() {
   const { user } = useUser();
@@ -10,6 +10,11 @@ export default function AdminCreditTopup() {
   const [credits, setCredits] = useState("100");
   const [status, setStatus] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+
+  // Script URL state
+  const [scriptUrl, setScriptUrl] = useState("");
+  const [scriptStatus, setScriptStatus] = useState<any>(null);
+  const [scriptLoading, setScriptLoading] = useState(false);
 
   // Security Check: Only you can see this!
   if (user?.primaryEmailAddress?.emailAddress !== "moderntrendz98@gmail.com") {
@@ -21,6 +26,13 @@ export default function AdminCreditTopup() {
       </div>
     );
   }
+
+  useEffect(() => {
+    // Load current script URL
+    fetch("/api/admin/script-url")
+      .then(r => r.json())
+      .then(d => setScriptUrl(d.url || ""));
+  }, []);
 
   const handleTopup = async (e: any) => {
     e.preventDefault();
@@ -49,6 +61,32 @@ export default function AdminCreditTopup() {
     }
   };
 
+  const handleScriptUpdate = async (e: any) => {
+    e.preventDefault();
+    setScriptLoading(true);
+    setScriptStatus(null);
+
+    try {
+      const res = await fetch("/api/admin/script-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: scriptUrl })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setScriptStatus({ type: "success", message: "✅ Master URL updated! All users will now use the new script instantly." });
+      } else {
+        setScriptStatus({ type: "error", message: data.error || "Failed to update URL." });
+      }
+    } catch (err) {
+      setScriptStatus({ type: "error", message: "Network error occurred." });
+    } finally {
+      setScriptLoading(false);
+    }
+  };
+
   return (
     <div className="max-w-3xl mx-auto space-y-8">
       <div>
@@ -59,6 +97,50 @@ export default function AdminCreditTopup() {
         <p className="text-slate-400 mt-2">Manage client accounts and inject credits instantly without leaving the app.</p>
       </div>
 
+      {/* Master Script URL Updater */}
+      <div className="bg-[#050B14] border border-amber-500/30 rounded-3xl p-8 shadow-[0_0_40px_-15px_rgba(245,158,11,0.15)] relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
+          <Link2 className="w-48 h-48" />
+        </div>
+
+        <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
+          <RefreshCw className="w-5 h-5 text-amber-400" />
+          Master Google Apps Script URL
+        </h3>
+        <p className="text-slate-400 text-sm mb-6">Update this once when you redeploy your Apps Script. It instantly applies to ALL users — no more errors!</p>
+
+        <form onSubmit={handleScriptUpdate} className="space-y-4 relative z-10">
+          <div>
+            <label className="block text-sm font-bold text-slate-400 mb-2">New Web App URL</label>
+            <input
+              type="url"
+              required
+              value={scriptUrl}
+              onChange={(e) => setScriptUrl(e.target.value)}
+              placeholder="https://script.google.com/macros/s/AKfycb.../exec"
+              className="w-full bg-[#020617] border border-slate-800 rounded-xl py-3 px-4 text-white font-mono text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={scriptLoading}
+            className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-4 rounded-xl transition-all shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2"
+          >
+            {scriptLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <RefreshCw className="w-5 h-5" />}
+            {scriptLoading ? "Updating..." : "Update Master URL for All Users"}
+          </button>
+
+          {scriptStatus && (
+            <div className={`p-4 rounded-xl flex items-start gap-3 ${scriptStatus.type === 'success' ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400' : 'bg-rose-500/10 border border-rose-500/20 text-rose-400'}`}>
+              {scriptStatus.type === 'success' ? <CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5" /> : <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />}
+              <p className="font-medium text-sm">{scriptStatus.message}</p>
+            </div>
+          )}
+        </form>
+      </div>
+
+      {/* Credit Topup */}
       <div className="bg-[#050B14] border border-rose-500/30 rounded-3xl p-8 shadow-[0_0_40px_-15px_rgba(244,63,94,0.15)] relative overflow-hidden">
         <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
           <Coins className="w-48 h-48" />
