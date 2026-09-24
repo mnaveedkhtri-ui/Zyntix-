@@ -1,4 +1,6 @@
-import Link from "next/link";
+const fs = require("fs");
+
+const newContent = `import Link from "next/link";
 import { ArrowRight, Database, Search, Link as LinkIcon, ShieldCheck } from "lucide-react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
@@ -74,3 +76,7 @@ export default function Home() {
     </div>
   );
 }
+`;
+
+fs.writeFileSync("src/app/page.tsx", newContent, "utf8");
+console.log("Updated homepage");
