@@ -28,8 +28,9 @@ export async function POST(req: Request) {
       data = { docUrl: text.trim() };
     }
 
-    if (data.docUrl && data.docUrl.startsWith("http")) {
-      return NextResponse.json({ success: true, url: data.docUrl });
+    const finalUrl = data.docUrl || data.url;
+    if (finalUrl && finalUrl.startsWith("http")) {
+      return NextResponse.json({ success: true, url: finalUrl });
     } else {
       return NextResponse.json({ error: "No valid URL returned from script." }, { status: 500 });
     }
