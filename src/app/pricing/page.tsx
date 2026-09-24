@@ -37,7 +37,7 @@ export default function PricingPage() {
               <li className="flex items-center gap-3"><Check className="w-4 h-4 text-emerald-500" /><span className="text-slate-300 font-medium">DA-99 Backlinks</span></li>
               <li className="flex items-center gap-3"><Check className="w-4 h-4 text-emerald-500" /><span className="text-slate-300 font-medium">Standard Support</span></li>
             </ul>
-            <a href="https://wa.me/1234567890" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 w-full bg-slate-800 hover:bg-slate-700 text-white py-4 rounded-xl font-bold transition-all">
+            <a href="https://wa.me/923323219981" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 w-full bg-slate-800 hover:bg-slate-700 text-white py-4 rounded-xl font-bold transition-all">
               <MessageCircle className="w-5 h-5" /> Buy Starter
             </a>
           </div>
@@ -63,7 +63,7 @@ export default function PricingPage() {
               <li className="flex items-center gap-3"><Check className="w-4 h-4 text-emerald-500" /><span className="text-slate-300 font-medium">Automated Interlinking</span></li>
               <li className="flex items-center gap-3"><Check className="w-4 h-4 text-emerald-500" /><span className="text-slate-300 font-medium">Priority Cloud Storage</span></li>
             </ul>
-            <a href="https://wa.me/1234567890" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 w-full bg-[#25D366] hover:bg-[#1DA851] text-white py-4 rounded-xl font-bold transition-all shadow-lg hover:shadow-[#25D366]/20">
+            <a href="https://wa.me/923323219981" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 w-full bg-[#25D366] hover:bg-[#1DA851] text-white py-4 rounded-xl font-bold transition-all shadow-lg hover:shadow-[#25D366]/20">
               <MessageCircle className="w-5 h-5" /> Buy Pro
             </a>
           </div>
@@ -86,7 +86,7 @@ export default function PricingPage() {
               <li className="flex items-center gap-3"><Check className="w-4 h-4 text-emerald-500" /><span className="text-slate-300 font-medium">Dedicated Master Key</span></li>
               <li className="flex items-center gap-3"><Check className="w-4 h-4 text-emerald-500" /><span className="text-slate-300 font-medium">24/7 WhatsApp Support</span></li>
             </ul>
-            <a href="mailto:admin@zyntix.com" className="flex items-center justify-center gap-2 w-full bg-slate-800 hover:bg-slate-700 text-white py-4 rounded-xl font-bold transition-all">
+            <a href="mailto:naveedkhtri7@gmail.com" className="flex items-center justify-center gap-2 w-full bg-slate-800 hover:bg-slate-700 text-white py-4 rounded-xl font-bold transition-all">
               <Mail className="w-5 h-5" /> Email Us
             </a>
           </div>
