@@ -9,6 +9,7 @@ export default function ReportsDashboard() {
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   useEffect(() => {
     async function loadReports() {
@@ -54,6 +55,36 @@ export default function ReportsDashboard() {
   };
 
   
+  
+  const handleBulkDelete = async () => {
+    if (!confirm(`Are you sure you want to delete ${selectedIds.length} reports?`)) return;
+    try {
+      const res = await fetch(`/api/reports?ids=${selectedIds.join(",")}`, { method: 'DELETE' });
+      if (res.ok) {
+        setReports(reports.filter(r => !selectedIds.includes(r.id)));
+        setSelectedIds([]);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.length === reports.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(reports.map(r => r.id));
+    }
+  };
+
+  const toggleSelect = (id: string) => {
+    if (selectedIds.includes(id)) {
+      setSelectedIds(selectedIds.filter(i => i !== id));
+    } else {
+      setSelectedIds([...selectedIds, id]);
+    }
+  };
+
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this report?")) return;
     try {
@@ -87,6 +118,19 @@ export default function ReportsDashboard() {
             </h1>
             <p className="text-slate-400 mt-2 text-lg">View, copy, and download Cloud TXT reports for your clients.</p>
           </div>
+          {selectedIds.length > 0 && (
+            <div className="mb-4 flex items-center gap-4 bg-red-500/10 border border-red-500/20 px-4 py-3 rounded-xl w-fit">
+              <span className="text-red-400 font-bold">{selectedIds.length} reports selected</span>
+              <button 
+                onClick={handleBulkDelete}
+                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-bold transition-colors flex items-center gap-2 text-sm"
+              >
+                <Trash2 className="w-4 h-4" /> Delete Selected
+              </button>
+            </div>
+          )}
+          
+          </div>
 
           <div className="bg-[#050B14] border border-slate-800 rounded-3xl overflow-hidden shadow-2xl relative">
             <div className="overflow-x-auto">
@@ -103,7 +147,7 @@ export default function ReportsDashboard() {
                 <tbody>
                   {loading ? (
                     <tr>
-                      <td colSpan={5}>
+                      <td colSpan={6}>
                         <div className="p-16 text-center flex flex-col items-center justify-center">
                           <Loader2 className="w-8 h-8 animate-spin text-emerald-500 mb-4" />
                           <p className="text-slate-500">Loading Cloud Reports...</p>
@@ -112,7 +156,7 @@ export default function ReportsDashboard() {
                     </tr>
                   ) : reports.length === 0 ? (
                     <tr>
-                      <td colSpan={5}>
+                      <td colSpan={6}>
                         <div className="p-16 text-center flex flex-col items-center justify-center">
                           <div className="w-16 h-16 bg-slate-800/30 rounded-full flex items-center justify-center mb-4">
                             <FileText className="w-8 h-8 text-slate-600" />
@@ -125,6 +169,14 @@ export default function ReportsDashboard() {
                   ) : (
                     reports.map((report) => (
                       <tr key={report.id} className="border-b border-slate-800/30 hover:bg-[#020617] transition-colors">
+                        <td className="p-4">
+                          <input 
+                            type="checkbox" 
+                            className="w-4 h-4 rounded border-slate-700 bg-slate-800 checked:bg-emerald-500 cursor-pointer"
+                            checked={selectedIds.includes(report.id)}
+                            onChange={() => toggleSelect(report.id)}
+                          />
+                        </td>
                         <td className="p-4 font-bold text-sm text-emerald-400">{report.keyword}</td>
                         <td className="p-4">
                           <span className="bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full text-xs font-bold border border-emerald-500/20">
