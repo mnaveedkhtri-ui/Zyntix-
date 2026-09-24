@@ -77,21 +77,23 @@ export default function GoogleStackingDashboard() {
       addLog(`Generating Asset ${i}/${count}`, `Creating Google Doc for "${keyword}"...`, "info");
       
       try {
-        const response = await fetch(savedKey, {
+        const response = await fetch("/api/generate", {
           method: "POST",
-          mode: "no-cors",
-          headers: {
-            "Content-Type": "text/plain",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
+            scriptUrl: savedKey,
             keyword: keyword + (i > 1 ? ` Part ${i}` : ""),
             targetUrl: targetUrl || "https://example.com"
           }),
         });
         
-        await new Promise(r => setTimeout(r, 1500));
-        addLog(`Asset ${i} Successfully Generated`, "Entity document published and live on Google infrastructure.", "success");
-        successfulLinks.push(`https://docs.google.com/document/d/asset-${Date.now()}-${i}/edit`);
+        const data = await response.json();
+        if (data.url) {
+          addLog(`Asset ${i} Successfully Generated`, "Entity document published and live on Google infrastructure.", "success");
+          successfulLinks.push(data.url);
+        } else {
+          throw new Error("Invalid response from proxy");
+        }
         
       } catch (error) {
         addLog(`Asset ${i} Failed`, "Google rate limit hit. Retrying in 5 seconds...", "error");
