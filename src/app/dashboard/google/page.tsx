@@ -86,7 +86,8 @@ function GoogleDashboardContent() {
 
     for (let i = 1; i <= maxDocs; i++) {
       setProgressMsg(`Publishing document ${i} of ${maxDocs} to Google Drive...`);
-      const result = await generateDocWithRetry(appsScriptUrl, targetUrl, `${keyword} (Variation ${i})`, globalAiIntro, globalAiBullets, 3);
+      const previousUrl = generatedUrls.length > 0 ? generatedUrls[generatedUrls.length - 1] : "";
+      const result = await generateDocWithRetry(appsScriptUrl, targetUrl, `${keyword} (Variation ${i})`, globalAiIntro, globalAiBullets, previousUrl, 3);
       
       if (result && result.success) {
          newReportData.push(...result.data);

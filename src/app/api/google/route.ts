@@ -17,7 +17,7 @@ function toTitleCase(str: string) {
 
 export async function POST(req: Request) {
   try {
-    const { keyword, targetUrl, appsScriptUrl, aiIntro, aiBullets } = await req.json();
+    const { keyword, targetUrl, appsScriptUrl, aiIntro, aiBullets, previousUrl } = await req.json();
 
     if (!keyword || !targetUrl || !appsScriptUrl) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -52,7 +52,7 @@ export async function POST(req: Request) {
 
     const response = await fetch(appsScriptUrl, {
       method: "POST",
-      body: JSON.stringify({ keyword: cleanKeyword, targetUrl, aiIntro: finalIntro, aiBullets: finalBullets }),
+      body: JSON.stringify({ keyword: cleanKeyword, targetUrl, aiIntro: finalIntro, aiBullets: finalBullets, previousUrl }),
       headers: {
         "Content-Type": "application/json",
       },
