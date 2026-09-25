@@ -23,8 +23,7 @@ export default function Home() {
         </div>
         
         <h1 className="text-5xl md:text-7xl font-black tracking-tight mb-8 leading-tight">
-          Syndicate <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">Enterprise Cloud Entities</span> <br className="hidden md:block"/>
-          at Scale.
+          Syndicate <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">Cloud Entities</span><br className="hidden md:block"/> at Enterprise Scale.
         </h1>
         
         <p className="text-xl text-slate-400 max-w-3xl mx-auto mb-12 leading-relaxed">
