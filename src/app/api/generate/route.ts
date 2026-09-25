@@ -37,7 +37,7 @@ export async function POST(req: Request) {
     const text = await response.text();
 
     if (text.trim().toLowerCase().startsWith("<!doctype") || text.includes("<html")) {
-      return NextResponse.json({ error: "Google Script auth error. Please contact admin." }, { status: 403 });
+      return NextResponse.json({ error: "Google Blocked Request: " + text.substring(0, 150).replace(/<[^>]*>?/gm, '') }, { status: 403 });
     }
 
     let data;
