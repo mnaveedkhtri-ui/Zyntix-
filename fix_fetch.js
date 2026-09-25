@@ -1,9 +1,21 @@
 const fs = require("fs");
-let content = fs.readFileSync("src/app/dashboard/google/page.tsx", "utf-8");
+let content = fs.readFileSync("src/app/dashboard/google/page.tsx", "utf8");
 
 content = content.replace(
-  `body: JSON.stringify({ targetUrl, keyword, appsScriptUrl, preGeneratedIntro, preGeneratedBullets })`,
-  `body: JSON.stringify({ targetUrl, keyword, appsScriptUrl, aiIntro: preGeneratedIntro, aiBullets: preGeneratedBullets, previousUrl })`
+  `            targetUrl: targetUrl || "https://example.com",
+            previousUrls: i > 1 ? allUrlsObject[allUrlsObject.length - 1] : null,
+            generateDocs,
+            generateSlides,
+            generateForms
+          }),`,
+  `            targetUrl: targetUrl || "https://example.com",
+            language: language || "en",
+            previousUrls: i > 1 ? allUrlsObject[allUrlsObject.length - 1] : null,
+            generateDocs,
+            generateSlides,
+            generateForms
+          }),`
 );
 
-fs.writeFileSync("src/app/dashboard/google/page.tsx", content);
+fs.writeFileSync("src/app/dashboard/google/page.tsx", content, "utf8");
+console.log("Fixed missing language param in fetch body.");
