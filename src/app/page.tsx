@@ -14,6 +14,25 @@ export default function Home() {
       <NavBar />
 
       <main className="max-w-7xl mx-auto px-8 pt-24 pb-32 text-center relative z-10">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            "name": "Zyntix",
+            "operatingSystem": "Web",
+            "applicationCategory": "BusinessApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "19.00",
+              "priceCurrency": "USD"
+            },
+            "description": "Zyntix is a premium Generative Engine Optimization (GEO) and Answer Engine Optimization (AEO) platform for local businesses."
+          })
+        }}
+      />
+
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-bold mb-8 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>

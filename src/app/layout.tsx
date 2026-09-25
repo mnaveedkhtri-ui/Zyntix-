@@ -8,6 +8,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Zyntix | Google Entity Stacking for Agencies",
   description: "Automate your high-authority link building with Zyntix. Bulk generate public, indexable DA-99 Google Docs and Sheets directly via API.",
+  verification: {
+    google: "XKqDOIporTLwhEyizWES5BzLGewgVKX3ymxqUbKwjvE",
+  },
 };
 
 export default function RootLayout({
