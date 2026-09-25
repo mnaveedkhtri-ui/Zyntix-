@@ -28,6 +28,22 @@ export default function ReportsDashboard() {
     loadReports();
   }, []);
 
+  
+  const flattenUrls = (urlsArray: any[]) => {
+    if (!urlsArray) return [];
+    let flat: string[] = [];
+    urlsArray.forEach(item => {
+      if (typeof item === 'string') {
+        flat.push(item);
+      } else if (typeof item === 'object' && item !== null) {
+        if (item.doc) flat.push(item.doc);
+        if (item.slides) flat.push(item.slides);
+        if (item.form) flat.push(item.form);
+      }
+    });
+    return flat;
+  };
+
   const handleDownloadTXT = (campaign: any) => {
     let txtContent = "ZYNTIX - CAMPAIGN REPORT\n";
     txtContent += "==================================\n";
@@ -37,11 +53,10 @@ export default function ReportsDashboard() {
     txtContent += "==================================\n\n";
     txtContent += "LIVE URLs:\n";
     
-    if (campaign.urls) {
-      campaign.urls.forEach((url: string, index: number) => {
-        txtContent += `${index + 1}. ${url}\n`;
-      });
-    }
+    const flatUrls = flattenUrls(campaign.urls);
+    flatUrls.forEach((url: string, index: number) => {
+      txtContent += `${index + 1}. ${url}\n`;
+    });
     
     const blob = new Blob([txtContent], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
@@ -98,8 +113,9 @@ export default function ReportsDashboard() {
   };
 
   const handleCopyLinks = (campaign: any) => {
-    if (!campaign.urls) return;
-    const links = campaign.urls.join("\n");
+    const flatUrls = flattenUrls(campaign.urls);
+    if (flatUrls.length === 0) return;
+    const links = flatUrls.join("\n");
     navigator.clipboard.writeText(links);
     setCopiedId(campaign.id);
     setTimeout(() => setCopiedId(null), 2000);
@@ -244,7 +260,7 @@ export default function ReportsDashboard() {
                   <button onClick={() => setExpandedId(null)} className="text-slate-500 hover:text-white text-sm">Close</button>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-64 overflow-y-auto pr-2">
-                  {reports.find(r => r.id === expandedId)?.urls?.map((url: string, i: number) => (
+                  {flattenUrls(reports.find(r => r.id === expandedId)?.urls || []).map((url: string, i: number) => (
                     <a key={i} href={url} target="_blank" rel="noreferrer" className="flex items-center gap-2 p-3 bg-[#050B14] border border-slate-800 rounded-xl hover:border-emerald-500/50 transition-colors text-sm text-slate-300 truncate group">
                       <ExternalLink className="w-4 h-4 text-emerald-500 shrink-0 group-hover:scale-110 transition-transform" />
                       <span className="truncate">{url}</span>
