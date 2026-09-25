@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth, useUser } from "@clerk/nextjs";
 import { FileText, Loader2, PlayCircle, ExternalLink, Activity, Target, Link as LinkIcon, Database, CheckCircle2, Lock, KeySquare, ShieldCheck, Crown, MonitorPlay, ListTodo } from "lucide-react";
 import Link from "next/link";
@@ -42,8 +42,10 @@ export default function GoogleStackingDashboard() {
     }
   }, [user]);
 
+  const cancelRef = useRef(false);
   const addLog = (title: string, message: string, type: 'info' | 'success' | 'error' = 'info') => {
-    setLogs(prev => [...prev, { title, message, type }]);
+    const time = new Date().toLocaleTimeString();
+    setLogs(prev => [...prev, { title, message, type, time }]);
   };
 
   const handleGenerate = async () => {
@@ -64,6 +66,7 @@ export default function GoogleStackingDashboard() {
     setIsGenerating(true);
     setLogs([]);
     setGeneratedUrls([]);
+    cancelRef.current = false;
     
     try {
       const creditRes = await fetch("/api/credits/deduct", { 
@@ -87,6 +90,11 @@ export default function GoogleStackingDashboard() {
     let allUrlsObject: any[] = [];
 
     for (let i = 1; i <= count; i++) {
+      if (cancelRef.current) {
+        addLog("Engine Terminated", "Campaign manually cancelled by the user.", "error");
+        break;
+      }
+      
       addLog(`Generating Node ${i}/${count}`, `Creating selected entities for "${keyword}"...`, "info");
       
       try {
@@ -119,17 +127,21 @@ export default function GoogleStackingDashboard() {
           throw new Error("Invalid response from Google Servers");
         }
         
-            } catch (error: any) {
+      } catch (error: any) {
         addLog(`Node ${i} Failed`, error.message || "Unknown error occurred.", "error");
       }
       
-      if (i < count) {
-        addLog("API Cooldown & Bypass", "Cooling down for 4 seconds to evade Google rate limits and ensure 100% success...", "info");
-        await new Promise(r => setTimeout(r, 4000));
+      if (i < count && !cancelRef.current) {
+        addLog("API Cooldown & Bypass", "Cooling down for 10 seconds to bypass Google rate limits and ensure 100% success...", "info");
+        await new Promise(r => setTimeout(r, 10000));
       }
     }
 
-    addLog("Campaign Completed", `Successfully generated ${successfulLinks.length} DA-99+ assets!`, "success");
+    if (!cancelRef.current) {
+      addLog("Campaign Completed", `Successfully generated ${successfulLinks.length} DA-99+ assets!`, "success");
+    } else {
+      addLog("Campaign Terminated", `Process halted. Saved ${successfulLinks.length} assets.`, "info");
+    }
 
     // Save to Cloud Database
     try {
@@ -321,7 +333,7 @@ export default function GoogleStackingDashboard() {
                         </div>
                         <div>
                           <p className={`font-bold ${log.type === 'error' ? 'text-rose-400' : log.type === 'success' ? 'text-emerald-400' : 'text-slate-300'}`}>
-                            [{new Date().toLocaleTimeString()}] {log.title}
+                            [{log.time}] {log.title}
                           </p>
                           <p className="text-slate-500 mt-1">{log.message}</p>
                         </div>
