@@ -14,7 +14,7 @@ export default function GoogleStackingDashboard() {
   const [count, setCount] = useState(1);
   const [language, setLanguage] = useState("en");
   const [isGenerating, setIsGenerating] = useState(false);
-  const [logs, setLogs] = useState<{title: string, message: string, type: 'info' | 'success' | 'error'}[]>([]);
+  const [logs, setLogs] = useState<{title: string, message: string, type: 'info' | 'success' | 'error', time?: string}[]>([]);
   const [generatedUrls, setGeneratedUrls] = useState<string[]>([]);
   
   const [displayCredits, setDisplayCredits] = useState<number>(0);
@@ -298,14 +298,25 @@ export default function GoogleStackingDashboard() {
                       <Lock className="w-5 h-5" /> Not Enough Credits - Recharge
                     </Link>
                   ) : (
-                    <button 
-                      onClick={handleGenerate}
-                      disabled={isGenerating}
-                      className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-lg py-5 rounded-xl transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {isGenerating ? <Loader2 className="w-6 h-6 animate-spin" /> : <PlayCircle className="w-6 h-6" />}
-                      {isGenerating ? "Executing Campaign..." : "Initiate Stacking Engine"}
-                    </button>
+                    <div className="flex gap-4 w-full mt-4">
+    <button
+      onClick={handleGenerate}
+      disabled={isGenerating}
+      className="flex-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-lg py-5 rounded-xl transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      {isGenerating ? <Loader2 className="w-6 h-6 animate-spin" /> : <PlayCircle className="w-6 h-6" />}
+      {isGenerating ? "Executing Engine..." : "Initiate Stacking Engine"}
+    </button>
+    {isGenerating && (
+      <button
+        onClick={() => cancelRef.current = true}
+        className="bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 font-bold px-8 py-5 rounded-xl flex items-center justify-center transition-all border border-rose-500/30"
+        title="Force Cancel"
+      >
+        Cancel
+      </button>
+    )}
+  </div>
                   )}
                 </div>
               </div>
