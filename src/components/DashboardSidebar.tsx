@@ -22,6 +22,10 @@ export default function DashboardSidebar() {
           <Database className="w-5 h-5" />
           Google Stacking
         </Link>
+        <Link href="/dashboard/github" className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${pathname === '/dashboard/github' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white'}`}>
+          <Database className="w-5 h-5" />
+          GitHub Stacking
+        </Link>
         
         <div className="mt-8 mb-4">
           <div className="text-xs font-bold text-slate-500 mb-4 tracking-wider">ANALYTICS & CONFIG</div>
