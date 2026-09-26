@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Link2, Target, Loader2, PlayCircle, CheckCircle2, Activity, ExternalLink, Github } from "lucide-react";
+import { Link2, Target, Loader2, PlayCircle, CheckCircle2, Activity, ExternalLink } from "lucide-react";
 
 export default function GithubStackingPage() {
   const [targetUrl, setTargetUrl] = useState("");
@@ -89,7 +89,7 @@ export default function GithubStackingPage() {
       <div className="max-w-6xl mx-auto space-y-8">
         <div>
           <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight mb-4 flex items-center gap-4">
-            <Github className="w-12 h-12 text-emerald-500" />
+            <Link2 className="w-12 h-12 text-emerald-500" />
             GitHub Silo Engine
             <span className="px-3 py-1 bg-emerald-500/10 text-emerald-500 text-sm font-bold rounded-full border border-emerald-500/20 uppercase tracking-widest align-middle ml-2">
               DA-100
