@@ -2,7 +2,6 @@
 
 import { useState, useRef } from "react";
 import { Link2, Target, Loader2, PlayCircle, CheckCircle2, Activity, ExternalLink, Github } from "lucide-react";
-import Link from "next/link";
 
 export default function GithubStackingPage() {
   const [targetUrl, setTargetUrl] = useState("");
