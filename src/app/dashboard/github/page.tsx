@@ -1,12 +1,10 @@
 "use client";
 
-import { useState, useRef } from "next";
-import { Link2, Target, Loader2, PlayCircle, CheckCircle2, Activity, ExternalLink, Lock, Github } from "lucide-react";
+import { useState, useRef } from "react";
+import { Link2, Target, Loader2, PlayCircle, CheckCircle2, Activity, ExternalLink, Github } from "lucide-react";
 import Link from "next/link";
-import { useUser } from "@clerk/nextjs";
 
 export default function GithubStackingPage() {
-  const { user } = useUser();
   const [targetUrl, setTargetUrl] = useState("");
   const [keyword, setKeyword] = useState("");
   const [language, setLanguage] = useState("en");
@@ -15,8 +13,6 @@ export default function GithubStackingPage() {
   const [logs, setLogs] = useState<{time: string, type: string, title: string, message: string}[]>([]);
   const [generatedUrls, setGeneratedUrls] = useState<string[]>([]);
   
-  // Dummy credits for UI matching (should sync with db in real app)
-  const displayCredits = 1000; 
   const cancelRef = useRef(false);
 
   const addLog = (type: string, title: string, message: string) => {
