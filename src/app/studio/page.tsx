@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { SignedIn, SignedOut, RedirectToSignIn, UserButton } from "@clerk/nextjs";
 import { 
   Send, 
   ExternalLink, 
@@ -54,6 +55,7 @@ interface SiteConfig {
     name: string;
     bio: string;
     avatar: string;
+    credentials?: string;
   };
   navigation: Array<{ label: string; href: string }>;
   posts: BlogPost[];
@@ -61,7 +63,14 @@ interface SiteConfig {
     email: string;
     twitter?: string;
     linkedin?: string;
+    phone?: string;
+    address?: string;
   };
+  services?: Array<{
+    title: string;
+    description: string;
+    icon?: string;
+  }>;
 }
 
 export default function ZyntixStudio() {
@@ -97,6 +106,7 @@ export default function ZyntixStudio() {
     isVercelConnected: boolean;
     message: string;
     checked: boolean;
+    expectedIp?: string;
   } | null>(null);
   const [checkingDns, setCheckingDns] = useState(false);
 
@@ -339,7 +349,12 @@ export default function ZyntixStudio() {
   const liveUrl = currentSite?.customDomain ? `https://${currentSite.customDomain}` : previewUrl;
 
   return (
-    <div className="h-screen w-screen bg-[#121214] text-zinc-100 flex flex-col overflow-hidden font-sans antialiased">
+    <>
+      <SignedOut>
+        <RedirectToSignIn redirectUrl="/studio" />
+      </SignedOut>
+      <SignedIn>
+        <div className="h-screen w-screen bg-[#121214] text-zinc-100 flex flex-col overflow-hidden font-sans antialiased">
       {/* Studio Header */}
       <header className="h-14 border-b border-zinc-800 bg-[#18181b] px-4 sm:px-6 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-3">
@@ -426,6 +441,8 @@ export default function ZyntixStudio() {
             <span>Live URL</span>
             <ExternalLink className="w-3 h-3" />
           </a>
+
+          <UserButton afterSignOutUrl="/" />
         </div>
       </header>
 
@@ -1040,7 +1057,7 @@ export default function ZyntixStudio() {
                       <button
                         type="button"
                         onClick={() => {
-                          const updated = currentSite.services.filter((_, idx) => idx !== sIdx);
+                          const updated = (currentSite.services || []).filter((_: any, idx: number) => idx !== sIdx);
                           setCurrentSite({ ...currentSite, services: updated });
                         }}
                         className="text-zinc-500 hover:text-red-400 p-1.5 rounded transition cursor-pointer"
@@ -1176,5 +1193,7 @@ export default function ZyntixStudio() {
         )}
       </div>
     </div>
+      </SignedIn>
+    </>
   );
 }

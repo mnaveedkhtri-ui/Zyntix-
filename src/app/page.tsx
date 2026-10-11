@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { ArrowRight, BookOpen, Sparkles, Globe, Shield } from "lucide-react";
 
 export default function Home() {
@@ -17,15 +18,28 @@ export default function Home() {
             <Link href="/site/demo" className="hover:text-stone-950 transition hidden md:inline">
               Showcase Publication
             </Link>
-            <Link href="/sign-in" className="hover:text-stone-950 transition font-semibold">
-              Sign In
-            </Link>
-            <Link 
-              href="/studio"
-              className="px-4 py-2 rounded-md bg-stone-900 text-stone-50 hover:bg-stone-800 transition font-sans text-xs"
-            >
-              Open Studio &rarr;
-            </Link>
+            
+            <SignedOut>
+              <Link href="/sign-in" className="hover:text-stone-950 transition font-semibold">
+                Sign In
+              </Link>
+              <Link 
+                href="/sign-in"
+                className="px-4 py-2 rounded-md bg-stone-900 text-stone-50 hover:bg-stone-800 transition font-sans text-xs"
+              >
+                Open Studio &rarr;
+              </Link>
+            </SignedOut>
+
+            <SignedIn>
+              <Link 
+                href="/studio"
+                className="px-4 py-2 rounded-md bg-stone-900 text-stone-50 hover:bg-stone-800 transition font-sans text-xs"
+              >
+                Open Studio &rarr;
+              </Link>
+              <UserButton afterSignOutUrl="/" />
+            </SignedIn>
           </nav>
         </div>
       </header>
@@ -45,18 +59,30 @@ export default function Home() {
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 font-sans text-xs">
-          <Link
-            href="/sign-in"
-            className="w-full sm:w-auto px-8 py-3.5 bg-stone-900 text-stone-50 rounded-md font-medium hover:bg-stone-800 transition flex items-center justify-center gap-2 shadow-md shadow-stone-900/10"
-          >
-            <span>Continue with Google &rarr;</span>
-          </Link>
-          <Link
-            href="/studio"
-            className="w-full sm:w-auto px-8 py-3.5 bg-white border border-stone-300 text-stone-800 rounded-md font-medium hover:bg-stone-50 transition"
-          >
-            Launch Zyntix Studio
-          </Link>
+          <SignedOut>
+            <Link
+              href="/sign-in"
+              className="w-full sm:w-auto px-8 py-3.5 bg-stone-900 text-stone-50 rounded-md font-medium hover:bg-stone-800 transition flex items-center justify-center gap-2 shadow-md shadow-stone-900/10"
+            >
+              <span>Continue with Google &rarr;</span>
+            </Link>
+            <Link
+              href="/sign-in"
+              className="w-full sm:w-auto px-8 py-3.5 bg-white border border-stone-300 text-stone-800 rounded-md font-medium hover:bg-stone-50 transition"
+            >
+              Launch Zyntix Studio
+            </Link>
+          </SignedOut>
+
+          <SignedIn>
+            <Link
+              href="/studio"
+              className="w-full sm:w-auto px-8 py-3.5 bg-stone-900 text-stone-50 rounded-md font-medium hover:bg-stone-800 transition flex items-center justify-center gap-2 shadow-md shadow-stone-900/10"
+            >
+              <span>Launch Zyntix Studio &rarr;</span>
+            </Link>
+          </SignedIn>
+
           <Link
             href="/site/demo"
             className="w-full sm:w-auto px-6 py-3.5 text-stone-600 hover:text-stone-900 transition font-medium"

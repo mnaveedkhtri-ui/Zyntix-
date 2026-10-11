@@ -23,6 +23,7 @@ export async function GET(req: Request) {
 
     // Vercel Anycast IPs (legacy 76.76.21.21 and newly expanded 216.198.79.1)
     const validIps = ['76.76.21.21', '216.198.79.1'];
+    const expectedIp = '76.76.21.21';
     const isVercelConnected = aRecords.some((ip: string) => validIps.includes(ip));
 
     let status = 'not_configured';

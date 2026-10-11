@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { Database } from "lucide-react";
 
 export default function NavBar() {
@@ -14,14 +15,19 @@ export default function NavBar() {
       </Link>
       <div className="hidden md:flex items-center gap-8 text-xs font-sans uppercase tracking-widest text-stone-600 font-medium">
         <Link href="/site/demo" className="hover:text-stone-950 transition">Showcase Publication</Link>
-        <Link href="/studio" className="hover:text-stone-950 transition">Studio</Link>
         <Link href="/pricing" className="hover:text-stone-950 transition">Pricing</Link>
-        <Link href="/sign-in" className="hover:text-stone-950 transition font-semibold">Sign In</Link>
-        <div className="flex items-center gap-3">
-          <Link href="/sign-up" className="bg-stone-900 text-stone-50 px-4 py-2 rounded-md hover:bg-stone-800 transition">
-            Get Started &rarr;
-          </Link>
-        </div>
+        <SignedOut>
+          <Link href="/sign-in" className="hover:text-stone-950 transition font-semibold">Sign In</Link>
+          <div className="flex items-center gap-3">
+            <Link href="/sign-up" className="bg-stone-900 text-stone-50 px-4 py-2 rounded-md hover:bg-stone-800 transition">
+              Get Started &rarr;
+            </Link>
+          </div>
+        </SignedOut>
+        <SignedIn>
+          <Link href="/studio" className="hover:text-stone-950 transition font-semibold">Studio</Link>
+          <UserButton afterSignOutUrl="/" />
+        </SignedIn>
       </div>
     </nav>
   );

@@ -27,7 +27,7 @@ export async function POST(req: Request) {
       });
       const html = await ddgRes.text();
       const $ = cheerio.load(html);
-      $(".result").each((i, el) => {
+      $(".result").each((i: number, el: any) => {
         if (i > 2) return;
         let url = $(el).find(".result__url").attr("href") || "";
         if (url && url.includes("uddg=")) url = decodeURIComponent(url.split("uddg=")[1].split("&")[0]);
