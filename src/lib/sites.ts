@@ -73,7 +73,7 @@ const INITIAL_DEMO_SITES: SiteConfig[] = [
   "tagline": "Architectural Craftsmanship, Sustainable Engineering & Thoughtful Construction",
   "description": "An independent architectural studio and research journal dedicated to timeless masonry, sustainable timber framing, and grounded regional engineering.",
   "niche": "Architecture & Craftsmanship",
-  "location": "Austin, Texas",
+  "location": "Latifabad, Hyderabad, Sindh, Pakistan",
   "author": {
     "name": "Naveed Khatri",
     "bio": "Principal Architect & Structural Conservationist with over 15 years dedicated to restorative timber joinery, passive thermal envelopes, and sustainable civic spaces.",
@@ -184,7 +184,7 @@ const INITIAL_DEMO_SITES: SiteConfig[] = [
         "**Is historic timber restoration more expensive than rebuilding?** In over 80% of structural case studies, localized conservation—using traditional Dutchman timber splices and natural linseed stabilization—costs significantly less than total demolition, environmental hazardous material abatement, and structural reconstruction. Review our breakdown in [our timber restoration monograph](/blog/restoring-historic-timber).",
         "**Why does modern Portland cement destroy historic limestone?** Portland cement cures significantly harder and less vapor-permeable than historic stone. When moisture enters the wall, it cannot evaporate through the cement joints, forcing vapor through the face of the stone and causing spalling and structural fracturing. As documented by [NPS Preservation Brief 2](https://www.nps.gov/tps/how-to-preserve/briefs/2-repoint-mortar-joints.htm), historic masonry must always be pointed with flexible lime mortar.",
         "### The Colophon of Craftsmanship",
-        "True sustainability is never a digital marketing badge purchased through third-party greenwashing certificates. It is the disciplined, quiet practice of building something so structurally resilient, thermally honest, and visually enduring that subsequent generations will preserve and protect it with pride. To discuss an upcoming commission or heritage preservation audit, [contact our Austin Atelier](/#contact)."
+        "True sustainability is never a digital marketing badge purchased through third-party greenwashing certificates. It is the disciplined, quiet practice of building something so structurally resilient, thermally honest, and visually enduring that subsequent generations will preserve and protect it with pride. To discuss an upcoming commission or heritage preservation audit, [contact our studio atelier](/#contact)."
       ]
     },
     {
@@ -205,8 +205,8 @@ const INITIAL_DEMO_SITES: SiteConfig[] = [
         "Clients are thoroughly exhausted by polished corporate brochures showing stock models in immaculate hardhats who have never touched a trowel. When someone commits their life savings to build a home, restore an estate, or engineer an heirloom workspace, they want to look into the eyes of the master practitioner.",
         "The modern building industry has become dangerously financialized. General contractors frequently function as asset managers who subcontract 100% of field operations to third-tier transient labor with zero generational stake in the outcome. The result is predictable: cosmetic perfection on handoff day, followed by warranty disputes within eighteen months.",
         "### The Disruption of Niche Editorial Authority",
-        "When an independent studio documents its exact processes—explaining why local Texas Cordova limestone is selected over imported composite tile, showing the grain direction of quarter-sawn white oak, and candidly discussing structural challenges—the sales pitch becomes completely irrelevant. The work proves itself.",
-        "![Plate 1: Master artisan inspecting hand-finished timber joinery inside the local Texas workshop.](https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1200&q=80)",
+        "When an independent studio documents its exact processes—explaining why regional limestone is selected over imported composite tile, showing the grain direction of quarter-sawn white oak, and candidly discussing structural challenges—the sales pitch becomes completely irrelevant. The work proves itself.",
+        "![Plate 1: Master artisan inspecting hand-finished timber joinery inside the local atelier workshop.](https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1200&q=80)",
         "This dynamic explains why bespoke ateliers with quiet, authoritative editorial publications consistently outrank mega-platforms across search engines and executive referrals. High-net-worth clients, historic district commissions, and institutional trustees do not search for discount coupons; they search for deep, unvarnished domain competence.",
         "As highlighted in [our monograph on quiet structures](/blog/the-art-of-quiet-structures), material honesty creates buildings that improve with age rather than decaying into landfill burdens. Leading historic stewardship guidelines from the [National Trust for Historic Preservation](https://savingplaces.org) demonstrate that local craftsmanship creates generational community resilience.",
         "> \"In an era saturated with synthetic claims and AI-generated marketing noise, verifiable human craftsmanship remains the only indestructible currency.\"",
@@ -224,8 +224,8 @@ const INITIAL_DEMO_SITES: SiteConfig[] = [
         "**How does direct architect-builder collaboration prevent cost overruns?** In traditional delivery models, disconnects between designers and third-party subcontractors generate frequent change orders. When the architect and craft guild work as an integrated atelier, structural tolerances and constructability are resolved before groundbreaking. Review our [integrated atelier services](/#services).",
         "**What warranty is provided on handcrafted timber joinery?** Because traditional timber framing uses interlocking mortise-and-tenon joinery without brittle nails or glues, our frames carry multi-decade structural warranties and periodic checkups. [Contact our team](/#contact) for a structural warranty consultation.",
         "### Case In Point: The 20-Year Horizon",
-        "In our own restorative practice across Central Texas, structures commissioned over fifteen years ago have required zero cosmetic remediation. The limestone has weathered to a soft golden patina, the mortise joints have settled into rock-solid interlocks, and our clients have avoided hundreds of thousands of dollars in premature replacement cycles.",
-        "When you build with honesty, you do not need to advertise. Your buildings do the talking. [Schedule an in-person consultation](/#contact) with Naveed Khatri at our Austin studio."
+        "In our own restorative practice across our regional practice, structures commissioned over fifteen years ago have required zero cosmetic remediation. The limestone has weathered to a soft golden patina, the mortise joints have settled into rock-solid interlocks, and our clients have avoided hundreds of thousands of dollars in premature replacement cycles.",
+        "When you build with honesty, you do not need to advertise. Your buildings do the talking. [Schedule an in-person consultation](/#contact) with Naveed Khatri at our studio atelier."
       ]
     },
     {
@@ -285,19 +285,19 @@ const INITIAL_DEMO_SITES: SiteConfig[] = [
   "contact": {
     "phone": "+92 3323219981",
     "email": "moderntrendz98@gmail.com",
-    "address": "742 Congress Avenue, Historic District, Austin, TX 78701",
-    "hours": "Monday – Friday: 8:00 AM – 6:00 PM CST",
+    "address": "Latifabad, Hyderabad, Sindh, Pakistan",
+    "hours": "Monday – Friday: 8:00 AM – 6:00 PM PKT",
     "twitter": "@meridiancraft",
     "linkedin": "linkedin.com/company/meridian-craft"
   },
   "seo": {
-    "metaTitle": "Meridian Craft & Architecture | Sustainable Historic Restorations Austin",
-    "metaDescription": "Award-winning architectural studio & research journal in Austin, Texas. Specializing in sustainable timber framing, historic masonry restoration, and passive solar design.",
+    "metaTitle": "Meridian Craft & Architecture | Sustainable Historic Restorations | Latifabad, Hyderabad",
+    "metaDescription": "Award-winning architectural studio & research journal in Latifabad, Hyderabad, Sindh, Pakistan. Specializing in sustainable timber framing, historic masonry restoration, and passive solar design.",
     "keywords": [
-      "sustainable architecture austin",
-      "historic timber restoration",
-      "passive solar design texas",
-      "traditional masonry craft"
+      "sustainable architecture hyderabad",
+      "historic timber restoration sindh",
+      "passive solar design pakistan",
+      "traditional masonry craft latifabad"
     ]
   },
   "createdAt": "2026-10-11T16:47:02.386Z",

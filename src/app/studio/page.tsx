@@ -1213,6 +1213,14 @@ export default function ZyntixStudio() {
                 src={previewUrl}
                 className="w-full flex-1 border-0 bg-[#faf8f5]"
                 title="Site Live Preview"
+                onLoad={(e) => {
+                  try {
+                    const targetWin = (e.target as HTMLIFrameElement)?.contentWindow;
+                    if (targetWin && currentSite) {
+                      targetWin.postMessage({ type: "ZYNTIX_UPDATE_SITE", site: currentSite }, "*");
+                    }
+                  } catch (err) {}
+                }}
               />
             </div>
           </div>

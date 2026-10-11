@@ -240,7 +240,7 @@ export default async function TenantSitePage({ params }: SitePageProps) {
               Selected commissions accepted for 2026
             </span>
             <span className="text-stone-600 hidden md:inline">&bull;</span>
-            <span className="text-stone-400 hidden md:inline font-sans text-[11px] uppercase tracking-wider">{site.location} Atelier</span>
+            <span data-site-location className="text-stone-400 hidden md:inline font-sans text-[11px] uppercase tracking-wider">{site.location} Atelier</span>
           </div>
           <div className="flex items-center gap-4 text-[11px] text-stone-400">
             {site.contact.phone && (
@@ -268,7 +268,7 @@ export default async function TenantSitePage({ params }: SitePageProps) {
               <span data-site-name className="text-xl sm:text-2xl tracking-tight font-normal text-stone-950 block leading-tight">
                 {site.name}
               </span>
-              <span className="font-sans text-[10px] sm:text-[11px] uppercase tracking-widest text-stone-500 block">
+              <span data-site-location-header className="font-sans text-[10px] sm:text-[11px] uppercase tracking-widest text-stone-500 block">
                 Atelier &bull; Est. 2008 &bull; {site.location}
               </span>
             </div>
@@ -745,7 +745,7 @@ export default async function TenantSitePage({ params }: SitePageProps) {
             </p>
             <div className="pt-2 text-[11px] text-stone-500 flex flex-wrap gap-6">
               <span>Data Security: 256-bit SSL Encrypted</span>
-              <span>Governing Jurisdiction: State of Texas, USA</span>
+              <span>Governing Jurisdiction: {site.location || 'Sindh, Pakistan'}</span>
               <span>Updated: October 2026</span>
             </div>
           </div>
@@ -763,7 +763,7 @@ export default async function TenantSitePage({ params }: SitePageProps) {
               <p className="text-stone-500 text-xs leading-relaxed mb-4 font-light">
                 {site.tagline}
               </p>
-              <span className="text-[11px] text-amber-400 block font-medium">
+              <span data-site-location className="text-[11px] text-amber-400 block font-medium">
                 {site.location}
               </span>
             </div>
@@ -797,14 +797,14 @@ export default async function TenantSitePage({ params }: SitePageProps) {
               <h5 className="text-white font-semibold uppercase tracking-wider text-[11px] mb-4">
                 Atelier Location
               </h5>
-              <p className="text-stone-400 leading-relaxed font-light mb-3">
-                {site.contact.address || '742 Congress Ave, Austin, TX 78701'}
+              <p data-contact-address className="text-stone-400 leading-relaxed font-light mb-3">
+                {site.contact.address || site.location}
               </p>
               <p className="text-stone-500">
-                Tel: {site.contact.phone || '+1 (512) 894-3920'}
+                Tel: <a href={`tel:${site.contact.phone || '+92 3323219981'}`} data-contact-phone className="hover:text-stone-300">{site.contact.phone || '+92 3323219981'}</a>
               </p>
               <p className="text-stone-500">
-                Email: {site.contact.email}
+                Email: <a href={`mailto:${site.contact.email}`} data-contact-email className="hover:text-stone-300">{site.contact.email}</a>
               </p>
             </div>
           </div>

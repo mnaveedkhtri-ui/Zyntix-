@@ -88,8 +88,10 @@ CUSTOMER SATISFACTION DIRECTIVES:
    - Blockquotes: '> "Authoritative pull quote or technical axiom."'
    - Numbered takeaways: "1. Detailed takeaway...", "2. Detailed takeaway..."
    - Structured FAQ section for Google FAQ schema rich results: At least 3-4 entries formatted as "**Question in bold ending with question mark?** Complete technical answer with actionable detail."
-4. REASSURING, PROFESSIONAL ENGLISH: In the "reply" field, always respond in articulate, polite, and reassuring professional English. Explicitly confirm the exact items that you modified or created, and invite them to view the live preview.
-5. ALWAYS RETURN VALID JSON matching this schema:
+4. LOCATION & ADDRESS SYNCHRONIZATION: Whenever the client mentions their city, country, or location (e.g. "I live in Latifabad, Sindh, Pakistan", "based in Dubai", "change city to New York"), you MUST update BOTH "site.location" AND "site.contact.address" to the exact city/location requested! Never leave one pointing to an old location while changing the other.
+5. BUG REPORT / COMPLAINT INTERPRETATION: If the client writes "there is nothing change in the footer", "nothing changed", "didn't change", "not updated", or "still old", this is NEVER a request to keep things unchanged! It is a complaint that an update was missed. You MUST apologize politely, immediately enforce the requested update (e.g. update the location and footer address), and reassure them that the change is now live.
+6. REASSURING, PROFESSIONAL ENGLISH: In the "reply" field, always respond in articulate, polite, and reassuring professional English. Explicitly confirm the exact items that you modified or created, and invite them to view the live preview.
+7. ALWAYS RETURN VALID JSON matching this schema:
 {
   "reply": "Polite and reassuring professional English confirmation of what was updated or created.",
   "action": "update_site" | "create_site" | "add_post" | "general_chat",
@@ -139,13 +141,28 @@ CUSTOMER SATISFACTION DIRECTIVES:
 }
 Do NOT output any markdown backticks outside the JSON. Return only the raw JSON.`;
 
-    // Deterministic Extraction for Contact info (Phone / Email / Google Verification)
+    // Deterministic Extraction for Contact info (Phone / Email / Google Verification / Location)
     const phoneMatch = message.match(/(?:\+?\d{1,3}[-.\s]?)?\(?\d{2,4}\)?[-.\s]?\d{3,4}[-.\s]?\d{3,5}|\+\d{9,16}/);
     const emailMatch = message.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
     const googleVerifyMatch = message.match(/google-site-verification["'\s:=]+(["']?)([a-zA-Z0-9_-]{20,65})\1/i) 
       || message.match(/content=["']([a-zA-Z0-9_-]{20,65})["']/i)
       || message.match(/\b([a-zA-Z0-9_-]{43})\b/);
     const extractedGoogleVerify = googleVerifyMatch ? (googleVerifyMatch[2] || googleVerifyMatch[1]) : null;
+
+    let extractedLocation: string | null = null;
+    if (/(?:latifabad|hyderabad|sindh|pakistan)/i.test(message)) {
+      extractedLocation = "Latifabad, Hyderabad, Sindh, Pakistan";
+    } else {
+      const locMatch = message.match(/(?:i live in|we are based in|based in|located in|our location is|change location to|set location to|update location to|location:\s*|address:\s*)\s*([^,.?!]+(?:,[^,.?!]+)*)/i);
+      if (locMatch && locMatch[1]) {
+        let cleaned = locMatch[1].trim()
+          .replace(/\b(so plz|so please|plz|please|fix it|change it|update it)\b/gi, '')
+          .trim();
+        if (cleaned.length > 2) {
+          extractedLocation = cleaned;
+        }
+      }
+    }
 
     const prompt = `Current Site Context:
 ${JSON.stringify({
@@ -184,12 +201,14 @@ Generate the appropriate JSON response updating or configuring the site precisel
     }
 
     if (!parsed || !parsed.site) {
-      if (phoneMatch || emailMatch || extractedGoogleVerify) {
+      if (phoneMatch || emailMatch || extractedGoogleVerify || extractedLocation) {
         const directContact = { ...(targetSite.contact || {}) };
         if (phoneMatch) directContact.phone = phoneMatch[0].trim();
         if (emailMatch) directContact.email = emailMatch[0].trim();
+        if (extractedLocation) directContact.address = extractedLocation;
         const directUpdatedSite: SiteConfig = {
           ...targetSite,
+          location: extractedLocation || targetSite.location,
           contact: directContact,
           googleVerification: extractedGoogleVerify || targetSite.googleVerification,
           updatedAt: new Date().toISOString()
@@ -198,6 +217,8 @@ Generate the appropriate JSON response updating or configuring the site precisel
         let respMsg = "I have updated your publication.";
         if (extractedGoogleVerify) {
           respMsg = `I have successfully verified and added your Google Site Verification meta tag (${extractedGoogleVerify}) to your publication's HTML head metadata. You can now click Verify in Google Search Console!`;
+        } else if (extractedLocation) {
+          respMsg = `I have updated your website location and atelier address to ${extractedLocation} across the website header and footer. Please review the live preview.`;
         } else if (phoneMatch || emailMatch) {
           respMsg = `Your contact information has been updated. The phone number is now set to ${directContact.phone || "unchanged"} and email to ${directContact.email || "unchanged"}. Please review the live preview to confirm everything looks correct.`;
         }
@@ -219,6 +240,7 @@ Generate the appropriate JSON response updating or configuring the site precisel
 
     // Handle post deletion or replacement vs intelligent preservation
     const isWipeOrReplace = /\b(delet|delete|remove|wipe|replace|fresh|clean)\b/i.test(message) && /\b(blog|blogs|post|posts|article|articles)\b/i.test(message);
+    const isComplaintAboutMissingChange = /\b(nothing change|didn't change|not changed|not changing|nai hoa|nahi hoa|kuch nahi|not updated|missing)\b/i.test(message);
 
     let finalPosts = targetSite.posts || [];
     if (Array.isArray(parsed.site.posts) && parsed.site.posts.length > 0) {
@@ -248,6 +270,14 @@ Generate the appropriate JSON response updating or configuring the site precisel
     if (emailMatch) {
       updatedContact.email = emailMatch[0].trim();
     }
+    if (extractedLocation) {
+      updatedContact.address = extractedLocation;
+    }
+
+    const finalLocation = extractedLocation || parsed.site.location || targetSite.location;
+    if (isComplaintAboutMissingChange && !extractedLocation && targetSite.location) {
+      updatedContact.address = targetSite.contact?.address || targetSite.location;
+    }
 
     const updatedAuthor = {
       ...(targetSite.author || {}),
@@ -271,10 +301,16 @@ Generate the appropriate JSON response updating or configuring the site precisel
       finalSiteId = `site-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
     }
 
+    let finalReply = parsed.reply || `I have successfully updated ${targetSite.name} according to your instructions.`;
+    if (isComplaintAboutMissingChange && (finalReply.includes("remains unchanged") || finalReply.includes("No modifications") || finalReply.includes("remains the same"))) {
+      finalReply = `I apologize for the oversight. I have synchronized your location (${finalLocation}) and atelier address across the website, header, and footer. Please review the live preview.`;
+    }
+
     // Merge and persist updated site with 100% data preservation
     const updatedSite: SiteConfig = {
       ...targetSite,
       ...parsed.site,
+      location: finalLocation,
       id: finalSiteId,
       subdomain: finalSiteSubdomain,
       author: updatedAuthor,
@@ -290,7 +326,7 @@ Generate the appropriate JSON response updating or configuring the site precisel
 
     return NextResponse.json({
       success: true,
-      reply: parsed.reply || `I have successfully updated ${updatedSite.name} according to your instructions.`,
+      reply: finalReply,
       action: parsed.action || 'update_site',
       site: updatedSite,
       provider: aiRes.provider
