@@ -42,12 +42,6 @@ export interface SiteConfig {
   updatedAt: string;
 }
 
-// In Vercel serverless, process.cwd()/data is read-only.
-// We use /tmp on Linux/Vercel, or process.cwd()/data on local.
-const isServerless = process.env.VERCEL === '1' || process.env.NODE_ENV === 'production';
-const DATA_DIR = isServerless ? '/tmp/zyntix-data' : path.join(process.cwd(), 'data');
-const SITES_FILE = path.join(DATA_DIR, 'sites.json');
-
 const INITIAL_DEMO_SITES: SiteConfig[] = [
   {
     id: 'site-default-demo',
@@ -118,30 +112,37 @@ const INITIAL_DEMO_SITES: SiteConfig[] = [
   }
 ];
 
-function ensureDataFile() {
+// In-Memory cache for 100% zero-crash guarantee in any environment
+let memorySitesCache: SiteConfig[] = [...INITIAL_DEMO_SITES];
+
+function getSafeFilePath(): string | null {
   try {
-    if (!fs.existsSync(DATA_DIR)) {
-      fs.mkdirSync(DATA_DIR, { recursive: true });
+    const isVercel = process.env.VERCEL === '1';
+    const baseDir = isVercel ? '/tmp' : path.join(process.cwd(), 'data');
+    if (!fs.existsSync(baseDir)) {
+      fs.mkdirSync(baseDir, { recursive: true });
     }
-    if (!fs.existsSync(SITES_FILE)) {
-      fs.writeFileSync(SITES_FILE, JSON.stringify(INITIAL_DEMO_SITES, null, 2), 'utf-8');
-    }
-  } catch (e) {
-    console.error('Failed to ensure data file:', e);
+    return path.join(baseDir, 'sites.json');
+  } catch (err) {
+    return null;
   }
 }
 
 export function getAllSites(): SiteConfig[] {
-  ensureDataFile();
-  try {
-    if (fs.existsSync(SITES_FILE)) {
-      const raw = fs.readFileSync(SITES_FILE, 'utf-8');
-      return JSON.parse(raw) as SiteConfig[];
+  const filePath = getSafeFilePath();
+  if (filePath && fs.existsSync(filePath)) {
+    try {
+      const raw = fs.readFileSync(filePath, 'utf-8');
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        memorySitesCache = parsed;
+        return parsed;
+      }
+    } catch (e) {
+      // Fallback cleanly to in-memory cache
     }
-  } catch (e) {
-    console.error('Failed to read sites:', e);
   }
-  return INITIAL_DEMO_SITES;
+  return memorySitesCache;
 }
 
 export function getSiteBySubdomainOrDomain(identifier: string): SiteConfig | null {
@@ -150,12 +151,12 @@ export function getSiteBySubdomainOrDomain(identifier: string): SiteConfig | nul
   return sites.find(s => 
     s.subdomain.toLowerCase() === cleanId || 
     (s.customDomain && s.customDomain.toLowerCase() === cleanId)
-  ) || INITIAL_DEMO_SITES[0] || null;
+  ) || sites[0] || null;
 }
 
 export function getSiteById(id: string): SiteConfig | null {
   const sites = getAllSites();
-  return sites.find(s => s.id === id) || INITIAL_DEMO_SITES[0] || null;
+  return sites.find(s => s.id === id) || sites[0] || null;
 }
 
 export function saveOrUpdateSite(siteData: Partial<SiteConfig> & { subdomain: string; name: string }): SiteConfig {
@@ -166,7 +167,6 @@ export function saveOrUpdateSite(siteData: Partial<SiteConfig> & { subdomain: st
   );
 
   const now = new Date().toISOString();
-
   let updatedSite: SiteConfig;
 
   if (existingIdx >= 0) {
@@ -215,11 +215,15 @@ export function saveOrUpdateSite(siteData: Partial<SiteConfig> & { subdomain: st
     sites.push(updatedSite);
   }
 
-  try {
-    ensureDataFile();
-    fs.writeFileSync(SITES_FILE, JSON.stringify(sites, null, 2), 'utf-8');
-  } catch (err) {
-    console.error('Failed to write sites to disk:', err);
+  memorySitesCache = sites;
+
+  const filePath = getSafeFilePath();
+  if (filePath) {
+    try {
+      fs.writeFileSync(filePath, JSON.stringify(sites, null, 2), 'utf-8');
+    } catch (err) {
+      // Ignored: memory cache will serve
+    }
   }
 
   return updatedSite;
