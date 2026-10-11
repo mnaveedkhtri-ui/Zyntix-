@@ -149,12 +149,11 @@ export default async function TenantSitePage({ params }: SitePageProps) {
       <div className="bg-[#1c1917] text-stone-300 py-2.5 px-4 text-xs font-sans border-b border-stone-800">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
           <div className="flex items-center gap-3">
-            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-medium text-[11px]">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              Accepting Select Commissions
+            <span className="text-stone-200 font-serif italic text-xs sm:text-[13px] tracking-wide">
+              Selected commissions accepted for 2026
             </span>
-            <span className="text-stone-400 hidden md:inline">&bull;</span>
-            <span className="text-stone-400 hidden md:inline">{site.location} Studio</span>
+            <span className="text-stone-600 hidden md:inline">&bull;</span>
+            <span className="text-stone-400 hidden md:inline font-sans text-[11px] uppercase tracking-wider">{site.location} Atelier</span>
           </div>
           <div className="flex items-center gap-4 text-[11px] text-stone-400">
             {site.contact.phone && (
@@ -442,7 +441,7 @@ export default async function TenantSitePage({ params }: SitePageProps) {
               <span className="font-bold text-stone-900 uppercase tracking-wider block mb-2">Our Operating Values:</span>
               {site.aboutContent?.values?.map((val, vIdx) => (
                 <div key={vIdx} className="flex items-start gap-2.5 text-stone-700">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                  <CheckCircle2 className="w-4 h-4 text-amber-900 shrink-0 mt-0.5" />
                   <span>{val}</span>
                 </div>
               ))}
