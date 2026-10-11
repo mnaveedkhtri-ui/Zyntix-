@@ -65,11 +65,14 @@ export async function GET(req: Request) {
       });
 
       // 4. Autonomous Search Engine Ping
-      const host = `${site.subdomain}.zyntix.app`;
-      const targetUrl = `https://${host}/site/${site.subdomain}#${article.slug}`;
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://zyntix-studio-ivory.vercel.app';
+      const host = site.customDomain || 'zyntix-studio-ivory.vercel.app';
+      const targetUrl = site.customDomain 
+        ? `https://${site.customDomain}#${article.slug}`
+        : `${baseUrl}/site/${site.subdomain}#${article.slug}`;
       const [indexNowRes, googleRes] = await Promise.all([
         pingIndexNow(targetUrl, host),
-        pingGoogleSitemap(`https://${host}/sitemap.xml`)
+        pingGoogleSitemap(`${baseUrl}/sitemap.xml`)
       ]);
 
       results.push({

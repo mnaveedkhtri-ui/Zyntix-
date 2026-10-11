@@ -18,9 +18,63 @@ import {
   Sparkles,
   ExternalLink
 } from 'lucide-react';
+import type { Metadata } from 'next';
 
 interface SitePageProps {
   params: Promise<{ subdomain: string }>;
+}
+
+export async function generateMetadata({ params }: SitePageProps): Promise<Metadata> {
+  const { subdomain } = await params;
+  const site = getSiteBySubdomainOrDomain(subdomain);
+  if (!site) return { title: 'Publication Not Found | Zyntix' };
+
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://zyntix-studio-ivory.vercel.app';
+  const siteUrl = site.customDomain 
+    ? `https://${site.customDomain}` 
+    : `${baseUrl}/site/${site.subdomain}`;
+  const featuredPost = site.posts?.[0];
+
+  return {
+    title: `${site.name} — ${site.location} Official Publication`,
+    description: site.description || `${site.name} specializes in high-integrity craftsmanship and editorial insights in ${site.location}.`,
+    metadataBase: new URL(baseUrl),
+    alternates: {
+      canonical: siteUrl,
+    },
+    openGraph: {
+      title: `${site.name} — ${site.location}`,
+      description: site.description,
+      url: siteUrl,
+      siteName: site.name,
+      images: [
+        {
+          url: featuredPost?.coverImage || 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80',
+          width: 1200,
+          height: 630,
+          alt: site.name,
+        },
+      ],
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: site.name,
+      description: site.description,
+      images: [featuredPost?.coverImage || 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80'],
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
+    },
+  };
 }
 
 export default async function TenantSitePage({ params }: SitePageProps) {
