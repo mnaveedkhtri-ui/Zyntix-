@@ -56,45 +56,63 @@ class FailoverShield {
     const key = this.getNextGeminiKey();
     if (!key) throw new Error('No Gemini keys available in pool');
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
-    const payload: any = {
-      contents: [
-        {
-          role: 'user',
-          parts: [{ text: prompt }]
-        }
-      ]
-    };
+    const candidateModels = ['gemini-1.5-flash-latest', 'gemini-2.0-flash', 'gemini-1.5-pro', 'gemini-1.5-flash'];
+    let lastError = '';
 
-    if (systemInstruction) {
-      payload.systemInstruction = {
-        parts: [{ text: systemInstruction }]
+    for (const model of candidateModels) {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`;
+      const payload: any = {
+        contents: [
+          {
+            role: 'user',
+            parts: [{ text: prompt }]
+          }
+        ]
       };
+
+      if (systemInstruction) {
+        payload.systemInstruction = {
+          parts: [{ text: systemInstruction }]
+        };
+      }
+
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          const candidate = data.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (candidate) return candidate;
+        } else {
+          const errText = await res.text();
+          lastError = `Gemini (${model}) HTTP ${res.status}: ${errText}`;
+        }
+      } catch (err: any) {
+        lastError = err.message;
+      }
     }
 
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-
-    if (!res.ok) {
-      const errText = await res.text();
-      throw new Error(`Gemini HTTP ${res.status}: ${errText}`);
-    }
-
-    const data = await res.json();
-    const candidate = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!candidate) throw new Error('Empty Gemini response candidates');
-    return candidate;
+    throw new Error(lastError || 'All Gemini model candidates failed');
   }
 
   /**
-   * Fallback Provider: Groq (Llama 3.3 70B Versatile)
+   * Fallback Provider: Groq
    */
   private async callGroq(prompt: string, systemInstruction?: string): Promise<string> {
     const key = this.getNextGroqKey();
     if (!key) throw new Error('No Groq keys available in fallback pool');
+
+    const candidateModels = [
+      'llama-3.1-70b-versatile',
+      'llama-3.1-8b-instant',
+      'llama-3.3-70b-specdec',
+      'llama3-70b-8192',
+      'llama3-8b-8192'
+    ];
 
     const messages = [];
     if (systemInstruction) {
@@ -102,29 +120,38 @@ class FailoverShield {
     }
     messages.push({ role: 'user', content: prompt });
 
-    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${key}`
-      },
-      body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
-        messages,
-        temperature: 0.7,
-        max_tokens: 3000
-      })
-    });
+    let lastError = '';
 
-    if (!res.ok) {
-      const errText = await res.text();
-      throw new Error(`Groq HTTP ${res.status}: ${errText}`);
+    for (const model of candidateModels) {
+      try {
+        const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${key}`
+          },
+          body: JSON.stringify({
+            model,
+            messages,
+            temperature: 0.7,
+            max_tokens: 3000
+          })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          const reply = data.choices?.[0]?.message?.content;
+          if (reply) return reply;
+        } else {
+          const errText = await res.text();
+          lastError = `Groq (${model}) HTTP ${res.status}: ${errText}`;
+        }
+      } catch (err: any) {
+        lastError = err.message;
+      }
     }
 
-    const data = await res.json();
-    const reply = data.choices?.[0]?.message?.content;
-    if (!reply) throw new Error('Empty Groq response choices');
-    return reply;
+    throw new Error(lastError || 'All Groq model candidates failed');
   }
 
   /**
