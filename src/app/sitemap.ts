@@ -1,12 +1,61 @@
 import { MetadataRoute } from "next";
+import { headers } from "next/headers";
 import { getAllSites } from "@/lib/sites";
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://zyntix-studio-ivory.vercel.app";
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const headersList = await headers();
+  const hostHeader = headersList.get("host") || "";
+  const host = hostHeader.toLowerCase().replace(/:\d+$/, "");
+  const protocol = headersList.get("x-forwarded-proto") || "https";
   const now = new Date();
 
-  // Platform Root Pages
-  const staticRoutes: MetadataRoute.Sitemap = [
+  const sites = getAllSites();
+
+  // If request is from a custom domain (e.g. www.moderntrendsnow.org or moderntrendsnow.org)
+  const matchingSite = sites.find(s => 
+    (s.customDomain && (
+      host === s.customDomain.toLowerCase() ||
+      host === `www.${s.customDomain.toLowerCase()}` ||
+      s.customDomain.toLowerCase() === `www.${host}`
+    )) ||
+    host === `${s.subdomain}.zyntix.app`
+  );
+
+  if (matchingSite) {
+    const domainBase = `${protocol}://${host}`;
+    const siteRoutes: MetadataRoute.Sitemap = [
+      {
+        url: domainBase,
+        lastModified: new Date(matchingSite.updatedAt || now),
+        changeFrequency: "daily",
+        priority: 1.0,
+      },
+      {
+        url: `${domainBase}/blog`,
+        lastModified: new Date(matchingSite.updatedAt || now),
+        changeFrequency: "daily",
+        priority: 0.9,
+      },
+    ];
+
+    if (matchingSite.posts && Array.isArray(matchingSite.posts)) {
+      for (const post of matchingSite.posts) {
+        siteRoutes.push({
+          url: `${domainBase}/blog/${post.slug}`,
+          lastModified: new Date(post.date || now),
+          changeFrequency: "weekly",
+          priority: 0.85,
+        });
+      }
+    }
+
+    return siteRoutes;
+  }
+
+  // Fallback for platform root domain (zyntix.app / vercel.app)
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || `${protocol}://${host || "zyntix-studio-ivory.vercel.app"}`;
+
+  const platformRoutes: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
       lastModified: now,
@@ -27,63 +76,36 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
 
-  // Dynamic Multi-Tenant Sites and All Published Articles
-  const sites = getAllSites();
-  const dynamicSiteRoutes: MetadataRoute.Sitemap = [];
-
   for (const site of sites) {
     const siteUrl = site.customDomain 
       ? `https://${site.customDomain}` 
       : `${baseUrl}/site/${site.subdomain}`;
 
-    // Main Site / Publication Landing
-    dynamicSiteRoutes.push({
+    platformRoutes.push({
       url: siteUrl,
-      lastModified: new Date(site.updatedAt || now),
-      changeFrequency: "daily",
-      priority: 0.95,
-    });
-
-    // Dedicated Journal / Blog Archive
-    dynamicSiteRoutes.push({
-      url: `${siteUrl}/blog`,
       lastModified: new Date(site.updatedAt || now),
       changeFrequency: "daily",
       priority: 0.9,
     });
 
-    // Sub-sections / Anchors
-    dynamicSiteRoutes.push({
-      url: `${siteUrl}#services`,
-      lastModified: now,
-      changeFrequency: "weekly",
+    platformRoutes.push({
+      url: `${siteUrl}/blog`,
+      lastModified: new Date(site.updatedAt || now),
+      changeFrequency: "daily",
       priority: 0.85,
     });
-    dynamicSiteRoutes.push({
-      url: `${siteUrl}#about`,
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.8,
-    });
-    dynamicSiteRoutes.push({
-      url: `${siteUrl}#contact`,
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.8,
-    });
 
-    // Dedicated Individual Articles (High SEO Authority)
     if (site.posts && Array.isArray(site.posts)) {
       for (const post of site.posts) {
-        dynamicSiteRoutes.push({
+        platformRoutes.push({
           url: `${siteUrl}/blog/${post.slug}`,
           lastModified: new Date(post.date || now),
-          changeFrequency: "monthly",
-          priority: 0.9,
+          changeFrequency: "weekly",
+          priority: 0.8,
         });
       }
     }
   }
 
-  return [...staticRoutes, ...dynamicSiteRoutes];
+  return platformRoutes;
 }
