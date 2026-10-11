@@ -172,16 +172,24 @@ Generate the appropriate JSON response updating or configuring the site precisel
       });
     }
 
-    // Intelligently merge posts so existing articles are never lost
-    let mergedPosts = targetSite.posts || [];
+    // Handle post deletion or replacement vs intelligent preservation
+    const isWipeOrReplace = /\b(delet|delete|remove|wipe|replace|fresh|clean)\b/i.test(message) && /\b(blog|blogs|post|posts|article|articles)\b/i.test(message);
+
+    let finalPosts = targetSite.posts || [];
     if (Array.isArray(parsed.site.posts) && parsed.site.posts.length > 0) {
-      const existingSlugs = new Set(mergedPosts.map((p: any) => p.slug));
-      const newPosts = parsed.site.posts.filter((p: any) => !existingSlugs.has(p.slug));
-      const updatedExisting = mergedPosts.map((p: any) => {
-        const found = parsed.site.posts.find((np: any) => np.slug === p.slug);
-        return found ? { ...p, ...found } : p;
-      });
-      mergedPosts = [...newPosts, ...updatedExisting];
+      if (isWipeOrReplace) {
+        finalPosts = parsed.site.posts;
+      } else {
+        const existingSlugs = new Set(finalPosts.map((p: any) => p.slug));
+        const newPosts = parsed.site.posts.filter((p: any) => !existingSlugs.has(p.slug));
+        const updatedExisting = finalPosts.map((p: any) => {
+          const found = parsed.site.posts.find((np: any) => np.slug === p.slug);
+          return found ? { ...p, ...found } : p;
+        });
+        finalPosts = [...newPosts, ...updatedExisting];
+      }
+    } else if (isWipeOrReplace) {
+      finalPosts = [];
     }
 
     // Merge and persist updated site with 100% data preservation
@@ -191,7 +199,7 @@ Generate the appropriate JSON response updating or configuring the site precisel
       id: targetSite.id,
       subdomain: targetSite.subdomain,
       customDomain: parsed.site.customDomain !== undefined ? parsed.site.customDomain : targetSite.customDomain,
-      posts: mergedPosts,
+      posts: finalPosts,
       updatedAt: new Date().toISOString()
     };
 

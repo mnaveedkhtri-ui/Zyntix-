@@ -108,8 +108,8 @@ class FailoverShield {
 
     const candidateModels = [
       'openai/gpt-oss-120b',
-      'qwen/qwen3.8-27b',
-      'openai/gpt-oss-20b'
+      'openai/gpt-oss-20b',
+      'qwen/qwen3.8-27b'
     ];
 
     const messages = [];
@@ -122,6 +122,9 @@ class FailoverShield {
 
     for (const model of candidateModels) {
       try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
+
         const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
           method: 'POST',
           headers: {
@@ -133,8 +136,10 @@ class FailoverShield {
             messages,
             temperature: 0.7,
             max_tokens: 3000
-          })
+          }),
+          signal: controller.signal
         });
+        clearTimeout(timeoutId);
 
         if (res.ok) {
           const data = await res.json();
@@ -162,7 +167,22 @@ class FailoverShield {
     this.refreshKeys();
     const errors: string[] = [];
 
-    // 1. Try Gemini Key Pool (Loop through available keys on 429/quota error)
+    // 1. Primary Ultra-Fast Provider: Groq API (Sub-Second Response)
+    for (let groqAttempt = 0; groqAttempt < Math.max(this.groqKeys.length, 1); groqAttempt++) {
+      try {
+        const text = await this.callGroq(prompt, systemInstruction);
+        return { 
+          text, 
+          provider: 'groq',
+          keysCount: { gemini: this.geminiKeys.length, groq: this.groqKeys.length }
+        };
+      } catch (groqErr: any) {
+        errors.push(`Groq[${groqAttempt}]: ${groqErr.message}`);
+        console.warn(`[Shield] Groq attempt ${groqAttempt + 1} failed: ${groqErr.message}. Rotating Groq key...`);
+      }
+    }
+
+    // 2. Secondary Provider: Google Gemini Key Pool
     for (let attempt = 0; attempt < Math.min(this.geminiKeys.length, 3); attempt++) {
       try {
         const text = await this.callGemini(prompt, systemInstruction);
@@ -175,24 +195,7 @@ class FailoverShield {
       } catch (err: any) {
         errors.push(`Gemini[${attempt}]: ${err.message}`);
         console.warn(`[Shield] Gemini Key attempt ${attempt + 1} failed: ${err.message}. Rotating key...`);
-        // Slight backoff jitter
-        await new Promise(r => setTimeout(r, 200 + Math.random() * 200));
-      }
-    }
-
-    // 2. Failover to Groq Llama 3.3 70B
-    console.info('[Shield] Switching to Fallback A: Groq API (Llama 3.3 70B)...');
-    for (let groqAttempt = 0; groqAttempt < this.groqKeys.length; groqAttempt++) {
-      try {
-        const text = await this.callGroq(prompt, systemInstruction);
-        return { 
-          text, 
-          provider: 'groq',
-          keysCount: { gemini: this.geminiKeys.length, groq: this.groqKeys.length }
-        };
-      } catch (groqErr: any) {
-        errors.push(`Groq[${groqAttempt}]: ${groqErr.message}`);
-        console.warn(`[Shield] Groq attempt ${groqAttempt + 1} failed: ${groqErr.message}. Rotating Groq key...`);
+        await new Promise(r => setTimeout(r, 200));
       }
     }
 
