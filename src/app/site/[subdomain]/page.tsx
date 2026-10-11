@@ -191,7 +191,10 @@ export default async function TenantSitePage({ params }: SitePageProps) {
 
           <nav className="flex items-center gap-5 sm:gap-8 text-xs font-sans uppercase tracking-widest font-semibold text-stone-600">
             <a href="#services" className="hover:text-stone-950 transition hidden md:inline">Services</a>
-            <a href={`/site/${site.subdomain}/blog`} className="hover:text-stone-950 transition hidden sm:inline">Journal</a>
+            <a href={`/site/${site.subdomain}/blog`} className="text-stone-950 font-bold hover:text-amber-950 transition flex items-center gap-1.5 bg-stone-200/60 px-3 py-1.5 rounded-full">
+              <span>Blog</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-900" />
+            </a>
             <a href="#about" className="hover:text-stone-950 transition hidden md:inline">About Us</a>
             <a href="#contact" className="hover:text-stone-950 transition hidden sm:inline">Contact</a>
             <a
@@ -294,17 +297,24 @@ export default async function TenantSitePage({ params }: SitePageProps) {
       {/* Main Journal / Blog Feed (AEO & SEO Authority) */}
       <section id="journal" className="py-24 sm:py-32 border-b border-stone-200 bg-[#f7f4ee]/50">
         <div className="max-w-5xl mx-auto px-6 sm:px-10">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-16 gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-16 gap-6">
             <div>
               <span className="font-sans text-xs uppercase tracking-widest text-amber-900 font-bold block mb-2">
                 Field Research & Thought Leadership
               </span>
-              <h2 className="text-3xl sm:text-5xl font-normal text-stone-950 tracking-tight">
-                The Architectural Journal
+              <h2 className="text-3xl sm:text-5xl font-normal text-stone-950 tracking-tight mb-3">
+                Official Blog & Research Articles
               </h2>
+              <a 
+                href={`/site/${site.subdomain}/blog`}
+                className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-stone-900 text-stone-50 font-sans text-xs font-semibold hover:bg-stone-800 transition shadow-sm"
+              >
+                <BookOpen className="w-3.5 h-3.5 text-amber-400" />
+                <span>Open Dedicated Blog Archive ({site.posts?.length || 0} Articles) &rarr;</span>
+              </a>
             </div>
             <p className="font-sans text-xs sm:text-sm text-stone-500 max-w-sm font-light">
-              Unvarnished field reports on traditional materials, structural durability, and sustainable civic spaces.
+              Independent field reports on traditional materials, structural durability, and sustainable engineering.
             </p>
           </div>
 
@@ -605,7 +615,7 @@ export default async function TenantSitePage({ params }: SitePageProps) {
               </h5>
               <ul className="space-y-2.5 text-stone-400">
                 <li><a href="#services" className="hover:text-white transition">Services & Disciplines</a></li>
-                <li><a href={`/site/${site.subdomain}/blog`} className="hover:text-white transition">Architectural Journal</a></li>
+                <li><a href={`/site/${site.subdomain}/blog`} className="text-amber-400 font-semibold hover:text-white transition">Official Blog & Articles</a></li>
                 <li><a href="#about" className="hover:text-white transition">About Our Atelier</a></li>
                 <li><a href="#contact" className="hover:text-white transition">Direct Contact</a></li>
                 <li><a href="#privacy" className="hover:text-white transition">Privacy Statement</a></li>
