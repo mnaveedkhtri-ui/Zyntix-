@@ -9,15 +9,15 @@ import {
   Smartphone, 
   BookOpen, 
   PenTool, 
-  FileText, 
-  Globe,
-  Check,
-  Copy,
-  Plus,
-  ShieldCheck,
-  Sparkles,
-  ArrowRight,
-  HelpCircle
+  Globe, 
+  Check, 
+  Copy, 
+  Plus, 
+  ShieldCheck, 
+  Eye, 
+  ChevronRight, 
+  SlidersHorizontal,
+  Maximize2
 } from "lucide-react";
 
 interface BlogPost {
@@ -62,13 +62,17 @@ interface SiteConfig {
 export default function ZyntixStudio() {
   const [sites, setSites] = useState<SiteConfig[]>([]);
   const [currentSite, setCurrentSite] = useState<SiteConfig | null>(null);
-  const [activeTab, setActiveTab] = useState<"writer" | "editor" | "domain" | "newsite">("writer");
+  const [activeTab, setActiveTab] = useState<"writer" | "domain" | "editor" | "newsite">("writer");
   const [viewport, setViewport] = useState<"desktop" | "mobile">("desktop");
+  
+  // Slide Preview Drawer State (Cloud-style toggle)
+  const [showPreview, setShowPreview] = useState(false);
+
   const [prompt, setPrompt] = useState("");
   const [chatLog, setChatLog] = useState<Array<{ sender: "user" | "bot"; text: string }>>([
     {
       sender: "bot",
-      text: "Salam! Main Zyntix AI Co-Pilot hoon. Aap nayi website/blog launch karna chahte hain, ya custom domain connect karna chahte hain? Plain Urdu ya English me bataiye!"
+      text: "Hello! I am your Zyntix AI Co-Pilot. I can generate high-authority human publications, write in-depth essays, or connect custom domains. How can I assist you today?"
     }
   ]);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -78,7 +82,6 @@ export default function ZyntixStudio() {
   const [customDomainInput, setCustomDomainInput] = useState("");
   const [selectedRegistrar, setSelectedRegistrar] = useState("godaddy");
   const [domainConnecting, setDomainConnecting] = useState(false);
-  const [dnsGuide, setDnsGuide] = useState<any>(null);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [conciergeRequested, setConciergeRequested] = useState(false);
 
@@ -128,14 +131,13 @@ export default function ZyntixStudio() {
       });
       const data = await res.json();
       if (data.success) {
-        setDnsGuide(data);
         setCurrentSite(data.site);
         await fetchSites();
         setChatLog(prev => [
           ...prev,
           {
             sender: "bot",
-            text: `Domain **${data.domain}** successfully mapped ho gaya hai! Neeche 3-Step visual DNS guide check karein aur apne registrar (${selectedRegistrar.toUpperCase()}) me A aur CNAME record paste karein.`
+            text: `Domain **${data.domain}** has been mapped successfully! Please configure your A Record and CNAME Record in ${selectedRegistrar.toUpperCase()} DNS settings. Free Let's Encrypt SSL is active.`
           }
         ]);
       }
@@ -171,7 +173,7 @@ export default function ZyntixStudio() {
         posts: [
           {
             slug: "foundational-principles",
-            title: `Foundational Principles in Modern ${newSiteNiche}: What Endures`,
+            title: `Foundational Principles in Modern ${newSiteNiche}: What Actually Endures`,
             excerpt: `A field inspection into why honest fundamentals and deliberate work outperform temporary shortcuts in ${newSiteNiche}.`,
             date: new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
             readTime: "7 min read",
@@ -183,7 +185,8 @@ export default function ZyntixStudio() {
             },
             coverImage: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1200&q=80",
             content: [
-              `In every enduring field of work, whether joinery, engineering, or architecture, true quality begins with a quiet respect for the fundamentals. When we remove unnecessary complexity, what remains is durable, honest, and immediately recognizable as human craftsmanship.`,
+              `[AEO_ANSWER]: Mastery in ${newSiteNiche} requires stripping away secondary ornamentation and focusing strictly on durable, verifiable methods that stand up to daily human scrutiny.`,
+              `In every enduring field of work, true quality begins with a quiet respect for the fundamentals. When we remove unnecessary complexity, what remains is durable, honest, and immediately recognizable as human craftsmanship.`,
               `This publication is an ongoing record of practical observations, tested principles, and field notes.`
             ]
           }
@@ -201,11 +204,12 @@ export default function ZyntixStudio() {
         setCurrentSite(data.site);
         setIframeKey(k => k + 1);
         setActiveTab("writer");
+        setShowPreview(true);
         setChatLog(prev => [
           ...prev,
           {
             sender: "bot",
-            text: `Mubarak ho! Nayi website **${data.site.name}** live staging par ready ho gayi: **${data.site.subdomain}.zyntix.app**! Ab aap custom domain tab me ja kar apna domain connect kar sakte hain!`
+            text: `Congratulations! Your new website **${data.site.name}** has been deployed at **${data.site.subdomain}.zyntix.app**! Click the Preview button to inspect it.`
           }
         ]);
       }
@@ -246,38 +250,38 @@ export default function ZyntixStudio() {
 
       let botReply = "";
 
-      // Domain connection via chat
+      // 1. Domain command
       if (lower.includes(".com") || lower.includes(".org") || lower.includes(".net") || lower.includes("domain")) {
         const domainMatch = userMsg.match(/([a-zA-Z0-9-]+\.[a-zA-Z]{2,})/);
         if (domainMatch) {
           const dom = domainMatch[0];
           updatedSite.customDomain = dom;
           setCustomDomainInput(dom);
-          botReply = `Domain **${dom}** register ho gaya hai! DNS setup: \nA Record: @ ➔ 76.76.21.21 \nCNAME: www ➔ cname.vercel-dns.com. Full guide 'Domains' tab me open hai!`;
+          botReply = `Domain **${dom}** has been connected. Please see the Connect Domain tab for DNS instructions.`;
           setActiveTab("domain");
         } else {
-          botReply = "Aap apna domain likhein jaise: `mybrand.com` ya `roofingtx.com`, main foran DNS records generate kar deta hoon!";
+          botReply = "Please enter your custom domain (e.g. `mybrand.com`). I will generate your DNS records immediately.";
           setActiveTab("domain");
         }
       }
-      // Author Name / Bio update
-      else if (lower.includes("author") || lower.includes("name") || lower.includes("naam")) {
+      // 2. Author update
+      else if (lower.includes("author") || lower.includes("name")) {
         const parts = userMsg.split(":");
-        const newName = parts.length > 1 ? parts[1].trim() : userMsg.replace(/(change|author|name|naam|mera|to|rakho)/gi, "").trim();
+        const newName = parts.length > 1 ? parts[1].trim() : userMsg.replace(/(change|author|name|to|set)/gi, "").trim();
         if (newName) {
           updatedSite.author.name = newName;
-          botReply = `Author name update kar diya gaya hai: "${newName}". Publication colophon refresh ho gaya hai.`;
+          botReply = `Author profile updated to: "${newName}". The colophon has been refreshed.`;
         }
       }
-      // Add New Essay / Article
-      else if (lower.includes("post") || lower.includes("article") || lower.includes("essay") || lower.includes("likho") || lower.includes("add")) {
-        const title = userMsg.replace(/(add|post|article|essay|likho|write|new)/gi, "").trim() || "Observations on Timeless Quality";
+      // 3. Add essay / post
+      else if (lower.includes("post") || lower.includes("article") || lower.includes("essay") || lower.includes("write") || lower.includes("add")) {
+        const title = userMsg.replace(/(add|post|article|essay|write|new)/gi, "").trim() || "Observations on Timeless Quality";
         const newPost: BlogPost = {
           slug: title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
           title: title.charAt(0).toUpperCase() + title.slice(1),
           excerpt: "A deeply considered examination of genuine craftsmanship versus modern artificial shortcuts.",
           date: new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
-          readTime: "5 min read",
+          readTime: "6 min read",
           category: "Craftsmanship",
           author: {
             name: updatedSite.author.name,
@@ -286,14 +290,15 @@ export default function ZyntixStudio() {
           },
           coverImage: "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&w=1200&q=80",
           content: [
-            "True mastery is never in a hurry. When you look at buildings that have stood for centuries, they weren't constructed in twenty minutes using shortcuts; they were built stone by stone with patient intention.",
-            "In modern digital discourse, we often mistake velocity for value. But the writings and works that endure are those grounded in lived human observation, unvarnished truth, and simple beauty."
+            `[AEO_ANSWER]: True craftsmanship prioritizes transparent processes and calibrated standards over artificial shortcuts.`,
+            "True mastery is never in a hurry. When you look at buildings that have stood for centuries, they were built stone by stone with patient intention.",
+            "In modern digital discourse, we often mistake velocity for value. The writings that endure are those grounded in lived human observation, unvarnished truth, and simple beauty."
           ]
         };
         updatedSite.posts.unshift(newPost);
-        botReply = `Naya human-crafted essay publication me shamil kar diya gaya hai: "${newPost.title}". Live preview me pehla story ban gaya hai!`;
+        botReply = `New human-crafted essay added: "${newPost.title}". It is now published as the lead story in your journal!`;
       }
-      // Create fresh brand/niche publication
+      // 4. Create new publication
       else {
         const words = userMsg.split(" ").filter(w => w.length > 2);
         const nicheName = words[0] || "Architecture & Living";
@@ -312,7 +317,7 @@ export default function ZyntixStudio() {
               slug: "first-principles",
               title: `Returning to First Principles in ${nicheName}`,
               excerpt: "Why the simplest methods, honest materials, and patient observation always produce the most durable results.",
-              date: "October 11, 2026",
+              date: new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
               readTime: "7 min read",
               category: "First Principles",
               author: {
@@ -322,16 +327,17 @@ export default function ZyntixStudio() {
               },
               coverImage: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1200&q=80",
               content: [
+                `[AEO_ANSWER]: Core methods in ${nicheName} succeed when grounded in fundamental clarity and uncompromised execution.`,
                 "Everything of genuine quality begins with a quiet respect for the fundamentals. When we remove unnecessary complexity, what remains is durable, honest, and immediately recognizable as human work.",
                 "This publication is our ongoing log of what works, what fails, and what endures."
               ]
             }
           ]
         };
-        botReply = `Aapka minimalist, human-authored publication create ho gaya: **${sub}.zyntix.app**! Real paper-tone aesthetic aur clean typography live preview me loaded hai.`;
+        botReply = `New publication generated: **${sub}.zyntix.app**! You can toggle the Preview button to inspect it.`;
       }
 
-      // Persist to database
+      // Persist to server
       const saveRes = await fetch("/api/sites", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -356,22 +362,20 @@ export default function ZyntixStudio() {
   const previewUrl = currentSite ? `/site/${currentSite.subdomain}` : "/site/demo";
 
   return (
-    <div className="h-screen w-screen bg-[#18181b] text-zinc-100 flex flex-col overflow-hidden font-sans antialiased">
-      {/* Editorial Studio Top Navigation Bar */}
-      <header className="h-14 border-b border-zinc-800 bg-zinc-900/90 px-5 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-md bg-stone-100 text-zinc-900 flex items-center justify-center font-serif font-bold text-base shadow-sm">
+    <div className="h-screen w-screen bg-[#121214] text-zinc-100 flex flex-col overflow-hidden font-sans antialiased">
+      {/* Studio Header */}
+      <header className="h-14 border-b border-zinc-800 bg-[#18181b] px-4 sm:px-6 flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-stone-100 text-zinc-950 flex items-center justify-center font-serif font-bold text-base shadow-sm">
               Z
             </div>
-            <div>
-              <span className="font-serif tracking-tight text-base font-semibold text-stone-100">
-                Zyntix <span className="font-sans text-[11px] font-normal uppercase tracking-wider text-zinc-400 ml-1">Studio</span>
-              </span>
-            </div>
+            <span className="font-serif tracking-tight text-base font-semibold text-stone-100 hidden sm:inline">
+              Zyntix <span className="font-sans text-[11px] font-normal uppercase tracking-wider text-zinc-400 ml-1">Studio</span>
+            </span>
           </div>
 
-          <div className="h-4 w-px bg-zinc-800 mx-1" />
+          <div className="h-4 w-px bg-zinc-800 mx-1 hidden sm:block" />
 
           {/* Publication Selector */}
           <select 
@@ -384,7 +388,7 @@ export default function ZyntixStudio() {
                 setIframeKey(k => k + 1);
               }
             }}
-            className="bg-zinc-950 border border-zinc-800 rounded-md text-xs px-3 py-1.5 text-zinc-200 focus:outline-none focus:border-zinc-500 font-serif"
+            className="bg-zinc-950 border border-zinc-800 rounded-md text-xs px-2.5 py-1.5 text-zinc-200 focus:outline-none focus:border-zinc-500 font-serif max-w-[180px] sm:max-w-xs truncate"
           >
             {sites.map(s => (
               <option key={s.id} value={s.subdomain}>
@@ -395,95 +399,102 @@ export default function ZyntixStudio() {
 
           <button
             onClick={() => setActiveTab("newsite")}
-            className="flex items-center gap-1 px-2.5 py-1 bg-stone-800 hover:bg-stone-700 text-stone-200 rounded text-xs transition"
-            title="Create New Website"
+            className="flex items-center gap-1 px-2.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-stone-200 rounded-md text-xs transition"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>New Site</span>
+            <span className="hidden sm:inline">New Site</span>
           </button>
         </div>
 
-        {/* Viewport & Live Controls */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center bg-zinc-950 border border-zinc-800 rounded-md p-0.5">
-            <button
-              onClick={() => setViewport("desktop")}
-              className={`p-1.5 rounded text-xs flex items-center gap-1 transition ${viewport === "desktop" ? "bg-zinc-800 text-white" : "text-zinc-400 hover:text-white"}`}
-              title="Desktop View"
-            >
-              <Monitor className="w-3.5 h-3.5" />
-            </button>
-            <button
-              onClick={() => setViewport("mobile")}
-              className={`p-1.5 rounded text-xs flex items-center gap-1 transition ${viewport === "mobile" ? "bg-zinc-800 text-white" : "text-zinc-400 hover:text-white"}`}
-              title="Mobile View"
-            >
-              <Smartphone className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
+        {/* Viewport, Live Link & Cloud-Style Slide Preview Controls */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Cloud-Style Toggle Preview Button */}
           <button
-            onClick={() => setIframeKey(k => k + 1)}
-            className="p-1.5 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-md transition"
-            title="Refresh Preview"
+            onClick={() => setShowPreview(!showPreview)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition cursor-pointer ${
+              showPreview 
+                ? "bg-emerald-500 text-zinc-950 shadow-md shadow-emerald-500/20" 
+                : "bg-zinc-800 hover:bg-zinc-700 text-stone-200 border border-zinc-700"
+            }`}
           >
-            <RefreshCw className="w-4 h-4" />
+            <Eye className="w-3.5 h-3.5" />
+            <span>{showPreview ? "Hide Preview" : "Preview Site"}</span>
           </button>
+
+          {showPreview && (
+            <div className="flex items-center bg-zinc-950 border border-zinc-800 rounded-md p-0.5">
+              <button
+                onClick={() => setViewport("desktop")}
+                className={`p-1.5 rounded text-xs transition ${viewport === "desktop" ? "bg-zinc-800 text-white" : "text-zinc-400 hover:text-white"}`}
+                title="Laptop View"
+              >
+                <Monitor className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={() => setViewport("mobile")}
+                className={`p-1.5 rounded text-xs transition ${viewport === "mobile" ? "bg-zinc-800 text-white" : "text-zinc-400 hover:text-white"}`}
+                title="Mobile View"
+              >
+                <Smartphone className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
 
           <a
             href={previewUrl}
             target="_blank"
             rel="noreferrer"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-stone-100 text-zinc-900 hover:bg-stone-200 text-xs font-medium transition"
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-stone-100 text-zinc-900 hover:bg-stone-200 text-xs font-medium transition"
           >
-            <span>Open Publication</span>
+            <span>Live URL</span>
             <ExternalLink className="w-3 h-3" />
           </a>
         </div>
       </header>
 
-      {/* Main Studio Workspace */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Left Side: Editorial Co-Pilot & Colophon Controls */}
-        <div className="w-[440px] border-r border-zinc-800 bg-zinc-950 flex flex-col shrink-0">
-          <div className="flex border-b border-zinc-800 text-xs font-medium">
+      {/* Main Studio Body with Cloud Slide Preview Drawer */}
+      <div className="flex-1 flex overflow-hidden relative">
+        {/* Main Work Area (Expands to Fullscreen when Preview is hidden) */}
+        <div className={`flex-1 flex flex-col transition-all duration-300 ${showPreview ? "w-1/2 border-r border-zinc-800" : "w-full max-w-4xl mx-auto"}`}>
+          {/* Navigation Tabs */}
+          <div className="flex border-b border-zinc-800 text-xs font-medium bg-[#141416]">
             <button
               onClick={() => setActiveTab("writer")}
-              className={`flex-1 py-3 text-center border-b-2 flex items-center justify-center gap-1.5 transition ${activeTab === "writer" ? "border-stone-200 text-stone-100 bg-zinc-900" : "border-transparent text-zinc-400 hover:text-white"}`}
+              className={`flex-1 py-3 text-center border-b-2 flex items-center justify-center gap-1.5 transition ${activeTab === "writer" ? "border-stone-100 text-stone-100 bg-zinc-900/60" : "border-transparent text-zinc-400 hover:text-white"}`}
             >
               <PenTool className="w-3.5 h-3.5" />
-              <span>AI Co-Pilot</span>
+              <span>AI Co-Pilot (English)</span>
             </button>
             <button
               onClick={() => setActiveTab("domain")}
-              className={`flex-1 py-3 text-center border-b-2 flex items-center justify-center gap-1.5 transition ${activeTab === "domain" ? "border-stone-200 text-stone-100 bg-zinc-900" : "border-transparent text-zinc-400 hover:text-white"}`}
+              className={`flex-1 py-3 text-center border-b-2 flex items-center justify-center gap-1.5 transition ${activeTab === "domain" ? "border-emerald-400 text-emerald-400 bg-emerald-500/5 font-semibold" : "border-transparent text-zinc-400 hover:text-white"}`}
             >
-              <Globe className="w-3.5 h-3.5 text-emerald-400" />
-              <span className="font-semibold text-emerald-400">Connect Domain</span>
+              <Globe className="w-3.5 h-3.5" />
+              <span>Connect Domain</span>
             </button>
             <button
               onClick={() => setActiveTab("editor")}
-              className={`flex-1 py-3 text-center border-b-2 flex items-center justify-center gap-1.5 transition ${activeTab === "editor" ? "border-stone-200 text-stone-100 bg-zinc-900" : "border-transparent text-zinc-400 hover:text-white"}`}
+              className={`flex-1 py-3 text-center border-b-2 flex items-center justify-center gap-1.5 transition ${activeTab === "editor" ? "border-stone-100 text-stone-100 bg-zinc-900/60" : "border-transparent text-zinc-400 hover:text-white"}`}
             >
-              <BookOpen className="w-3.5 h-3.5" />
-              <span>Settings</span>
+              <SlidersHorizontal className="w-3.5 h-3.5" />
+              <span>Publication Settings</span>
             </button>
           </div>
 
-          {/* Tab 1: AI Co-Pilot Dialogue */}
+          {/* Tab 1: AI Co-Pilot (Strict English & Intelligent Execution) */}
           {activeTab === "writer" && (
             <div className="flex-1 flex flex-col overflow-hidden">
-              <div className="flex-1 p-4 overflow-y-auto space-y-3.5">
+              <div className="flex-1 p-4 sm:p-6 overflow-y-auto space-y-4">
                 {chatLog.map((chat, i) => (
                   <div
                     key={i}
-                    className={`flex gap-2.5 ${chat.sender === "user" ? "justify-end" : "justify-start"}`}
+                    className={`flex gap-3 ${chat.sender === "user" ? "justify-end" : "justify-start"}`}
                   >
                     <div
-                      className={`max-w-[88%] rounded-xl px-3.5 py-2.5 text-xs leading-relaxed ${
+                      className={`max-w-[85%] rounded-2xl px-4 py-3 text-xs sm:text-sm leading-relaxed ${
                         chat.sender === "user"
-                          ? "bg-zinc-800 text-stone-100 border border-zinc-700"
-                          : "bg-zinc-900 text-zinc-300 border border-zinc-800 font-serif"
+                          ? "bg-stone-100 text-zinc-950 font-medium rounded-br-xs shadow-sm"
+                          : "bg-zinc-900 text-zinc-200 border border-zinc-800 rounded-bl-xs font-serif leading-relaxed"
                       }`}
                     >
                       {chat.text}
@@ -493,56 +504,56 @@ export default function ZyntixStudio() {
                 {isProcessing && (
                   <div className="flex items-center gap-2 text-xs text-zinc-400 font-serif italic">
                     <RefreshCw className="w-3 h-3 animate-spin text-stone-300" />
-                    <span>Processing with Zyntix Autopilot...</span>
+                    <span>Zyntix Autopilot compiling updates...</span>
                   </div>
                 )}
               </div>
 
               {/* Chat Input */}
-              <div className="p-3 border-t border-zinc-800 bg-zinc-900/40">
+              <div className="p-4 border-t border-zinc-800 bg-[#141416]">
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
                     handleSendMessage();
                   }}
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 max-w-3xl mx-auto"
                 >
                   <input
                     type="text"
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
-                    placeholder="e.g. Connect domain mybrand.com, write new essay..."
-                    className="flex-1 bg-zinc-950 border border-zinc-800 rounded-md px-3.5 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-500 font-serif"
+                    placeholder="e.g. Connect domain brand.com, write an essay on timber work..."
+                    className="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-xs sm:text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-500"
                   />
                   <button
                     type="submit"
                     disabled={isProcessing || !prompt.trim()}
-                    className="p-2.5 bg-stone-100 text-zinc-950 rounded-md hover:bg-stone-200 transition disabled:opacity-40"
+                    className="p-3 bg-stone-100 text-zinc-950 rounded-xl hover:bg-stone-200 transition disabled:opacity-40"
                   >
-                    <Send className="w-3.5 h-3.5" />
+                    <Send className="w-4 h-4" />
                   </button>
                 </form>
               </div>
             </div>
           )}
 
-          {/* Tab 2: Zero-Confusion Custom Domain & DNS Engine (Step 3 Blueprint) */}
+          {/* Tab 2: Custom Domain & DNS Engine */}
           {activeTab === "domain" && currentSite && (
-            <div className="flex-1 p-5 overflow-y-auto space-y-5 text-xs">
-              <div className="border-b border-zinc-800 pb-3">
-                <h3 className="font-serif text-base text-stone-100 font-semibold mb-1">
+            <div className="flex-1 p-6 overflow-y-auto space-y-6 text-xs max-w-2xl mx-auto w-full">
+              <div>
+                <h3 className="font-serif text-lg text-stone-100 font-semibold mb-1">
                   Connect Custom Domain ($0 Free SSL)
                 </h3>
                 <p className="text-zinc-400 text-xs leading-relaxed">
-                  Apna domain enter karein. Vercel automatically Let's Encrypt SSL certificate issue karega.
+                  Enter your domain name to route global traffic directly to this publication. Let's Encrypt SSL is provisioned automatically.
                 </p>
               </div>
 
               {/* Domain Input Form */}
-              <div className="space-y-3 bg-zinc-900/70 p-4 rounded-xl border border-zinc-800">
+              <div className="space-y-4 bg-zinc-900/80 p-5 rounded-2xl border border-zinc-800 shadow-md">
                 <div>
-                  <label className="text-[11px] font-medium text-stone-300 block mb-1.5">
-                    Your Custom Domain
+                  <label className="text-xs font-medium text-stone-200 block mb-2">
+                    Enter Domain Name
                   </label>
                   <div className="flex gap-2">
                     <input
@@ -550,12 +561,12 @@ export default function ZyntixStudio() {
                       value={customDomainInput}
                       onChange={(e) => setCustomDomainInput(e.target.value)}
                       placeholder="e.g. apexroofingdallas.com"
-                      className="flex-1 bg-zinc-950 border border-zinc-800 rounded-md px-3 py-2 text-xs text-white font-mono focus:border-emerald-500 focus:outline-none"
+                      className="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white font-mono focus:border-emerald-500 focus:outline-none"
                     />
                     <button
                       onClick={handleConnectDomain}
                       disabled={domainConnecting || !customDomainInput.trim()}
-                      className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-md text-xs transition disabled:opacity-50 flex items-center gap-1.5"
+                      className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold rounded-xl text-xs transition disabled:opacity-50 flex items-center gap-1.5 cursor-pointer shadow-sm"
                     >
                       {domainConnecting ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Globe className="w-3.5 h-3.5" />}
                       <span>Connect</span>
@@ -563,20 +574,19 @@ export default function ZyntixStudio() {
                   </div>
                 </div>
 
-                {/* Registrar Selector */}
                 <div>
-                  <label className="text-[10px] text-zinc-400 block mb-1 uppercase tracking-wider">
-                    Where did you buy your domain?
+                  <label className="text-[10px] text-zinc-400 block mb-1.5 uppercase tracking-wider">
+                    Select Your Domain Registrar
                   </label>
-                  <div className="grid grid-cols-4 gap-1.5 text-center">
+                  <div className="grid grid-cols-4 gap-2">
                     {["godaddy", "namecheap", "hostinger", "custom"].map((reg) => (
                       <button
                         key={reg}
                         type="button"
                         onClick={() => setSelectedRegistrar(reg)}
-                        className={`py-1.5 rounded border text-[11px] font-medium capitalize transition ${
+                        className={`py-2 rounded-lg border text-xs font-medium capitalize transition cursor-pointer ${
                           selectedRegistrar === reg
-                            ? "bg-stone-100 text-zinc-950 border-stone-100"
+                            ? "bg-stone-100 text-zinc-950 border-stone-100 font-bold"
                             : "bg-zinc-950 text-zinc-400 border-zinc-800 hover:text-white"
                         }`}
                       >
@@ -588,91 +598,79 @@ export default function ZyntixStudio() {
               </div>
 
               {/* 3-Step Guided DNS Records */}
-              <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 space-y-4">
+              <div className="bg-zinc-900/80 border border-zinc-800 rounded-2xl p-5 space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
                     <ShieldCheck className="w-4 h-4" />
-                    <span>3-Step DNS Records</span>
+                    <span>DNS Configuration Records</span>
                   </span>
                   <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                    Free SSL Active
+                    Active & Validated
                   </span>
                 </div>
 
-                {/* Record 1: A Record */}
-                <div className="bg-zinc-950 p-3 rounded-lg border border-zinc-800 space-y-1">
-                  <div className="flex items-center justify-between text-[11px] text-zinc-400">
-                    <span>1. Type: <strong className="text-white">A Record</strong></span>
+                {/* A Record */}
+                <div className="bg-zinc-950 p-3.5 rounded-xl border border-zinc-800 space-y-1.5">
+                  <div className="flex items-center justify-between text-xs text-zinc-400">
+                    <span>Type: <strong className="text-white">A Record</strong></span>
                     <span>Host: <strong className="text-white">@</strong></span>
                   </div>
-                  <div className="flex items-center justify-between font-mono bg-zinc-900 px-2.5 py-1.5 rounded border border-zinc-800">
-                    <span className="text-stone-100 text-xs">76.76.21.21</span>
+                  <div className="flex items-center justify-between font-mono bg-zinc-900 px-3 py-2 rounded-lg border border-zinc-800">
+                    <span className="text-stone-100 text-xs font-bold">76.76.21.21</span>
                     <button
                       onClick={() => copyToClipboard("76.76.21.21", "a-record")}
-                      className="text-zinc-400 hover:text-white text-[11px] flex items-center gap-1"
+                      className="text-zinc-400 hover:text-white text-xs flex items-center gap-1 cursor-pointer"
                     >
                       {copiedKey === "a-record" ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                     </button>
                   </div>
                 </div>
 
-                {/* Record 2: CNAME Record */}
-                <div className="bg-zinc-950 p-3 rounded-lg border border-zinc-800 space-y-1">
-                  <div className="flex items-center justify-between text-[11px] text-zinc-400">
-                    <span>2. Type: <strong className="text-white">CNAME Record</strong></span>
+                {/* CNAME Record */}
+                <div className="bg-zinc-950 p-3.5 rounded-xl border border-zinc-800 space-y-1.5">
+                  <div className="flex items-center justify-between text-xs text-zinc-400">
+                    <span>Type: <strong className="text-white">CNAME Record</strong></span>
                     <span>Host: <strong className="text-white">www</strong></span>
                   </div>
-                  <div className="flex items-center justify-between font-mono bg-zinc-900 px-2.5 py-1.5 rounded border border-zinc-800">
-                    <span className="text-stone-100 text-xs">cname.vercel-dns.com</span>
+                  <div className="flex items-center justify-between font-mono bg-zinc-900 px-3 py-2 rounded-lg border border-zinc-800">
+                    <span className="text-stone-100 text-xs font-bold">cname.vercel-dns.com</span>
                     <button
                       onClick={() => copyToClipboard("cname.vercel-dns.com", "cname-record")}
-                      className="text-zinc-400 hover:text-white text-[11px] flex items-center gap-1"
+                      className="text-zinc-400 hover:text-white text-xs flex items-center gap-1 cursor-pointer"
                     >
                       {copiedKey === "cname-record" ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                     </button>
                   </div>
                 </div>
-
-                {/* Registrar Step-by-step instructions */}
-                <div className="pt-2 border-t border-zinc-800 text-[11px] text-zinc-400 space-y-1.5">
-                  <span className="font-semibold text-stone-200 block">
-                    Instructions for {selectedRegistrar.toUpperCase()}:
-                  </span>
-                  <ol className="list-decimal list-inside space-y-1 text-zinc-400 font-light">
-                    <li>Log in to your {selectedRegistrar} account and open DNS settings.</li>
-                    <li>Add the A Record pointing <code>@</code> to <code>76.76.21.21</code>.</li>
-                    <li>Add the CNAME pointing <code>www</code> to <code>cname.vercel-dns.com</code>.</li>
-                  </ol>
-                </div>
               </div>
 
-              {/* VIP Concierge Fallback (Step 3 Blueprint) */}
-              <div className="p-4 rounded-xl bg-zinc-900/40 border border-zinc-800 text-center space-y-2">
-                <span className="text-stone-300 font-medium block">
-                  Need Help Connecting?
+              {/* VIP Concierge Fallback */}
+              <div className="p-5 rounded-2xl bg-zinc-900/40 border border-zinc-800 text-center space-y-2">
+                <span className="text-stone-300 font-medium block text-xs">
+                  Prefer Delegated Setup?
                 </span>
-                <p className="text-zinc-500 text-[11px]">
-                  Agar DNS samajh nahi aa raha, to hamari engineering team aapka domain 10 minutes me free connect kar degi.
+                <p className="text-zinc-500 text-xs leading-relaxed">
+                  Our engineering team can configure your DNS and SSL certificates at zero charge.
                 </p>
                 <button
                   onClick={() => setConciergeRequested(true)}
                   disabled={conciergeRequested}
-                  className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-stone-200 rounded-md text-xs font-medium transition"
+                  className="px-5 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-stone-200 rounded-xl text-xs font-medium transition cursor-pointer"
                 >
-                  {conciergeRequested ? "✓ Request Received — Team is on it!" : "Let Our Team Connect It (VIP Free)"}
+                  {conciergeRequested ? "✓ Request Received — Team is Dispatching!" : "Let Our Team Connect It (VIP Free)"}
                 </button>
               </div>
             </div>
           )}
 
-          {/* Tab 3: Create New Website Form */}
+          {/* Tab 3: New Site Launcher */}
           {activeTab === "newsite" && (
-            <div className="flex-1 p-5 overflow-y-auto space-y-4 text-xs">
-              <h3 className="font-serif text-base text-stone-100 font-semibold mb-1">
-                Launch New Autonomous Website
+            <div className="flex-1 p-6 overflow-y-auto space-y-4 text-xs max-w-xl mx-auto w-full">
+              <h3 className="font-serif text-lg text-stone-100 font-semibold mb-1">
+                Launch New Publication
               </h3>
-              <p className="text-zinc-400 text-xs">
-                Enter your brand and niche to deploy a new multi-tenant human publication instantly.
+              <p className="text-zinc-400 text-xs leading-relaxed">
+                Provide your brand details to generate a responsive human-crafted publication.
               </p>
 
               <div>
@@ -683,50 +681,37 @@ export default function ZyntixStudio() {
                   type="text"
                   value={newSiteBrand}
                   onChange={(e) => setNewSiteBrand(e.target.value)}
-                  placeholder="e.g. Heritage Joinery & Timber"
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-md px-3 py-2 text-xs text-white"
+                  placeholder="e.g. Heritage Architecture Review"
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white"
                 />
               </div>
 
               <div>
                 <label className="text-zinc-400 block mb-1 uppercase text-[10px] tracking-wider">
-                  Niche / Industry
+                  Niche / Domain of Craft
                 </label>
                 <input
                   type="text"
                   value={newSiteNiche}
                   onChange={(e) => setNewSiteNiche(e.target.value)}
-                  placeholder="e.g. Fine Woodworking, Roofing, Dental Care"
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-md px-3 py-2 text-xs text-white"
-                />
-              </div>
-
-              <div>
-                <label className="text-zinc-400 block mb-1 uppercase text-[10px] tracking-wider">
-                  Author Name
-                </label>
-                <input
-                  type="text"
-                  value={newSiteAuthor}
-                  onChange={(e) => setNewSiteAuthor(e.target.value)}
-                  placeholder="e.g. Naveed Khatri"
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-md px-3 py-2 text-xs text-white"
+                  placeholder="e.g. Sustainable Architecture, Woodworking, Dental"
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white"
                 />
               </div>
 
               <button
                 onClick={handleCreateNewSite}
                 disabled={isProcessing || !newSiteBrand.trim() || !newSiteNiche.trim()}
-                className="w-full py-2.5 bg-stone-100 hover:bg-stone-200 text-zinc-900 rounded-md font-semibold text-xs transition disabled:opacity-40"
+                className="w-full py-3 bg-stone-100 hover:bg-stone-200 text-zinc-950 rounded-xl font-bold text-xs transition cursor-pointer"
               >
                 {isProcessing ? "Deploying Publication..." : "Deploy Website Instantly &rarr;"}
               </button>
             </div>
           )}
 
-          {/* Tab 4: Settings & Metadata */}
+          {/* Tab 4: Publication Settings */}
           {activeTab === "editor" && currentSite && (
-            <div className="flex-1 p-5 overflow-y-auto space-y-5 text-xs font-sans">
+            <div className="flex-1 p-6 overflow-y-auto space-y-5 text-xs max-w-xl mx-auto w-full">
               <div>
                 <label className="text-zinc-400 font-medium block mb-1.5 uppercase text-[10px] tracking-wider">
                   Publication Name
@@ -735,43 +720,19 @@ export default function ZyntixStudio() {
                   type="text"
                   value={currentSite.name}
                   onChange={(e) => setCurrentSite({ ...currentSite, name: e.target.value })}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-md px-3 py-2 text-xs text-white font-serif text-sm"
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white font-serif"
                 />
               </div>
 
               <div>
                 <label className="text-zinc-400 font-medium block mb-1.5 uppercase text-[10px] tracking-wider">
-                  Tagline / Masthead
+                  Masthead Tagline
                 </label>
                 <textarea
                   rows={2}
                   value={currentSite.tagline}
                   onChange={(e) => setCurrentSite({ ...currentSite, tagline: e.target.value })}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-md px-3 py-2 text-xs text-white font-serif"
-                />
-              </div>
-
-              <div>
-                <label className="text-zinc-400 font-medium block mb-1.5 uppercase text-[10px] tracking-wider">
-                  Author Name & Bio
-                </label>
-                <input
-                  type="text"
-                  value={currentSite.author.name}
-                  onChange={(e) => setCurrentSite({
-                    ...currentSite,
-                    author: { ...currentSite.author, name: e.target.value }
-                  })}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-md px-3 py-2 text-xs text-white mb-2"
-                />
-                <textarea
-                  rows={3}
-                  value={currentSite.author.bio}
-                  onChange={(e) => setCurrentSite({
-                    ...currentSite,
-                    author: { ...currentSite.author, bio: e.target.value }
-                  })}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-md px-3 py-2 text-xs text-white"
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white font-serif"
                 />
               </div>
 
@@ -785,7 +746,7 @@ export default function ZyntixStudio() {
                   setIframeKey(k => k + 1);
                   fetchSites();
                 }}
-                className="w-full py-2.5 bg-stone-100 hover:bg-stone-200 text-zinc-900 rounded-md text-xs font-medium transition"
+                className="w-full py-3 bg-stone-100 hover:bg-stone-200 text-zinc-950 rounded-xl text-xs font-bold transition cursor-pointer"
               >
                 Save Changes
               </button>
@@ -793,37 +754,46 @@ export default function ZyntixStudio() {
           )}
         </div>
 
-        {/* Right Side: Live Realistic Browser Frame */}
-        <div className="flex-1 bg-zinc-900/60 flex flex-col items-center justify-center p-5 overflow-hidden">
-          <div 
-            className={`h-full transition-all duration-300 flex flex-col rounded-xl overflow-hidden border border-zinc-800 bg-[#faf8f5] shadow-2xl ${
-              viewport === "desktop" ? "w-full" : "w-[390px] max-h-[844px] border-4 border-zinc-700 rounded-[36px]"
-            }`}
-          >
-            {/* Minimalist Browser Navigation Chrome */}
-            <div className="h-10 bg-[#f4f0eb] border-b border-stone-200 px-4 flex items-center gap-3 shrink-0">
-              <div className="flex gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-full bg-stone-300" />
-                <div className="w-2.5 h-2.5 rounded-full bg-stone-300" />
-                <div className="w-2.5 h-2.5 rounded-full bg-stone-300" />
+        {/* Cloud-Style Slide Preview Panel */}
+        {showPreview && (
+          <div className="w-1/2 bg-[#0c0c0e] flex flex-col items-center justify-center p-4 sm:p-6 overflow-hidden transition-all duration-300">
+            <div 
+              className={`h-full transition-all duration-300 flex flex-col rounded-2xl overflow-hidden border border-zinc-800 bg-[#faf8f5] shadow-2xl ${
+                viewport === "desktop" ? "w-full" : "w-[390px] max-h-[844px] border-4 border-zinc-700 rounded-[40px]"
+              }`}
+            >
+              {/* Minimalist Browser Navigation Chrome */}
+              <div className="h-10 bg-[#f4f0eb] border-b border-stone-200 px-4 flex items-center justify-between shrink-0">
+                <div className="flex gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-stone-300" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-stone-300" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-stone-300" />
+                </div>
+                <div className="flex-1 max-w-sm mx-auto bg-white rounded-md px-3 py-1 text-[11px] text-stone-600 flex items-center justify-center gap-1 font-mono border border-stone-200 truncate">
+                  <span className="text-stone-400">https://</span>
+                  <span className="text-stone-800 font-medium">
+                    {currentSite?.customDomain ? currentSite.customDomain : `${currentSite?.subdomain || "demo"}.zyntix.app`}
+                  </span>
+                </div>
+                <button
+                  onClick={() => setShowPreview(false)}
+                  className="text-stone-500 hover:text-stone-900 p-1 rounded cursor-pointer"
+                  title="Close Slide Preview"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
               </div>
-              <div className="flex-1 max-w-sm mx-auto bg-white rounded px-3 py-1 text-[11px] text-stone-600 flex items-center justify-center gap-1 font-mono border border-stone-200">
-                <span className="text-stone-400">https://</span>
-                <span className="text-stone-800 font-medium">
-                  {currentSite?.customDomain ? currentSite.customDomain : `${currentSite?.subdomain || "demo"}.zyntix.app`}
-                </span>
-              </div>
-            </div>
 
-            {/* Live Editorial Website Frame */}
-            <iframe
-              key={iframeKey}
-              src={previewUrl}
-              className="w-full flex-1 border-0 bg-[#faf8f5]"
-              title="Site Live Preview"
-            />
+              {/* Live Editorial Website Frame */}
+              <iframe
+                key={iframeKey}
+                src={previewUrl}
+                className="w-full flex-1 border-0 bg-[#faf8f5]"
+                title="Site Live Preview"
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
