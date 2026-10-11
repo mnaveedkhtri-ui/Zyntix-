@@ -12,6 +12,8 @@ interface AICompletionResponse {
   text: string;
   provider: 'gemini' | 'groq' | 'fallback';
   keyUsedIndex?: number;
+  errors?: string[];
+  keysCount?: { gemini: number; groq: number };
 }
 
 class FailoverShield {
@@ -133,12 +135,20 @@ class FailoverShield {
     systemInstruction: string = 'You are a master human essayist and craftsman. Write with grounded nuance, zero artificial buzzwords, and deep practical insight.'
   ): Promise<AICompletionResponse> {
     this.refreshKeys();
+    const errors: string[] = [];
+
     // 1. Try Gemini Key Pool (Loop through available keys on 429/quota error)
     for (let attempt = 0; attempt < Math.min(this.geminiKeys.length, 3); attempt++) {
       try {
         const text = await this.callGemini(prompt, systemInstruction);
-        return { text, provider: 'gemini', keyUsedIndex: this.currentGeminiIndex };
+        return { 
+          text, 
+          provider: 'gemini', 
+          keyUsedIndex: this.currentGeminiIndex,
+          keysCount: { gemini: this.geminiKeys.length, groq: this.groqKeys.length }
+        };
       } catch (err: any) {
+        errors.push(`Gemini[${attempt}]: ${err.message}`);
         console.warn(`[Shield] Gemini Key attempt ${attempt + 1} failed: ${err.message}. Rotating key...`);
         // Slight backoff jitter
         await new Promise(r => setTimeout(r, 200 + Math.random() * 200));
@@ -150,8 +160,13 @@ class FailoverShield {
     for (let groqAttempt = 0; groqAttempt < this.groqKeys.length; groqAttempt++) {
       try {
         const text = await this.callGroq(prompt, systemInstruction);
-        return { text, provider: 'groq' };
+        return { 
+          text, 
+          provider: 'groq',
+          keysCount: { gemini: this.geminiKeys.length, groq: this.groqKeys.length }
+        };
       } catch (groqErr: any) {
+        errors.push(`Groq[${groqAttempt}]: ${groqErr.message}`);
         console.warn(`[Shield] Groq attempt ${groqAttempt + 1} failed: ${groqErr.message}. Rotating Groq key...`);
       }
     }
@@ -160,7 +175,9 @@ class FailoverShield {
     console.warn('[Shield] All external AI APIs throttled. Engaging local editorial synthesis.');
     return {
       text: `Grounded observations on craftsmanship and fundamental execution. True mastery requires stripping away secondary ornamentation and focusing strictly on durable, verifiable methods that stand up to daily use.`,
-      provider: 'fallback'
+      provider: 'fallback',
+      errors,
+      keysCount: { gemini: this.geminiKeys.length, groq: this.groqKeys.length }
     };
   }
 

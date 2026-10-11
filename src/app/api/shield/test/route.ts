@@ -14,6 +14,8 @@ export async function POST(req: Request) {
     return NextResponse.json({
       success: true,
       provider: result.provider,
+      keysCount: result.keysCount,
+      errors: result.errors,
       output: result.text
     });
   } catch (err) {
