@@ -56,7 +56,7 @@ class FailoverShield {
     const key = this.getNextGeminiKey();
     if (!key) throw new Error('No Gemini keys available in pool');
 
-    const candidateModels = ['gemini-1.5-flash-latest', 'gemini-2.0-flash', 'gemini-1.5-pro', 'gemini-1.5-flash'];
+    const candidateModels = ['gemini-2.5-flash', 'gemini-flash-latest', 'gemini-2.5-pro'];
     let lastError = '';
 
     for (const model of candidateModels) {
@@ -107,11 +107,9 @@ class FailoverShield {
     if (!key) throw new Error('No Groq keys available in fallback pool');
 
     const candidateModels = [
-      'llama-3.1-70b-versatile',
-      'llama-3.1-8b-instant',
-      'llama-3.3-70b-specdec',
-      'llama3-70b-8192',
-      'llama3-8b-8192'
+      'openai/gpt-oss-120b',
+      'qwen/qwen3.8-27b',
+      'openai/gpt-oss-20b'
     ];
 
     const messages = [];
