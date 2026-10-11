@@ -27,13 +27,23 @@ export async function POST(req: Request) {
 
     if (vercelToken && vercelProjectId) {
       try {
-        const vRes = await fetch(`https://api.vercel.com/v9/projects/${vercelProjectId}/domains`, {
+        // Automatically add root domain to Vercel
+        const vRes = await fetch(`https://api.vercel.com/v10/projects/${vercelProjectId}/domains`, {
           method: 'POST',
           headers: {
             Authorization: `Bearer ${vercelToken}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ name: cleanDomain }),
+        });
+        // Also add www subdomain to Vercel
+        await fetch(`https://api.vercel.com/v10/projects/${vercelProjectId}/domains`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${vercelToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ name: `www.${cleanDomain}` }),
         });
         const vData = await vRes.json();
         vercelApiResult = { added: vRes.ok, message: vData.message || 'Domain submitted to Vercel API' };
@@ -55,18 +65,31 @@ export async function POST(req: Request) {
     };
 
     const registrarGuides: Record<string, string[]> = {
+      ionos: [
+        'Log in to IONOS (1&1) Control Center and click "Domains & SSL".',
+        'Click the gear icon next to your domain and select "DNS".',
+        'Find the current A Record and edit it: set IPv4 Address to 76.76.21.21.',
+        'Find or add the CNAME Record for "www": set points to cname.vercel-dns.com.',
+        'Click Save. Your domain connects in 5-15 minutes.'
+      ],
       godaddy: [
         'Log in to GoDaddy Domain Portfolio and select your domain.',
-        'Click DNS Records -> Add New Record -> Select Type A, Name @, Value 76.76.21.21.',
-        'Add CNAME Record: Name www, Value cname.vercel-dns.com.',
-        'Click Save. SSL is automatically provisioned within 15 minutes.'
+        'Click DNS Records -> Add/Edit Record -> Type A, Name @, Value 76.76.21.21.',
+        'Add/Edit CNAME Record: Name www, Value cname.vercel-dns.com.',
+        'Click Save. SSL is automatically provisioned.'
       ],
       namecheap: [
         'Log in to Namecheap -> Domain List -> Click Manage.',
         'Go to Advanced DNS tab.',
-        'Add A Record: Host @, Value 76.76.21.21, TTL Automatic.',
-        'Add CNAME Record: Host www, Target cname.vercel-dns.com.',
+        'Add/Edit A Record: Host @, Value 76.76.21.21, TTL Automatic.',
+        'Add/Edit CNAME Record: Host www, Target cname.vercel-dns.com.',
         'Save all changes.'
+      ],
+      cloudflare: [
+        'Open Cloudflare Dashboard -> DNS -> Records.',
+        'Edit Type A (@): Change IPv4 to 76.76.21.21 (Set Proxy to DNS Only during initial setup).',
+        'Edit CNAME (www): Target cname.vercel-dns.com.',
+        'Save Records.'
       ],
       hostinger: [
         'Open Hostinger hPanel -> Domains -> DNS / Nameservers.',

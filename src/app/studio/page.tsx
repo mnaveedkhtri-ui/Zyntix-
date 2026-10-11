@@ -18,7 +18,11 @@ import {
   ChevronRight, 
   SlidersHorizontal,
   Maximize2,
-  Trash2
+  Trash2,
+  Sparkles,
+  AlertCircle,
+  HelpCircle,
+  MessageCircle
 } from "lucide-react";
 
 interface BlogPost {
@@ -81,10 +85,62 @@ export default function ZyntixStudio() {
 
   // Custom Domain Connection State
   const [customDomainInput, setCustomDomainInput] = useState("");
-  const [selectedRegistrar, setSelectedRegistrar] = useState("godaddy");
+  const [selectedRegistrar, setSelectedRegistrar] = useState("ionos");
   const [domainConnecting, setDomainConnecting] = useState(false);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [conciergeRequested, setConciergeRequested] = useState(false);
+  const [conciergeLoading, setConciergeLoading] = useState(false);
+  const [conciergeMessage, setConciergeMessage] = useState("");
+  const [dnsCheckResult, setDnsCheckResult] = useState<{
+    status: string;
+    currentIps: string[];
+    isVercelConnected: boolean;
+    message: string;
+    checked: boolean;
+  } | null>(null);
+  const [checkingDns, setCheckingDns] = useState(false);
+
+  const handleCheckDns = async () => {
+    const targetDomain = customDomainInput.trim() || currentSite?.customDomain;
+    if (!targetDomain) return;
+    setCheckingDns(true);
+    try {
+      const res = await fetch(`/api/domains/check?domain=${encodeURIComponent(targetDomain)}`);
+      const data = await res.json();
+      if (data.success) {
+        setDnsCheckResult({ ...data, checked: true });
+      }
+    } catch (err) {
+      console.error("DNS check error", err);
+    } finally {
+      setCheckingDns(false);
+    }
+  };
+
+  const handleRequestConcierge = async () => {
+    const targetDomain = customDomainInput.trim() || currentSite?.customDomain || "moderntrendsnow.org";
+    setConciergeLoading(true);
+    try {
+      const res = await fetch("/api/domains/concierge", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          domain: targetDomain,
+          registrar: selectedRegistrar,
+          email: currentSite?.contact?.email || ""
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setConciergeRequested(true);
+        setConciergeMessage(data.message);
+      }
+    } catch (err) {
+      alert("Concierge request error: " + String(err));
+    } finally {
+      setConciergeLoading(false);
+    }
+  };
 
   // New Site Quick Creation State
   const [newSiteNiche, setNewSiteNiche] = useState("");
@@ -457,107 +513,297 @@ export default function ZyntixStudio() {
             </div>
           )}
 
-          {/* Tab 2: Custom Domain & DNS Engine (Clean & Simple) */}
+          {/* Tab 2: Custom Domain & DNS Engine (5-Star Zero-Friction UX) */}
           {activeTab === "domain" && currentSite && (
-            <div className="flex-1 p-6 overflow-y-auto space-y-6 text-xs max-w-xl mx-auto w-full">
-              <div>
-                <h3 className="font-serif text-xl text-stone-100 font-semibold mb-1">
-                  Connect Your Custom Domain
-                </h3>
-                <p className="text-zinc-400 text-xs leading-relaxed">
-                  Point any domain you own directly to this publication. SSL activates automatically at $0 hosting cost.
-                </p>
+            <div className="flex-1 p-4 sm:p-6 overflow-y-auto space-y-6 text-xs max-w-2xl mx-auto w-full">
+              {/* Top Banner: Your Site Is Already Live */}
+              <div className="bg-gradient-to-r from-emerald-950/60 to-zinc-900 border border-emerald-500/30 rounded-2xl p-5 shadow-lg">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                      <span className="text-emerald-400 font-bold uppercase tracking-wider text-[11px]">
+                        Your Website Is 100% Live Online
+                      </span>
+                    </div>
+                    <p className="text-stone-200 font-mono text-xs font-medium">
+                      https://{currentSite.subdomain}.zyntix.app
+                    </p>
+                    <p className="text-zinc-400 text-[11px] leading-relaxed">
+                      Instant Edge SSL and global CDN are already active. Connecting a custom domain is optional.
+                    </p>
+                  </div>
+                  <a
+                    href={`/site/${currentSite.subdomain}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold rounded-xl text-xs transition flex items-center gap-1.5 shrink-0 shadow-sm"
+                  >
+                    <span>Visit Live Site</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
               </div>
 
-              {/* Step 1: Domain Input */}
-              <div className="bg-zinc-900/80 p-5 rounded-2xl border border-zinc-800 space-y-3 shadow-md">
-                <span className="font-semibold text-stone-200 text-xs block uppercase tracking-wider">
-                  Step 1: Enter Your Domain
-                </span>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={customDomainInput}
-                    onChange={(e) => setCustomDomainInput(e.target.value)}
-                    placeholder="e.g. yourbrand.com"
-                    className="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-xs text-white font-mono focus:border-stone-400 focus:outline-none"
-                  />
-                  <button
-                    onClick={handleConnectDomain}
-                    disabled={domainConnecting || !customDomainInput.trim()}
-                    className="px-5 py-3 bg-stone-100 hover:bg-stone-200 text-zinc-950 font-bold rounded-xl text-xs transition disabled:opacity-50 flex items-center gap-1.5 cursor-pointer shadow-sm"
-                  >
-                    {domainConnecting ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Globe className="w-3.5 h-3.5" />}
-                    <span>Save Domain</span>
-                  </button>
+              {/* Option 1: VIP 1-Click Concierge (Zero Effort) */}
+              <div className="bg-gradient-to-b from-amber-950/30 via-zinc-900/60 to-zinc-950 border border-amber-500/30 rounded-2xl p-5 space-y-4 shadow-md">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-amber-400" />
+                    <span className="font-bold text-amber-200 text-xs uppercase tracking-wider">
+                      Option 1: Free 1-Click VIP Concierge (Recommended)
+                    </span>
+                  </div>
+                  <span className="text-[10px] px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 font-semibold">
+                    100% Free VIP Service
+                  </span>
                 </div>
-                {currentSite.customDomain && (
-                  <div className="pt-1 flex items-center gap-1.5 text-emerald-400 text-[11px]">
-                    <Check className="w-3.5 h-3.5" />
-                    <span>Domain registered: <strong>{currentSite.customDomain}</strong></span>
+                <p className="text-zinc-300 text-xs leading-relaxed">
+                  Don't want to deal with DNS settings, hostnames, or technical jargon? Click below and our engineering team will handle the domain connection and SSL configuration for you within 1-2 hours.
+                </p>
+
+                {conciergeRequested ? (
+                  <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4 text-emerald-300 text-xs flex items-center gap-3">
+                    <Check className="w-5 h-5 text-emerald-400 shrink-0" />
+                    <div>
+                      <p className="font-semibold mb-0.5">VIP Concierge Request Confirmed!</p>
+                      <p className="text-[11px] text-zinc-400">
+                        {conciergeMessage || "Our engineering team has received your request and is connecting your domain right now."}
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-col sm:flex-row items-center gap-3">
+                    <button
+                      onClick={handleRequestConcierge}
+                      disabled={conciergeLoading}
+                      className="w-full sm:w-auto px-5 py-3 bg-amber-400 hover:bg-amber-300 text-zinc-950 font-bold rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md cursor-pointer disabled:opacity-50"
+                    >
+                      {conciergeLoading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+                      <span>Let Us Connect It For You (1-Click)</span>
+                    </button>
+                    <a
+                      href="https://wa.me/923323219981?text=Hi%20Zyntix,%20please%20help%20me%20connect%20my%20domain"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="w-full sm:w-auto px-4 py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 font-medium rounded-xl text-xs transition flex items-center justify-center gap-2"
+                    >
+                      <MessageCircle className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>WhatsApp VIP Support</span>
+                    </a>
                   </div>
                 )}
               </div>
 
-              {/* Step 2: Clear DNS Records Table */}
-              <div className="bg-zinc-900/80 border border-zinc-800 rounded-2xl p-5 space-y-4 shadow-md">
-                <div className="flex items-center justify-between">
-                  <span className="font-semibold text-stone-200 text-xs uppercase tracking-wider">
-                    Step 2: Add These 2 DNS Records
-                  </span>
-                  <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                    Free SSL Included
-                  </span>
+              {/* Option 2: Quick Self-Setup (2 Minutes) */}
+              <div className="bg-zinc-900/80 border border-zinc-800 rounded-2xl p-5 space-y-5 shadow-md">
+                <div>
+                  <h4 className="font-serif text-lg text-stone-100 font-semibold mb-1">
+                    Option 2: Quick Self-Setup (2 Minutes)
+                  </h4>
+                  <p className="text-zinc-400 text-xs leading-relaxed">
+                    If you prefer to configure it yourself, simply enter your domain below and point these two standard records.
+                  </p>
                 </div>
-                <p className="text-zinc-400 text-xs leading-relaxed">
-                  Log in where you bought your domain (GoDaddy, Namecheap, Cloudflare, etc.) and add these two records in your DNS settings:
-                </p>
 
-                {/* Table */}
-                <div className="space-y-3 font-sans">
-                  {/* A Record */}
-                  <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 flex items-center justify-between gap-3">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-3 text-xs">
-                        <span className="px-2 py-0.5 rounded bg-zinc-800 text-stone-200 font-bold font-mono">A</span>
-                        <span className="text-zinc-400">Host / Name: <strong className="text-white font-mono">@</strong></span>
-                      </div>
-                      <div className="text-stone-200 font-mono text-xs font-semibold pt-1">
-                        76.76.21.21
-                      </div>
-                    </div>
+                {/* Step 1: Enter Custom Domain */}
+                <div className="space-y-2">
+                  <span className="font-semibold text-stone-300 text-xs block uppercase tracking-wider">
+                    Step 1: Enter Your Domain Name
+                  </span>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={customDomainInput}
+                      onChange={(e) => setCustomDomainInput(e.target.value)}
+                      placeholder="e.g. moderntrendsnow.org"
+                      className="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-xs text-white font-mono focus:border-stone-400 focus:outline-none"
+                    />
                     <button
-                      onClick={() => copyToClipboard("76.76.21.21", "a-record")}
-                      className="px-3 py-2 bg-zinc-900 hover:bg-zinc-800 text-stone-200 rounded-lg text-xs font-medium border border-zinc-800 flex items-center gap-1.5 transition cursor-pointer"
+                      onClick={handleConnectDomain}
+                      disabled={domainConnecting || !customDomainInput.trim()}
+                      className="px-5 py-3 bg-stone-100 hover:bg-stone-200 text-zinc-950 font-bold rounded-xl text-xs transition disabled:opacity-50 flex items-center gap-1.5 cursor-pointer shadow-sm"
                     >
-                      {copiedKey === "a-record" ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                      <span>{copiedKey === "a-record" ? "Copied!" : "Copy Value"}</span>
-                    </button>
-                  </div>
-
-                  {/* CNAME Record */}
-                  <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 flex items-center justify-between gap-3">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-3 text-xs">
-                        <span className="px-2 py-0.5 rounded bg-zinc-800 text-stone-200 font-bold font-mono">CNAME</span>
-                        <span className="text-zinc-400">Host / Name: <strong className="text-white font-mono">www</strong></span>
-                      </div>
-                      <div className="text-stone-200 font-mono text-xs font-semibold pt-1">
-                        cname.vercel-dns.com
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => copyToClipboard("cname.vercel-dns.com", "cname-record")}
-                      className="px-3 py-2 bg-zinc-900 hover:bg-zinc-800 text-stone-200 rounded-lg text-xs font-medium border border-zinc-800 flex items-center gap-1.5 transition cursor-pointer"
-                    >
-                      {copiedKey === "cname-record" ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                      <span>{copiedKey === "cname-record" ? "Copied!" : "Copy Value"}</span>
+                      {domainConnecting ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Globe className="w-3.5 h-3.5" />}
+                      <span>Save Domain</span>
                     </button>
                   </div>
                 </div>
 
-                <div className="pt-2 text-zinc-500 text-[11px] leading-relaxed">
-                  ✓ After adding these records, DNS takes 5 to 30 minutes to propagate worldwide. Your website and SSL will start working automatically.
+                {/* Step 2: Select Provider for Customized Guide */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-stone-300 text-xs block uppercase tracking-wider">
+                      Step 2: Select Where You Bought Your Domain
+                    </span>
+                    <span className="text-[10px] text-zinc-400">Customized click-by-click instructions</span>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {[
+                      { id: "ionos", label: "IONOS (1&1)" },
+                      { id: "godaddy", label: "GoDaddy" },
+                      { id: "namecheap", label: "Namecheap" },
+                      { id: "cloudflare", label: "Cloudflare" },
+                    ].map((provider) => (
+                      <button
+                        key={provider.id}
+                        onClick={() => setSelectedRegistrar(provider.id)}
+                        className={`p-2.5 rounded-xl border text-center transition cursor-pointer font-medium text-xs ${
+                          selectedRegistrar === provider.id
+                            ? "bg-stone-100 text-zinc-950 border-stone-100 shadow-sm"
+                            : "bg-zinc-950 border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700"
+                        }`}
+                      >
+                        {provider.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Provider Specific Step-By-Step Box */}
+                  <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-4 space-y-2 text-zinc-300 text-xs">
+                    <p className="font-semibold text-amber-300 flex items-center gap-1.5">
+                      <span>Instructions for {selectedRegistrar.toUpperCase()}:</span>
+                    </p>
+                    <ol className="list-decimal list-inside space-y-1 text-zinc-400 leading-relaxed">
+                      {selectedRegistrar === "ionos" && (
+                        <>
+                          <li>Log in to your <strong>IONOS (1&1) Control Center</strong> and click <strong>Domains & SSL</strong>.</li>
+                          <li>Click the gear icon next to your domain and select <strong>DNS</strong>.</li>
+                          <li>Find your current A Record (pointing to an old IP) and click <strong>Edit</strong>.</li>
+                          <li>Set IPv4 Address to <strong className="text-white font-mono">76.76.21.21</strong> and save.</li>
+                          <li>Ensure CNAME for <strong>www</strong> points to <strong className="text-white font-mono">cname.vercel-dns.com</strong>.</li>
+                        </>
+                      )}
+                      {selectedRegistrar === "godaddy" && (
+                        <>
+                          <li>Log in to <strong>GoDaddy</strong> and open <strong>Domain Portfolio</strong>.</li>
+                          <li>Click your domain &rarr; <strong>DNS Records</strong>.</li>
+                          <li>Edit Type A (Name @) and change value to <strong className="text-white font-mono">76.76.21.21</strong>.</li>
+                          <li>Add/Edit CNAME (Name www) with value <strong className="text-white font-mono">cname.vercel-dns.com</strong>.</li>
+                          <li>Save changes.</li>
+                        </>
+                      )}
+                      {selectedRegistrar === "namecheap" && (
+                        <>
+                          <li>Log in to <strong>Namecheap</strong> &rarr; <strong>Domain List</strong> &rarr; <strong>Manage</strong>.</li>
+                          <li>Click the <strong>Advanced DNS</strong> tab.</li>
+                          <li>Add/Edit A Record: Host @, Value <strong className="text-white font-mono">76.76.21.21</strong>.</li>
+                          <li>Add/Edit CNAME Record: Host www, Target <strong className="text-white font-mono">cname.vercel-dns.com</strong>.</li>
+                          <li>Save all changes.</li>
+                        </>
+                      )}
+                      {selectedRegistrar === "cloudflare" && (
+                        <>
+                          <li>Open your <strong>Cloudflare Dashboard</strong> &rarr; <strong>DNS</strong> &rarr; <strong>Records</strong>.</li>
+                          <li>Edit A Record (@): IPv4 <strong className="text-white font-mono">76.76.21.21</strong> (DNS Only proxy).</li>
+                          <li>Edit CNAME (www): Target <strong className="text-white font-mono">cname.vercel-dns.com</strong>.</li>
+                          <li>Save records.</li>
+                        </>
+                      )}
+                    </ol>
+                  </div>
+                </div>
+
+                {/* 2 DNS Records with Copy Buttons */}
+                <div className="space-y-3">
+                  <span className="font-semibold text-stone-300 text-xs block uppercase tracking-wider">
+                    DNS Values to Copy:
+                  </span>
+                  <div className="space-y-2 font-sans">
+                    {/* A Record */}
+                    <div className="bg-zinc-950 p-3.5 rounded-xl border border-zinc-800 flex items-center justify-between gap-3">
+                      <div className="space-y-0.5">
+                        <div className="flex items-center gap-2 text-xs">
+                          <span className="px-2 py-0.5 rounded bg-zinc-800 text-stone-200 font-bold font-mono text-[11px]">Type: A</span>
+                          <span className="text-zinc-400">Host: <strong className="text-white font-mono">@</strong></span>
+                        </div>
+                        <div className="text-stone-200 font-mono text-xs font-semibold">
+                          76.76.21.21
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => copyToClipboard("76.76.21.21", "a-record")}
+                        className="px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-stone-200 rounded-lg text-xs font-medium border border-zinc-800 flex items-center gap-1.5 transition cursor-pointer"
+                      >
+                        {copiedKey === "a-record" ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                        <span>{copiedKey === "a-record" ? "Copied!" : "Copy"}</span>
+                      </button>
+                    </div>
+
+                    {/* CNAME Record */}
+                    <div className="bg-zinc-950 p-3.5 rounded-xl border border-zinc-800 flex items-center justify-between gap-3">
+                      <div className="space-y-0.5">
+                        <div className="flex items-center gap-2 text-xs">
+                          <span className="px-2 py-0.5 rounded bg-zinc-800 text-stone-200 font-bold font-mono text-[11px]">Type: CNAME</span>
+                          <span className="text-zinc-400">Host: <strong className="text-white font-mono">www</strong></span>
+                        </div>
+                        <div className="text-stone-200 font-mono text-xs font-semibold">
+                          cname.vercel-dns.com
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => copyToClipboard("cname.vercel-dns.com", "cname-record")}
+                        className="px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-stone-200 rounded-lg text-xs font-medium border border-zinc-800 flex items-center gap-1.5 transition cursor-pointer"
+                      >
+                        {copiedKey === "cname-record" ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                        <span>{copiedKey === "cname-record" ? "Copied!" : "Copy"}</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Step 3: Live Real-Time DNS Connection Checker */}
+                <div className="pt-2 border-t border-zinc-800 space-y-3">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div>
+                      <span className="font-semibold text-stone-200 text-xs block">
+                        Step 3: Verify Connection Status
+                      </span>
+                      <p className="text-zinc-400 text-[11px]">
+                        Test directly against Google Public DNS to see if records have propagated.
+                      </p>
+                    </div>
+                    <button
+                      onClick={handleCheckDns}
+                      disabled={checkingDns || (!customDomainInput.trim() && !currentSite.customDomain)}
+                      className="px-4 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white font-semibold rounded-xl text-xs transition flex items-center gap-2 cursor-pointer border border-zinc-700 disabled:opacity-40"
+                    >
+                      <RefreshCw className={`w-3.5 h-3.5 ${checkingDns ? "animate-spin" : ""}`} />
+                      <span>{checkingDns ? "Checking DNS..." : "Test Connection"}</span>
+                    </button>
+                  </div>
+
+                  {/* Real-Time Live Status Display */}
+                  {dnsCheckResult && (
+                    <div className={`p-4 rounded-xl border text-xs leading-relaxed space-y-1.5 ${
+                      dnsCheckResult.isVercelConnected
+                        ? "bg-emerald-950/40 border-emerald-500/40 text-emerald-300"
+                        : "bg-amber-950/40 border-amber-500/40 text-amber-200"
+                    }`}>
+                      <div className="flex items-center gap-2 font-bold">
+                        {dnsCheckResult.isVercelConnected ? (
+                          <>
+                            <Check className="w-4 h-4 text-emerald-400" />
+                            <span>Domain Successfully Connected & Live!</span>
+                          </>
+                        ) : (
+                          <>
+                            <AlertCircle className="w-4 h-4 text-amber-400" />
+                            <span>DNS Propagation In Progress</span>
+                          </>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-zinc-300">
+                        {dnsCheckResult.message}
+                      </p>
+                      {dnsCheckResult.currentIps?.length > 0 && (
+                        <div className="font-mono text-[10px] text-zinc-400 pt-1">
+                          Current Live DNS IP: {dnsCheckResult.currentIps.join(", ")} &bull; Required Target: {dnsCheckResult.expectedIp}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
