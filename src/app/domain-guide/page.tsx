@@ -72,7 +72,7 @@ export default function DomainGuidePage() {
               <span>Want Us to Do It For You? 100% Free VIP Concierge</span>
             </div>
             <p className="text-zinc-300 text-xs">
-              Agar aapko DNS samajh nahi araha, to tension na lein! Hum khud free mein aapka domain connect kar ke denge.
+              Prefer our engineers handle the setup? We will configure and verify your domain and SSL certificate completely free of charge.
             </p>
           </div>
           <a
@@ -186,53 +186,54 @@ export default function DomainGuidePage() {
             <ol className="list-decimal list-inside space-y-2 text-zinc-300 text-xs leading-relaxed">
               {selectedRegistrar === "godaddy" && (
                 <>
-                  <li>Log in to <strong>GoDaddy</strong> and open <strong>Domain Portfolio</strong>.</li>
-                  <li>Click on your domain &rarr; select <strong>DNS Records</strong> tab.</li>
-                  <li>Purana <strong>Type A</strong> record (Name: @) dhoondhein aur <strong>Edit</strong> par click karein.</li>
-                  <li>Value mein <code className="text-white bg-zinc-900 px-1.5 py-0.5 rounded font-mono">76.76.21.21</code> enter karein aur Save karein.</li>
-                  <li>CNAME record (Name: www) mein value <code className="text-white bg-zinc-900 px-1.5 py-0.5 rounded font-mono">cname.vercel-dns.com</code> set karein.</li>
+                  <li>Log in to <strong>GoDaddy</strong> and open your <strong>Domain Portfolio</strong>.</li>
+                  <li>Click on your domain &rarr; navigate to the <strong>DNS Records</strong> tab.</li>
+                  <li>Locate the existing <strong>Type A</strong> record (Name: @) and click <strong>Edit</strong>.</li>
+                  <li>Change Value / Points to <code className="text-white bg-zinc-900 px-1.5 py-0.5 rounded font-mono">76.76.21.21</code> and click Save.</li>
+                  <li>In the CNAME record (Name: www), set value to <code className="text-white bg-zinc-900 px-1.5 py-0.5 rounded font-mono">cname.vercel-dns.com</code> and save.</li>
                 </>
               )}
               {selectedRegistrar === "namecheap" && (
                 <>
-                  <li>Log in to <strong>Namecheap</strong> &rarr; <strong>Domain List</strong> &rarr; Click <strong>Manage</strong>.</li>
+                  <li>Log in to <strong>Namecheap</strong> &rarr; go to <strong>Domain List</strong> &rarr; click <strong>Manage</strong>.</li>
                   <li>Click the <strong>Advanced DNS</strong> tab at the top.</li>
-                  <li>Purana default "Parking Page" A Record DELETE kar dein.</li>
+                  <li>Delete any existing "Parking Page" or default A Records.</li>
                   <li>Click <strong>Add New Record</strong> &rarr; Type: <strong>A Record</strong>, Host: <code className="text-white">@</code>, Value: <code className="text-white bg-zinc-900 px-1.5 py-0.5 rounded font-mono">76.76.21.21</code>, TTL: Automatic.</li>
                   <li>Click <strong>Add New Record</strong> &rarr; Type: <strong>CNAME Record</strong>, Host: <code className="text-white">www</code>, Target: <code className="text-white bg-zinc-900 px-1.5 py-0.5 rounded font-mono">cname.vercel-dns.com</code>.</li>
-                  <li>Green checkmark click kar ke save kar dein.</li>
+                  <li>Click the green checkmark icon to save all records.</li>
                 </>
               )}
               {selectedRegistrar === "hostinger" && (
                 <>
-                  <li>Log in to <strong>Hostinger hPanel</strong> &rarr; <strong>Domains</strong> &rarr; Click your domain.</li>
-                  <li>Left sidebar mein <strong>DNS / Nameservers</strong> par click karein.</li>
-                  <li>Under Manage DNS records:</li>
-                  <li>Type: <strong>A</strong>, Name: <code className="text-white">@</code>, Points to: <code className="text-white bg-zinc-900 px-1.5 py-0.5 rounded font-mono">76.76.21.21</code> &rarr; Add Record.</li>
-                  <li>Type: <strong>CNAME</strong>, Name: <code className="text-white">www</code>, Target: <code className="text-white bg-zinc-900 px-1.5 py-0.5 rounded font-mono">cname.vercel-dns.com</code> &rarr; Add Record.</li>
+                  <li>Log in to <strong>Hostinger hPanel</strong> &rarr; go to <strong>Domains</strong> &rarr; click your domain.</li>
+                  <li>Click <strong>DNS / Nameservers</strong> in the left sidebar navigation.</li>
+                  <li>Under the Manage DNS records section:</li>
+                  <li>Type: <strong>A</strong>, Name: <code className="text-white">@</code>, Points to: <code className="text-white bg-zinc-900 px-1.5 py-0.5 rounded font-mono">76.76.21.21</code> &rarr; click Add Record.</li>
+                  <li>Type: <strong>CNAME</strong>, Name: <code className="text-white">www</code>, Target: <code className="text-white bg-zinc-900 px-1.5 py-0.5 rounded font-mono">cname.vercel-dns.com</code> &rarr; click Add Record.</li>
                 </>
               )}
               {selectedRegistrar === "cloudflare" && (
                 <>
-                  <li>Open <strong>Cloudflare Dashboard</strong> &rarr; Click Domain &rarr; <strong>DNS &gt; Records</strong>.</li>
-                  <li>Edit A Record (<code className="text-white">@</code>): IPv4 <code className="text-white bg-zinc-900 px-1.5 py-0.5 rounded font-mono">76.76.21.21</code>.</li>
-                  <li><strong className="text-amber-400">CRITICAL:</strong> Proxy Status toggle ko Orange Cloud se band kar ke <strong>DNS Only (Grey Cloud)</strong> select karein.</li>
-                  <li>Edit CNAME (<code className="text-white">www</code>): Target <code className="text-white bg-zinc-900 px-1.5 py-0.5 rounded font-mono">cname.vercel-dns.com</code>.</li>
+                  <li>Open your <strong>Cloudflare Dashboard</strong> &rarr; select Domain &rarr; click <strong>DNS &gt; Records</strong>.</li>
+                  <li>Edit A Record (<code className="text-white">@</code>): set IPv4 address to <code className="text-white bg-zinc-900 px-1.5 py-0.5 rounded font-mono">76.76.21.21</code>.</li>
+                  <li><strong className="text-amber-400">CRITICAL:</strong> Toggle Proxy Status from Orange Cloud to <strong>DNS Only (Grey Cloud)</strong> for instant SSL validation.</li>
+                  <li>Edit CNAME (<code className="text-white">www</code>): set Target to <code className="text-white bg-zinc-900 px-1.5 py-0.5 rounded font-mono">cname.vercel-dns.com</code>.</li>
                 </>
               )}
               {selectedRegistrar === "ionos" && (
                 <>
-                  <li>Log in to <strong>IONOS Control Center</strong> &rarr; <strong>Domains & SSL</strong>.</li>
-                  <li>Click gear icon next to domain &rarr; Select <strong>DNS</strong>.</li>
-                  <li>Edit A Record to <code className="text-white bg-zinc-900 px-1.5 py-0.5 rounded font-mono">76.76.21.21</code>.</li>
-                  <li>Set CNAME for www to <code className="text-white bg-zinc-900 px-1.5 py-0.5 rounded font-mono">cname.vercel-dns.com</code>.</li>
+                  <li>Log in to <strong>IONOS Control Center</strong> &rarr; navigate to <strong>Domains & SSL</strong>.</li>
+                  <li>Click the gear icon next to your domain &rarr; select <strong>DNS</strong>.</li>
+                  <li>Edit A Record to point to <code className="text-white bg-zinc-900 px-1.5 py-0.5 rounded font-mono">76.76.21.21</code>.</li>
+                  <li>Set CNAME for www to point to <code className="text-white bg-zinc-900 px-1.5 py-0.5 rounded font-mono">cname.vercel-dns.com</code>.</li>
                 </>
               )}
               {selectedRegistrar === "other" && (
                 <>
-                  <li>Apne domain provider ke <strong>DNS Zone Editor</strong> mein jaein.</li>
-                  <li>A Record (@) ko <code className="text-white bg-zinc-900 px-1.5 py-0.5 rounded font-mono">76.76.21.21</code> par point karein.</li>
-                  <li>CNAME Record (www) ko <code className="text-white bg-zinc-900 px-1.5 py-0.5 rounded font-mono">cname.vercel-dns.com</code> par point karein.</li>
+                  <li>Open your domain provider's <strong>DNS Settings / Zone Editor</strong>.</li>
+                  <li>Point your A Record (@) to <code className="text-white bg-zinc-900 px-1.5 py-0.5 rounded font-mono">76.76.21.21</code>.</li>
+                  <li>Point your CNAME Record (www) to <code className="text-white bg-zinc-900 px-1.5 py-0.5 rounded font-mono">cname.vercel-dns.com</code>.</li>
+                  <li>Save changes. Your free Edge SSL certificate will activate automatically.</li>
                 </>
               )}
             </ol>
@@ -243,17 +244,17 @@ export default function DomainGuidePage() {
         <div className="bg-amber-950/20 border border-amber-500/30 rounded-2xl p-6 space-y-3">
           <div className="flex items-center gap-2 text-amber-300 font-bold text-sm">
             <AlertTriangle className="w-4 h-4 text-amber-400" />
-            <span>3 Golden Rules: Ghaltiyan Jin Say Bachna Hai</span>
+            <span>3 Golden Rules: Critical Pitfalls to Avoid</span>
           </div>
           <div className="space-y-2 text-zinc-300 text-xs leading-relaxed">
             <p>
-              <strong>1. Purana A Record DELETE karein:</strong> Agar aapke registrar par pehle se koi purana IP (jaise parking page IP) laga hua hai, to usay pehle delete karein. Sirf <code>76.76.21.21</code> rehna chahiye.
+              <strong>1. Delete Existing A Records:</strong> If your domain currently points to an old parking page or former hosting server, delete that record first. Having multiple conflicting A records will prevent your website from loading. Only <code>76.76.21.21</code> should remain.
             </p>
             <p>
-              <strong>2. Cloudflare Users (Grey Cloud):</strong> Agar aap Cloudflare use kar rahe hain, to Orange Cloud band kar ke <strong>DNS Only (Grey Cloud)</strong> select karein taake initial SSL verification foran ho.
+              <strong>2. Cloudflare Users (Grey Cloud):</strong> If you use Cloudflare DNS, ensure the Proxy Status toggle is set to <strong>DNS Only (Grey Cloud)</strong> during initial setup so that automated SSL certificates can be generated immediately.
             </p>
             <p>
-              <strong>3. Sabar Rakhein (5-30 Minutes):</strong> Save karnay ke baad foran panic na karein! DNS poori dunya ke internet par phelne mein 5 se 30 minute leta hai.
+              <strong>3. Allow Propagation Time (5–30 Minutes):</strong> Do not panic immediately after saving! Global DNS caches take 5 to 30 minutes to update across worldwide networks.
             </p>
           </div>
         </div>
@@ -265,16 +266,16 @@ export default function DomainGuidePage() {
           </h2>
           {[
             {
-              q: "Website par 'Not Secure' ya SSL Pending kyun dikh raha hai?",
-              a: "Let's Encrypt Free SSL certificate DNS connect honay ke 10-15 minute ke andar khud ba khud activate ho jata hai. Kisi paid certificate ki zaroorat nahi hai. Thora sa wait karein, ye khud HTTPS ho jayega."
+              q: "Why does my browser display 'Not Secure' or 'SSL Pending'?",
+              a: "Our automated Let's Encrypt Edge SSL certificates activate automatically within 10 to 15 minutes once the DNS records are detected. No paid SSL certificate is needed. Once verified, your site will show the secure HTTPS lock immediately."
             },
             {
-              q: "Root domain (@) aur 'www' mein kya farq hai?",
-              a: "@ aapka main domain hota hai (jaise moderntrendsnow.org) aur CNAME www subdomain ke liye hota hai (www.moderntrendsnow.org). Dono records add karna zaroori hai taake agar koi www likhay ya na likhay, dono sooraton mein aapki website khulay."
+              q: "What is the difference between root domain (@) and 'www'?",
+              a: "The @ record represents your root apex domain (e.g., moderntrendsnow.org), while www handles requests to www.moderntrendsnow.org. Configuring both records guarantees that visitors always reach your publication regardless of whether they type 'www'."
             },
             {
-              q: "Kya meri website band ho jayegi jab tak custom domain verify na ho?",
-              a: "Bilkul nahi! Aapka .zyntix.app subdomain 24/7 online rehta hai aur kabhi down nahi hota."
+              q: "Will my website experience any downtime while connecting?",
+              a: "Zero downtime. Your fast .zyntix.app cloud subdomain remains fully online and serving visitors 24/7 throughout the entire DNS transition."
             }
           ].map((faq, idx) => (
             <div key={idx} className="border border-zinc-800 rounded-xl overflow-hidden bg-zinc-950">

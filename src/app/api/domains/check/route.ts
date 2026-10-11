@@ -55,17 +55,14 @@ export async function GET(req: Request) {
     const isVercelConnected = isRootConnected;
 
     let status = 'not_configured';
-    let message = 'No DNS records detected yet.';
-    let urduMessage = 'Abhi tak koi DNS record detect nahi hua. Baraye meherbani registrar mein A Record (76.76.21.21) add kar ke Save karein.';
+    let message = 'No DNS records detected yet. Please add an A Record pointing to 76.76.21.21 in your domain registrar and save.';
 
     if (isVercelConnected) {
       status = 'connected';
-      message = `Success! ${rootDomain} is pointing directly to Zyntix Edge servers (${aRecords.filter(ip => validIps.includes(ip)).join(', ')}).`;
-      urduMessage = `Mubarak ho! ${rootDomain} 100% Zyntix servers se connect ho chuka hai. SSL active hai aur website live hai!`;
+      message = `Success! ${rootDomain} is pointing directly to Zyntix Edge servers (${aRecords.filter(ip => validIps.includes(ip)).join(', ')}). SSL is active and your website is live!`;
     } else if (aRecords.length > 0) {
       status = 'pointing_elsewhere';
-      message = `${rootDomain} is currently pointing to ${aRecords.join(', ')}. Please update your A Record (@) to 76.76.21.21 in your registrar.`;
-      urduMessage = `${rootDomain} abhi puranay IP (${aRecords.join(', ')}) par point kar raha hai. Apne registrar mein ja kar A Record ko badal kar 76.76.21.21 kar dein.`;
+      message = `${rootDomain} is currently pointing to ${aRecords.join(', ')}. Please update your A Record (@) to 76.76.21.21 in your domain registrar.`;
     }
 
     return NextResponse.json({
@@ -79,7 +76,6 @@ export async function GET(req: Request) {
       isWwwConnected,
       wwwRecords,
       message,
-      urduMessage,
       checkedAt: new Date().toISOString()
     });
   } catch (error: any) {

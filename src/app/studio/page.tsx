@@ -588,7 +588,7 @@ export default function ZyntixStudio() {
                     <p className="text-zinc-400 text-[11px] leading-relaxed">
                       {currentSite.customDomain 
                         ? "Custom domain active with automatic Edge SSL. Root and www versions are both handled."
-                        : `Instant Edge SSL is active at ${currentSite.subdomain}.zyntix.app. Custom domain lagana optional hai par brand reputation ke liye recommended hai.`}
+                        : `Instant Edge SSL is active at ${currentSite.subdomain}.zyntix.app. Connecting a custom domain is optional, but recommended for authoritative brand equity.`}
                     </p>
                   </div>
                   <a
@@ -617,7 +617,7 @@ export default function ZyntixStudio() {
                   </span>
                 </div>
                 <p className="text-zinc-300 text-xs leading-relaxed">
-                  Agar aapko DNS settings ya technical jargon samajh nahi araha, to pareshan honay ki bilkul zaroorat nahi hai! Humari engineering team aapka domain aur SSL certificate khud 10-15 minute mein connect kar degi.
+                  Prefer our engineering team configure everything for you? We will set up your DNS records and verify SSL certificates within 10–15 minutes completely free of charge.
                 </p>
 
                 {conciergeRequested ? (
@@ -626,7 +626,7 @@ export default function ZyntixStudio() {
                     <div>
                       <p className="font-semibold mb-0.5">VIP Concierge Request Confirmed!</p>
                       <p className="text-[11px] text-zinc-400">
-                        {conciergeMessage || "Humari team ko aapki request mil chuki hai aur hum domain connect kar rahe hain."}
+                        {conciergeMessage || "Our engineering team has received your request and is currently connecting your custom domain."}
                       </p>
                     </div>
                   </div>
@@ -661,7 +661,7 @@ export default function ZyntixStudio() {
                       Option 2: 2-Minute Step-by-Step Self Setup
                     </h4>
                     <p className="text-zinc-400 text-xs leading-relaxed">
-                      Apna domain connect karna intehai aasan hai. Sirf 2 DNS records add karnay hain:
+                      Connecting your domain takes less than 2 minutes. You only need to add 2 simple DNS records:
                     </p>
                   </div>
                   <a
@@ -697,7 +697,7 @@ export default function ZyntixStudio() {
                     </button>
                   </div>
                   <p className="text-[11px] text-zinc-500">
-                    Tip: https:// ya / likhnay ki zaroorat nahi. Root domain aur www dono khud map ho jayengay.
+                    Tip: No need to include https:// or trailing slashes. Both root domain and www subdomain will be automatically mapped.
                   </p>
                 </div>
 
@@ -742,17 +742,17 @@ export default function ZyntixStudio() {
                       {selectedRegistrar === "godaddy" && (
                         <>
                           <li>Log in to <strong>GoDaddy</strong> &rarr; Open <strong>Domain Portfolio</strong>.</li>
-                          <li>Click on your domain name &rarr; Select <strong>DNS Records</strong> tab.</li>
-                          <li>Find the existing <strong>Type A</strong> record (Name: @) and click <strong>Edit</strong> (ya naya record add karein).</li>
-                          <li>Value / Points to ko change kar ke <strong className="text-white font-mono bg-zinc-900 px-1.5 py-0.5 rounded">76.76.21.21</strong> kar dein.</li>
-                          <li><strong>CNAME</strong> record check karein (Name: www) aur Target mein <strong className="text-white font-mono bg-zinc-900 px-1.5 py-0.5 rounded">cname.vercel-dns.com</strong> daal kar Save kar dein.</li>
+                          <li>Click on your domain name &rarr; Select the <strong>DNS Records</strong> tab.</li>
+                          <li>Find the existing <strong>Type A</strong> record (Name: @) and click <strong>Edit</strong>.</li>
+                          <li>Change Value / Points to to <strong className="text-white font-mono bg-zinc-900 px-1.5 py-0.5 rounded">76.76.21.21</strong> and save.</li>
+                          <li>Locate the <strong>CNAME</strong> record (Name: www) and set Target to <strong className="text-white font-mono bg-zinc-900 px-1.5 py-0.5 rounded">cname.vercel-dns.com</strong> and save.</li>
                         </>
                       )}
                       {selectedRegistrar === "namecheap" && (
                         <>
                           <li>Log in to <strong>Namecheap</strong> &rarr; <strong>Domain List</strong> &rarr; Click <strong>Manage</strong> next to your domain.</li>
                           <li>Click on the <strong>Advanced DNS</strong> tab at the top.</li>
-                          <li>Purana "Parking Page" A Record DELETE kar dein.</li>
+                          <li>Delete any existing "Parking Page" or default A Records.</li>
                           <li>Click <strong>Add New Record</strong> &rarr; Select <strong>A Record</strong> &rarr; Host: <code className="text-white">@</code>, Value: <strong className="text-white font-mono bg-zinc-900 px-1.5 py-0.5 rounded">76.76.21.21</strong>, TTL: Automatic.</li>
                           <li>Add <strong>CNAME Record</strong> &rarr; Host: <code className="text-white">www</code>, Target: <strong className="text-white font-mono bg-zinc-900 px-1.5 py-0.5 rounded">cname.vercel-dns.com</strong>.</li>
                           <li>Click the green checkmark to Save all changes.</li>
@@ -761,8 +761,8 @@ export default function ZyntixStudio() {
                       {selectedRegistrar === "hostinger" && (
                         <>
                           <li>Log in to <strong>Hostinger hPanel</strong> &rarr; Click <strong>Domains</strong> &rarr; Manage your domain.</li>
-                          <li>Left sidebar mein <strong>DNS / Nameservers</strong> par click karein.</li>
-                          <li>Manage DNS records section mein:</li>
+                          <li>Click <strong>DNS / Nameservers</strong> in the left sidebar menu.</li>
+                          <li>Under the Manage DNS records section:</li>
                           <li>Type: <strong>A</strong>, Name: <code className="text-white">@</code>, Points to: <strong className="text-white font-mono bg-zinc-900 px-1.5 py-0.5 rounded">76.76.21.21</strong> &rarr; Click <strong>Add Record</strong>.</li>
                           <li>Type: <strong>CNAME</strong>, Name: <code className="text-white">www</code>, Target: <strong className="text-white font-mono bg-zinc-900 px-1.5 py-0.5 rounded">cname.vercel-dns.com</strong> &rarr; Click <strong>Add Record</strong>.</li>
                         </>
@@ -770,9 +770,9 @@ export default function ZyntixStudio() {
                       {selectedRegistrar === "cloudflare" && (
                         <>
                           <li>Open your <strong>Cloudflare Dashboard</strong> &rarr; Select your Domain &rarr; Click <strong>DNS &gt; Records</strong>.</li>
-                          <li>Edit A Record (<code className="text-white">@</code>): IPv4 ko <strong className="text-white font-mono bg-zinc-900 px-1.5 py-0.5 rounded">76.76.21.21</strong> set karein.</li>
-                          <li><strong className="text-amber-400">IMPORTANT:</strong> Proxy status ko Orange Cloud se band kar ke <strong>DNS Only (Grey Cloud)</strong> karein taake SSL foran issue ho.</li>
-                          <li>Edit CNAME (<code className="text-white">www</code>): Target ko <strong className="text-white font-mono bg-zinc-900 px-1.5 py-0.5 rounded">cname.vercel-dns.com</strong> set karein.</li>
+                          <li>Edit A Record (<code className="text-white">@</code>): set IPv4 address to <strong className="text-white font-mono bg-zinc-900 px-1.5 py-0.5 rounded">76.76.21.21</strong>.</li>
+                          <li><strong className="text-amber-400">CRITICAL:</strong> Switch Proxy status toggle from Orange Cloud to <strong>DNS Only (Grey Cloud)</strong> for instant SSL certificate issuance.</li>
+                          <li>Edit CNAME (<code className="text-white">www</code>): set Target to <strong className="text-white font-mono bg-zinc-900 px-1.5 py-0.5 rounded">cname.vercel-dns.com</strong>.</li>
                         </>
                       )}
                       {selectedRegistrar === "ionos" && (
@@ -785,10 +785,10 @@ export default function ZyntixStudio() {
                       )}
                       {selectedRegistrar === "other" && (
                         <>
-                          <li>Apne domain provider ke <strong>DNS Settings / Zone Editor</strong> mein jaein.</li>
-                          <li><strong>A Record (@):</strong> Points to <strong className="text-white font-mono bg-zinc-900 px-1.5 py-0.5 rounded">76.76.21.21</strong>.</li>
-                          <li><strong>CNAME Record (www):</strong> Points to <strong className="text-white font-mono bg-zinc-900 px-1.5 py-0.5 rounded">cname.vercel-dns.com</strong>.</li>
-                          <li>Save changes. Free SSL Let's Encrypt certificate khud ba khud activate ho jayega.</li>
+                          <li>Open your domain provider's <strong>DNS Settings / Zone Editor</strong>.</li>
+                          <li><strong>A Record (@):</strong> Point to <strong className="text-white font-mono bg-zinc-900 px-1.5 py-0.5 rounded">76.76.21.21</strong>.</li>
+                          <li><strong>CNAME Record (www):</strong> Point to <strong className="text-white font-mono bg-zinc-900 px-1.5 py-0.5 rounded">cname.vercel-dns.com</strong>.</li>
+                          <li>Save changes. Your free Edge SSL certificate will activate automatically.</li>
                         </>
                       )}
                     </ol>
@@ -843,29 +843,29 @@ export default function ZyntixStudio() {
                   </div>
                 </div>
 
-                {/* Step 4: 3 Golden Rules / Critical Pitfalls (Ghaltiyan Jin Say Bachna Hai) */}
+                {/* Step 4: 3 Golden Rules / Critical Pitfalls to Avoid */}
                 <div className="bg-amber-950/20 border border-amber-500/30 rounded-xl p-4 space-y-3">
                   <div className="flex items-center gap-2 text-amber-300 font-bold text-xs uppercase tracking-wider">
                     <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
-                    <span>3 Golden Rules: Ghaltiyan Jin Say Bachna Hai</span>
+                    <span>3 Golden Rules: Critical Pitfalls to Avoid</span>
                   </div>
                   <div className="space-y-2 text-zinc-300 text-[11px] leading-relaxed">
                     <div className="flex items-start gap-2">
                       <span className="text-amber-400 font-bold shrink-0">1.</span>
                       <p>
-                        <strong>Purana A Record DELETE karein:</strong> Agar aapke registrar par pehle se koi purana IP (parking IP ya purana host) laga hua hai, to usay pehle delete karein. Agar 2 mukhtalif A records honge to website nahi khulegi. Sirf <code className="text-white bg-zinc-900 px-1 rounded">76.76.21.21</code> hona chahiye.
+                        <strong>Delete Existing A Records:</strong> If your domain has an existing A record pointing to a parking page or former host, delete it first. Conflicting A records will prevent your site from loading. Only <code className="text-white bg-zinc-900 px-1 rounded">76.76.21.21</code> should remain.
                       </p>
                     </div>
                     <div className="flex items-start gap-2">
                       <span className="text-amber-400 font-bold shrink-0">2.</span>
                       <p>
-                        <strong>Cloudflare Users (Grey Cloud):</strong> Agar aap Cloudflare use kar rahe hain, to Orange Cloud band kar ke <strong>DNS Only (Grey Cloud)</strong> select karein taake initial SSL verification foran ho jaye.
+                        <strong>Cloudflare Users (Grey Cloud):</strong> If using Cloudflare, turn off the Orange Cloud proxy and set it to <strong>DNS Only (Grey Cloud)</strong> for instant SSL generation.
                       </p>
                     </div>
                     <div className="flex items-start gap-2">
                       <span className="text-amber-400 font-bold shrink-0">3.</span>
                       <p>
-                        <strong>Sabar Rakhein (5-30 Minutes):</strong> Save karnay ke baad foran panic na karein! DNS internet par phelne mein 5 se 30 minute leta hai. Aapka <code className="text-white bg-zinc-900 px-1 rounded">.zyntix.app</code> link tab tak 100% chal raha hai.
+                        <strong>Allow DNS Propagation (5–30 Minutes):</strong> Do not panic immediately after saving! Global DNS caches take 5 to 30 minutes to update. Your <code className="text-white bg-zinc-900 px-1 rounded">.zyntix.app</code> address remains 100% online in the meantime.
                       </p>
                     </div>
                   </div>
@@ -879,7 +879,7 @@ export default function ZyntixStudio() {
                         Step 5: Verify Live Connection Status
                       </span>
                       <p className="text-zinc-400 text-[11px]">
-                        Google Public DNS (8.8.8.8) se live check karein ke records propagate ho chuke hain ya nahi.
+                        Verify live propagation directly from Google Public DNS (8.8.8.8).
                       </p>
                     </div>
                     <button
@@ -903,17 +903,17 @@ export default function ZyntixStudio() {
                         {dnsCheckResult.isVercelConnected ? (
                           <>
                             <Check className="w-5 h-5 text-emerald-400" />
-                            <span>Mubarak Ho! Domain Successfully Connected & Live!</span>
+                            <span>Congratulations! Domain Successfully Connected & Live!</span>
                           </>
                         ) : (
                           <>
                             <Clock className="w-5 h-5 text-amber-400 animate-spin" />
-                            <span>DNS Propagation In Progress (Wait 5-15 mins)</span>
+                            <span>DNS Propagation In Progress (Allow 5–15 mins)</span>
                           </>
                         )}
                       </div>
                       <p className="text-xs text-zinc-200">
-                        {dnsCheckResult.urduMessage || dnsCheckResult.message}
+                        {dnsCheckResult.message}
                       </p>
                       {dnsCheckResult.currentIps?.length > 0 && (
                         <div className="font-mono text-[11px] text-zinc-400 pt-1 border-t border-zinc-800">
@@ -927,24 +927,24 @@ export default function ZyntixStudio() {
                 {/* Step 6: Interactive Frequently Asked Questions (FAQ Accordion) */}
                 <div className="pt-2 border-t border-zinc-800 space-y-2">
                   <span className="font-semibold text-stone-200 text-xs block uppercase tracking-wider mb-2">
-                    Aam Sawalat & Rahnumai (FAQ):
+                    Frequently Asked Questions (FAQ):
                   </span>
                   {[
                     {
-                      q: "Website par 'Not Secure' ya SSL Pending kyun dikh raha hai?",
-                      a: "Let's Encrypt Free SSL certificate DNS connect honay ke 10-15 minute ke andar khud ba khud activate ho jata hai. Kisi paid certificate khareedne ki zaroorat nahi hai. Thora sa sabar karein, ye khud green lock (HTTPS) ban jayega."
+                      q: "Why does my browser display 'Not Secure' or 'SSL Pending'?",
+                      a: "Our automated Let's Encrypt Edge SSL certificates activate automatically within 10 to 15 minutes once the DNS records are detected. No paid SSL certificate is needed. Once verified, your site will show the secure HTTPS lock immediately."
                     },
                     {
-                      q: "Root domain (@) aur 'www' mein kya farq hai?",
-                      a: "@ aapka main domain hota hai (jaise moderntrendsnow.org) aur CNAME www subdomain ke liye hota hai (www.moderntrendsnow.org). Dono records add karna zaroori hai taake agar koi www likhay ya na likhay, dono sooraton mein aapki website khulay."
+                      q: "What is the difference between root domain (@) and 'www'?",
+                      a: "The @ record represents your root apex domain (e.g., moderntrendsnow.org), while www handles requests to www.moderntrendsnow.org. Configuring both records guarantees that visitors always reach your publication regardless of whether they type 'www'."
                     },
                     {
-                      q: "Kya meri website band ho jayegi jab tak custom domain verify na ho?",
-                      a: "Bilkul nahi! Aapka .zyntix.app subdomain 24/7 online rehta hai aur kabhi down nahi hota. Jab tak naya domain propagate ho raha hai, tab tak aapka purana link perfectly chalega."
+                      q: "Will my website experience any downtime while connecting?",
+                      a: "Zero downtime. Your fast .zyntix.app cloud subdomain remains fully online and serving visitors 24/7 throughout the entire DNS transition."
                     },
                     {
-                      q: "Agar mujh se connect na ho sake to kya karon?",
-                      a: "Aap upar Option 1 mein 'Let Us Connect It For You' button dabayein ya direct WhatsApp VIP support (+92 332 3219981) par message kar dein. Humari team khud screen share ya registrar ke zariye 100% free setup kar degi."
+                      q: "What if I get stuck or need assistance?",
+                      a: "Click Option 1 above ('Let Us Connect It For You') or reach out directly to our VIP WhatsApp support (+92 332 3219981). Our engineering team will configure the DNS and verify SSL for you 100% free of charge."
                     }
                   ].map((faq, idx) => (
                     <div key={idx} className="border border-zinc-800 rounded-xl overflow-hidden bg-zinc-950">
