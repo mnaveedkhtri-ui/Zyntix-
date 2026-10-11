@@ -1,5 +1,7 @@
 import React from 'react';
 import { getSiteBySubdomainOrDomain } from '@/lib/sites';
+
+export const dynamic = 'force-dynamic';
 import { 
   ShieldCheck, 
   Phone, 
