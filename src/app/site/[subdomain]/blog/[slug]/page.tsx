@@ -69,6 +69,29 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
   };
 }
 
+function renderInlineMarkdown(text: string) {
+  // Support bold: **text**
+  // Support italic: *text*
+  const parts = text.split(/(\*\*.*?\*\*|\*.*?\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
+      return (
+        <strong key={i} className="font-semibold text-stone-950 font-sans tracking-tight">
+          {part.slice(2, -2)}
+        </strong>
+      );
+    }
+    if (part.startsWith('*') && part.endsWith('*') && part.length > 2) {
+      return (
+        <em key={i} className="italic text-stone-700">
+          {part.slice(1, -1)}
+        </em>
+      );
+    }
+    return part;
+  });
+}
+
 export default async function BlogPostPage({ params }: ArticlePageProps) {
   const { subdomain, slug } = await params;
   const site = getSiteBySubdomainOrDomain(subdomain);
@@ -263,19 +286,31 @@ export default async function BlogPostPage({ params }: ArticlePageProps) {
             if (block.startsWith('[AEO_ANSWER]:')) {
               const answer = block.replace('[AEO_ANSWER]:', '').trim();
               return (
-                <div key={pIdx} className="my-10 p-6 sm:p-8 bg-[#f5ede3] border-l-4 border-amber-900 rounded-r-2xl font-sans text-sm sm:text-base text-stone-900 leading-relaxed shadow-xs">
-                  <span className="block text-xs uppercase tracking-widest font-bold text-amber-950 mb-2">
-                    Executive Answer (#0 Direct Answer Snippet)
-                  </span>
-                  <p>{answer}</p>
+                <div key={pIdx} className="my-10 p-6 sm:p-8 bg-[#f5ede3] border-l-4 border-amber-900 rounded-2xl font-sans text-sm sm:text-base text-stone-900 leading-relaxed shadow-sm">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="w-2.5 h-2.5 rounded-full bg-amber-900 animate-pulse" />
+                    <span className="text-xs uppercase tracking-widest font-bold text-amber-950 font-sans">
+                      Executive Direct Answer (#0 AEO Snippet)
+                    </span>
+                  </div>
+                  <p className="font-sans leading-relaxed text-stone-800 text-[15px] sm:text-base">
+                    {renderInlineMarkdown(answer)}
+                  </p>
                 </div>
               );
             }
-            if (block.startsWith('### ')) {
+            if (block.startsWith('### ') || block.startsWith('## ')) {
               return (
-                <h2 key={pIdx} className="text-2xl sm:text-4xl font-normal text-stone-950 pt-10 pb-3 border-b border-stone-200">
-                  {block.replace('### ', '')}
+                <h2 key={pIdx} className="text-2xl sm:text-4xl font-normal text-stone-950 pt-12 pb-3 border-b border-stone-200/90 font-serif tracking-tight">
+                  {block.replace(/^(### |## )/, '')}
                 </h2>
+              );
+            }
+            if (block.startsWith('#### ')) {
+              return (
+                <h3 key={pIdx} className="text-xl sm:text-2xl font-medium text-stone-900 pt-8 pb-2 font-serif text-amber-950">
+                  {block.replace('#### ', '')}
+                </h3>
               );
             }
             if (block.startsWith('*') && block.endsWith('*')) {
@@ -287,8 +322,8 @@ export default async function BlogPostPage({ params }: ArticlePageProps) {
             }
             if (block.startsWith('> ')) {
               return (
-                <blockquote key={pIdx} className="my-10 pl-6 border-l-3 border-stone-400 italic text-xl sm:text-2xl text-stone-800 font-serif">
-                  {block.replace('> ', '')}
+                <blockquote key={pIdx} className="my-10 p-6 sm:p-8 bg-white/70 border-l-4 border-amber-900/70 rounded-r-2xl italic text-xl sm:text-2xl text-stone-800 font-serif shadow-xs">
+                  &ldquo;{block.replace('> ', '').replace(/^"|"$/g, '')}&rdquo;
                 </blockquote>
               );
             }
@@ -296,16 +331,54 @@ export default async function BlogPostPage({ params }: ArticlePageProps) {
               const match = block.match(/!\[(.*?)\]\((.*?)\)/);
               if (match) {
                 return (
-                  <div key={pIdx} className="my-10 rounded-2xl overflow-hidden shadow-sm border border-stone-200">
-                    <img src={match[2]} alt={match[1]} className="w-full h-auto object-cover" />
-                    <p className="p-3 bg-stone-50 text-center font-sans text-xs text-stone-500 italic">
+                  <figure key={pIdx} className="my-12 rounded-3xl overflow-hidden shadow-md border border-stone-200/90 bg-stone-100">
+                    <img src={match[2]} alt={match[1]} className="w-full h-[320px] sm:h-[480px] object-cover filter contrast-[1.03]" />
+                    <figcaption className="p-3.5 bg-stone-100/95 border-t border-stone-200/90 text-center font-sans text-xs text-stone-600">
+                      <span className="font-semibold text-stone-900 mr-1.5 uppercase tracking-wider text-[11px]">Plate &bull;</span>
                       {match[1]}
-                    </p>
-                  </div>
+                    </figcaption>
+                  </figure>
                 );
               }
             }
-            return <p key={pIdx}>{block}</p>;
+            // Numbered list items (e.g., 1. Modern EIFS...)
+            const numMatch = block.match(/^(\d+)\.\s+(.*)$/);
+            if (numMatch) {
+              return (
+                <div key={pIdx} className="my-3 p-5 sm:p-6 bg-white rounded-2xl border border-stone-200/90 shadow-xs flex items-start gap-4">
+                  <span className="w-8 h-8 rounded-xl bg-amber-900 text-stone-100 font-sans text-xs font-bold flex items-center justify-center shrink-0 shadow-xs">
+                    {numMatch[1]}
+                  </span>
+                  <div className="flex-1 font-sans text-sm sm:text-base text-stone-800 leading-relaxed">
+                    {renderInlineMarkdown(numMatch[2])}
+                  </div>
+                </div>
+              );
+            }
+            // FAQ format: **Question?** Answer
+            if (block.startsWith('**') && block.includes('?**')) {
+              const [qRaw, ...rest] = block.split('?**');
+              const question = qRaw.replace(/^\*\*/, '') + '?';
+              const answer = rest.join('?**').trim();
+              return (
+                <div key={pIdx} className="my-5 p-6 sm:p-7 bg-white rounded-2xl border border-stone-200/90 shadow-xs hover:border-amber-900/30 transition">
+                  <h4 className="font-serif text-lg sm:text-xl font-medium text-stone-950 mb-3 flex items-start gap-3">
+                    <span className="px-2.5 py-0.5 rounded-lg bg-amber-100 text-amber-950 font-sans text-xs font-bold uppercase tracking-wider shrink-0 mt-0.5">
+                      Q
+                    </span>
+                    <span>{question}</span>
+                  </h4>
+                  <div className="font-sans text-sm sm:text-base text-stone-700 leading-relaxed pl-10 border-l-2 border-amber-900/10">
+                    {renderInlineMarkdown(answer)}
+                  </div>
+                </div>
+              );
+            }
+            return (
+              <p key={pIdx} className="leading-[1.95] text-stone-800 text-base sm:text-lg font-serif">
+                {renderInlineMarkdown(block)}
+              </p>
+            );
           })}
         </article>
 
