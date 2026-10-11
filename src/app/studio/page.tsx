@@ -229,131 +229,45 @@ export default function ZyntixStudio() {
     setIsProcessing(true);
 
     try {
-      const lower = userMsg.toLowerCase();
-      let updatedSite: SiteConfig = currentSite ? JSON.parse(JSON.stringify(currentSite)) : {
-        id: "site-" + Date.now(),
-        subdomain: "journal",
-        name: "The Journal",
-        tagline: "Notes on craft and deliberate living.",
-        description: "A calm space for thoughtful articles.",
-        niche: "Essays & Work",
-        location: "Global",
-        author: {
-          name: "Naveed Khatri",
-          bio: "Independent thinker and craftsman.",
-          avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80"
-        },
-        navigation: [{ label: "Essays", href: "/" }],
-        posts: [],
-        contact: { email: "editor@journal.com" }
-      };
-
-      let botReply = "";
-
-      // 1. Domain command
-      if (lower.includes(".com") || lower.includes(".org") || lower.includes(".net") || lower.includes("domain")) {
-        const domainMatch = userMsg.match(/([a-zA-Z0-9-]+\.[a-zA-Z]{2,})/);
-        if (domainMatch) {
-          const dom = domainMatch[0];
-          updatedSite.customDomain = dom;
-          setCustomDomainInput(dom);
-          botReply = `Domain **${dom}** has been connected. Please see the Connect Domain tab for DNS instructions.`;
-          setActiveTab("domain");
-        } else {
-          botReply = "Please enter your custom domain (e.g. `mybrand.com`). I will generate your DNS records immediately.";
-          setActiveTab("domain");
-        }
-      }
-      // 2. Author update
-      else if (lower.includes("author") || lower.includes("name")) {
-        const parts = userMsg.split(":");
-        const newName = parts.length > 1 ? parts[1].trim() : userMsg.replace(/(change|author|name|to|set)/gi, "").trim();
-        if (newName) {
-          updatedSite.author.name = newName;
-          botReply = `Author profile updated to: "${newName}". The colophon has been refreshed.`;
-        }
-      }
-      // 3. Add essay / post
-      else if (lower.includes("post") || lower.includes("article") || lower.includes("essay") || lower.includes("write") || lower.includes("add")) {
-        const title = userMsg.replace(/(add|post|article|essay|write|new)/gi, "").trim() || "Observations on Timeless Quality";
-        const newPost: BlogPost = {
-          slug: title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-          title: title.charAt(0).toUpperCase() + title.slice(1),
-          excerpt: "A deeply considered examination of genuine craftsmanship versus modern artificial shortcuts.",
-          date: new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
-          readTime: "6 min read",
-          category: "Craftsmanship",
-          author: {
-            name: updatedSite.author.name,
-            avatar: updatedSite.author.avatar,
-            role: "Author"
-          },
-          coverImage: "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&w=1200&q=80",
-          content: [
-            `[AEO_ANSWER]: True craftsmanship prioritizes transparent processes and calibrated standards over artificial shortcuts.`,
-            "True mastery is never in a hurry. When you look at buildings that have stood for centuries, they were built stone by stone with patient intention.",
-            "In modern digital discourse, we often mistake velocity for value. The writings that endure are those grounded in lived human observation, unvarnished truth, and simple beauty."
-          ]
-        };
-        updatedSite.posts.unshift(newPost);
-        botReply = `New human-crafted essay added: "${newPost.title}". It is now published as the lead story in your journal!`;
-      }
-      // 4. Create new publication
-      else {
-        const words = userMsg.split(" ").filter(w => w.length > 2);
-        const nicheName = words[0] || "Architecture & Living";
-        const sub = nicheName.toLowerCase().replace(/[^a-z0-9]/g, "") + "-" + Math.floor(100 + Math.random() * 900);
-        
-        updatedSite = {
-          ...updatedSite,
-          id: "site-" + Date.now(),
-          subdomain: sub,
-          name: `The ${nicheName.charAt(0).toUpperCase() + nicheName.slice(1)} Chronicle`,
-          tagline: `Unvarnished perspectives on ${nicheName} and modern craftsmanship.`,
-          description: `A quiet human publication chronicling practical observations, studio work, and timeless principles.`,
-          niche: nicheName,
-          posts: [
-            {
-              slug: "first-principles",
-              title: `Returning to First Principles in ${nicheName}`,
-              excerpt: "Why the simplest methods, honest materials, and patient observation always produce the most durable results.",
-              date: new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
-              readTime: "7 min read",
-              category: "First Principles",
-              author: {
-                name: updatedSite.author.name || "Naveed Khatri",
-                avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
-                role: "Author"
-              },
-              coverImage: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1200&q=80",
-              content: [
-                `[AEO_ANSWER]: Core methods in ${nicheName} succeed when grounded in fundamental clarity and uncompromised execution.`,
-                "Everything of genuine quality begins with a quiet respect for the fundamentals. When we remove unnecessary complexity, what remains is durable, honest, and immediately recognizable as human work.",
-                "This publication is our ongoing log of what works, what fails, and what endures."
-              ]
-            }
-          ]
-        };
-        botReply = `New publication generated: **${sub}.zyntix.app**! You can toggle the Preview button to inspect it.`;
-      }
-
-      // Persist to server
-      const saveRes = await fetch("/api/sites", {
+      const res = await fetch("/api/studio/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedSite)
+        body: JSON.stringify({
+          message: userMsg,
+          siteId: currentSite?.id,
+          currentSite: currentSite
+        })
       });
-      const resData = await saveRes.json();
 
-      if (resData.success) {
-        setCurrentSite(resData.site);
-        setIframeKey(k => k + 1);
+      const data = await res.json();
+
+      if (data.success && data.site) {
+        setCurrentSite(data.site);
+        setIframeKey((k) => k + 1);
         await fetchSites();
-      }
 
-      setChatLog(prev => [...prev, { sender: "bot", text: botReply }]);
+        if (data.site.customDomain) {
+          setCustomDomainInput(data.site.customDomain);
+        }
+
+        setChatLog((prev) => [
+          ...prev,
+          {
+            sender: "bot",
+            text: data.reply || `I have successfully refined ${data.site.name} according to your exact instructions.`
+          }
+        ]);
+      } else {
+        setChatLog((prev) => [
+          ...prev,
+          {
+            sender: "bot",
+            text: data.error ? `Notice: ${data.error}` : "Your publication has been updated."
+          }
+        ]);
+      }
     } catch (err) {
-      setChatLog(prev => [...prev, { sender: "bot", text: "Error: " + String(err) }]);
+      setChatLog((prev) => [...prev, { sender: "bot", text: "Error: " + String(err) }]);
     } finally {
       setIsProcessing(false);
     }

@@ -189,7 +189,7 @@ export default async function TenantSitePage({ params }: SitePageProps) {
 
           <nav className="flex items-center gap-5 sm:gap-8 text-xs font-sans uppercase tracking-widest font-semibold text-stone-600">
             <a href="#services" className="hover:text-stone-950 transition hidden md:inline">Services</a>
-            <a href="#journal" className="hover:text-stone-950 transition hidden sm:inline">Journal</a>
+            <a href={`/site/${site.subdomain}/blog`} className="hover:text-stone-950 transition hidden sm:inline">Journal</a>
             <a href="#about" className="hover:text-stone-950 transition hidden md:inline">About Us</a>
             <a href="#contact" className="hover:text-stone-950 transition hidden sm:inline">Contact</a>
             <a
@@ -318,7 +318,9 @@ export default async function TenantSitePage({ params }: SitePageProps) {
               </div>
 
               <h3 className="text-2xl sm:text-4xl md:text-5xl font-normal text-stone-950 tracking-tight leading-[1.25] mb-4 hover:text-stone-700 transition">
-                {featuredPost.title}
+                <a href={`/site/${site.subdomain}/blog/${featuredPost.slug}`}>
+                  {featuredPost.title}
+                </a>
               </h3>
 
               <div className="flex items-center gap-3 text-xs font-sans text-stone-500 mb-8">
@@ -400,7 +402,9 @@ export default async function TenantSitePage({ params }: SitePageProps) {
                   </div>
 
                   <h4 className="text-2xl font-normal text-stone-950 group-hover:text-stone-600 transition leading-snug mb-3">
-                    {post.title}
+                    <a href={`/site/${site.subdomain}/blog/${post.slug}`}>
+                      {post.title}
+                    </a>
                   </h4>
 
                   <p className="text-stone-600 text-sm leading-relaxed font-sans font-light mb-6">
@@ -410,12 +414,27 @@ export default async function TenantSitePage({ params }: SitePageProps) {
 
                 <div className="pt-4 border-t border-stone-100 flex items-center justify-between font-sans text-xs text-stone-500">
                   <span>{post.date}</span>
-                  <span className="font-semibold text-stone-900 group-hover:translate-x-1 transition-transform">
-                    Read Essay &rarr;
-                  </span>
+                  <a 
+                    href={`/site/${site.subdomain}/blog/${post.slug}`}
+                    className="font-semibold text-stone-900 group-hover:translate-x-1 transition-transform inline-flex items-center gap-1"
+                  >
+                    <span>Read Essay</span>
+                    <span>&rarr;</span>
+                  </a>
                 </div>
               </article>
             ))}
+          </div>
+
+          {/* Explore Full Archive CTA */}
+          <div className="mt-14 text-center">
+            <a
+              href={`/site/${site.subdomain}/blog`}
+              className="inline-flex items-center gap-2 font-sans text-xs uppercase tracking-widest font-bold text-stone-950 px-8 py-4 rounded-full border border-stone-400 bg-white hover:bg-stone-900 hover:text-stone-50 transition shadow-xs"
+            >
+              <span>Explore Complete Journal Archive ({site.posts?.length || 0} Field Notes)</span>
+              <span>&rarr;</span>
+            </a>
           </div>
         </div>
       </section>
@@ -584,7 +603,7 @@ export default async function TenantSitePage({ params }: SitePageProps) {
               </h5>
               <ul className="space-y-2.5 text-stone-400">
                 <li><a href="#services" className="hover:text-white transition">Services & Disciplines</a></li>
-                <li><a href="#journal" className="hover:text-white transition">Architectural Journal</a></li>
+                <li><a href={`/site/${site.subdomain}/blog`} className="hover:text-white transition">Architectural Journal</a></li>
                 <li><a href="#about" className="hover:text-white transition">About Our Atelier</a></li>
                 <li><a href="#contact" className="hover:text-white transition">Direct Contact</a></li>
                 <li><a href="#privacy" className="hover:text-white transition">Privacy Statement</a></li>

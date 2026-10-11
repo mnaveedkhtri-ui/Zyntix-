@@ -44,6 +44,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.95,
     });
 
+    // Dedicated Journal / Blog Archive
+    dynamicSiteRoutes.push({
+      url: `${siteUrl}/blog`,
+      lastModified: new Date(site.updatedAt || now),
+      changeFrequency: "daily",
+      priority: 0.9,
+    });
+
     // Sub-sections / Anchors
     dynamicSiteRoutes.push({
       url: `${siteUrl}#services`,
@@ -64,11 +72,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     });
 
-    // Individual Articles
+    // Dedicated Individual Articles (High SEO Authority)
     if (site.posts && Array.isArray(site.posts)) {
       for (const post of site.posts) {
         dynamicSiteRoutes.push({
-          url: `${siteUrl}#${post.slug}`,
+          url: `${siteUrl}/blog/${post.slug}`,
           lastModified: new Date(post.date || now),
           changeFrequency: "monthly",
           priority: 0.9,
