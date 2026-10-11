@@ -39,6 +39,8 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
     ? `https://${site.customDomain}` 
     : `${baseUrl}/site/${site.subdomain}`;
   const articleUrl = `${siteUrl}/blog/${post.slug}`;
+  const iconUrl = `${baseUrl}/api/sites/${site.subdomain}/icon`;
+  const dynamicOgUrl = `${baseUrl}/api/sites/${site.subdomain}/og?slug=${post.slug}`;
 
   return {
     title: `${post.title} — ${site.name}`,
@@ -47,6 +49,11 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
     alternates: {
       canonical: articleUrl,
     },
+    icons: {
+      icon: iconUrl,
+      shortcut: iconUrl,
+      apple: iconUrl,
+    },
     openGraph: {
       title: post.title,
       description: post.excerpt,
@@ -54,7 +61,7 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
       siteName: site.name,
       images: [
         {
-          url: post.coverImage || 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80',
+          url: dynamicOgUrl,
           width: 1200,
           height: 630,
           alt: post.title,
@@ -68,7 +75,7 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
       card: 'summary_large_image',
       title: post.title,
       description: post.excerpt,
-      images: [post.coverImage || 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80'],
+      images: [dynamicOgUrl],
     },
   };
 }

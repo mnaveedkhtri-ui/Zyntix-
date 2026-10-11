@@ -27,6 +27,8 @@ export async function generateMetadata({ params }: BlogIndexProps): Promise<Meta
   const siteUrl = site.customDomain 
     ? `https://${site.customDomain}` 
     : `${baseUrl}/site/${site.subdomain}`;
+  const iconUrl = `${baseUrl}/api/sites/${site.subdomain}/icon`;
+  const ogUrl = `${baseUrl}/api/sites/${site.subdomain}/og`;
 
   return {
     title: `The Research Journal & Field Notes — ${site.name}`,
@@ -35,12 +37,31 @@ export async function generateMetadata({ params }: BlogIndexProps): Promise<Meta
     alternates: {
       canonical: `${siteUrl}/blog`,
     },
+    icons: {
+      icon: iconUrl,
+      shortcut: iconUrl,
+      apple: iconUrl,
+    },
     openGraph: {
       title: `The Research Journal — ${site.name}`,
       description: `Complete archive of research essays and practical craftsmanship studies in ${site.location}.`,
       url: `${siteUrl}/blog`,
       siteName: site.name,
+      images: [
+        {
+          url: ogUrl,
+          width: 1200,
+          height: 630,
+          alt: site.name,
+        },
+      ],
       type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `The Research Journal — ${site.name}`,
+      description: `Complete archive of research essays and practical craftsmanship studies in ${site.location}.`,
+      images: [ogUrl],
     },
   };
 }

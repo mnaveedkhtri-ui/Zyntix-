@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <!-- Background: Deep Luxury Obsidian Dark -->
+  <rect width="512" height="512" rx="128" fill="#09090b" />
+  <rect x="2" y="2" width="508" height="508" rx="126" fill="none" stroke="rgba(255, 255, 255, 0.1)" stroke-width="4" />
+  
+  <!-- Architectural Geometric Z Monogram -->
+  <path d="M 128 134 H 384 V 202 L 232 310 H 384 V 378 H 128 V 310 L 280 202 H 128 Z" fill="#faf8f5" />
+  
+  <!-- Subtle Amber Atelier Dot Accent -->
+  <circle cx="364" cy="138" r="9" fill="#d97706" />
+</svg>

@@ -36,7 +36,8 @@ export async function generateMetadata({ params }: SitePageProps): Promise<Metad
   const siteUrl = site.customDomain 
     ? `https://${site.customDomain}` 
     : `${baseUrl}/site/${site.subdomain}`;
-  const featuredPost = site.posts?.[0];
+  const iconUrl = `${baseUrl}/api/sites/${site.subdomain}/icon`;
+  const ogUrl = `${baseUrl}/api/sites/${site.subdomain}/og`;
 
   return {
     title: `${site.name} — ${site.location} Official Publication`,
@@ -45,6 +46,11 @@ export async function generateMetadata({ params }: SitePageProps): Promise<Metad
     alternates: {
       canonical: siteUrl,
     },
+    icons: {
+      icon: iconUrl,
+      shortcut: iconUrl,
+      apple: iconUrl,
+    },
     openGraph: {
       title: `${site.name} — ${site.location}`,
       description: site.description,
@@ -52,7 +58,7 @@ export async function generateMetadata({ params }: SitePageProps): Promise<Metad
       siteName: site.name,
       images: [
         {
-          url: featuredPost?.coverImage || 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80',
+          url: ogUrl,
           width: 1200,
           height: 630,
           alt: site.name,
@@ -64,7 +70,7 @@ export async function generateMetadata({ params }: SitePageProps): Promise<Metad
       card: 'summary_large_image',
       title: site.name,
       description: site.description,
-      images: [featuredPost?.coverImage || 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80'],
+      images: [ogUrl],
     },
     robots: {
       index: true,
