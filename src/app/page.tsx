@@ -13,9 +13,12 @@ export default function Home() {
             Zyntix
           </Link>
 
-          <nav className="flex items-center gap-6 font-sans text-xs uppercase tracking-widest font-medium text-stone-600">
-            <Link href="/site/demo" className="hover:text-stone-950 transition">
-              Live Showcase Publication
+          <nav className="flex items-center gap-4 sm:gap-6 font-sans text-xs uppercase tracking-widest font-medium text-stone-600">
+            <Link href="/site/demo" className="hover:text-stone-950 transition hidden md:inline">
+              Showcase Publication
+            </Link>
+            <Link href="/sign-in" className="hover:text-stone-950 transition font-semibold">
+              Sign In
             </Link>
             <Link 
               href="/studio"
@@ -43,17 +46,22 @@ export default function Home() {
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 font-sans text-xs">
           <Link
-            href="/studio"
-            className="w-full sm:w-auto px-8 py-3.5 bg-stone-900 text-stone-50 rounded-md font-medium hover:bg-stone-800 transition flex items-center justify-center gap-2"
+            href="/sign-in"
+            className="w-full sm:w-auto px-8 py-3.5 bg-stone-900 text-stone-50 rounded-md font-medium hover:bg-stone-800 transition flex items-center justify-center gap-2 shadow-md shadow-stone-900/10"
           >
-            <span>Launch Zyntix Studio</span>
-            <ArrowRight className="w-4 h-4" />
+            <span>Continue with Google &rarr;</span>
+          </Link>
+          <Link
+            href="/studio"
+            className="w-full sm:w-auto px-8 py-3.5 bg-white border border-stone-300 text-stone-800 rounded-md font-medium hover:bg-stone-50 transition"
+          >
+            Launch Zyntix Studio
           </Link>
           <Link
             href="/site/demo"
-            className="w-full sm:w-auto px-8 py-3.5 bg-white border border-stone-300 text-stone-800 rounded-md font-medium hover:bg-stone-50 transition"
+            className="w-full sm:w-auto px-6 py-3.5 text-stone-600 hover:text-stone-900 transition font-medium"
           >
-            Explore Showcase Publication
+            Explore Showcase
           </Link>
         </div>
 

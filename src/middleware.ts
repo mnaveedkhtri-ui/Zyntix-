@@ -4,11 +4,13 @@ export function middleware(req: NextRequest) {
   const url = req.nextUrl;
   const hostname = req.headers.get("host") || "";
 
-  // 1. Exclude Next.js system assets, static files, and API routes
+  // 1. Exclude Next.js system assets, static files, API routes, and auth
   if (
     url.pathname.startsWith("/_next") ||
     url.pathname.startsWith("/api") ||
     url.pathname.startsWith("/static") ||
+    url.pathname.startsWith("/sign-in") ||
+    url.pathname.startsWith("/sign-up") ||
     url.pathname.includes(".")
   ) {
     return NextResponse.next();
