@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   description: "Autonomous multi-tenant editorial publications and high-authority organic web platform.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://zyntix-studio-ivory.vercel.app"),
   verification: {
-    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "google-site-verification-zyntix-auto",
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "gCz9yLEhlFt8IGLhyJZdLHR_v5PHJ7px4ot69CUB1pw",
     yandex: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION || undefined,
     other: {
       "msvalidate.01": process.env.NEXT_PUBLIC_BING_VERIFICATION || "bing-verification-zyntix",

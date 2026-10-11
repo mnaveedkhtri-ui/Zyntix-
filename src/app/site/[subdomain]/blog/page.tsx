@@ -63,6 +63,9 @@ export async function generateMetadata({ params }: BlogIndexProps): Promise<Meta
       description: `Complete archive of research essays and practical craftsmanship studies in ${site.location}.`,
       images: [ogUrl],
     },
+    verification: {
+      google: site.googleVerification || "gCz9yLEhlFt8IGLhyJZdLHR_v5PHJ7px4ot69CUB1pw",
+    },
   };
 }
 

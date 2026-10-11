@@ -21,6 +21,7 @@ export interface SiteConfig {
   id: string;
   subdomain: string;
   customDomain?: string | null;
+  googleVerification?: string;
   name: string;
   tagline: string;
   description: string;
@@ -67,6 +68,7 @@ const INITIAL_DEMO_SITES: SiteConfig[] = [
   "id": "site-default-demo",
   "subdomain": "demo",
   "customDomain": "moderntrendsnow.org",
+  "googleVerification": "gCz9yLEhlFt8IGLhyJZdLHR_v5PHJ7px4ot69CUB1pw",
   "name": "Meridian Craft & Architecture",
   "tagline": "Architectural Craftsmanship, Sustainable Engineering & Thoughtful Construction",
   "description": "An independent architectural studio and research journal dedicated to timeless masonry, sustainable timber framing, and grounded regional engineering.",

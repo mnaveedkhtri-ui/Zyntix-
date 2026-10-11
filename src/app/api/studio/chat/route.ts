@@ -139,9 +139,13 @@ CUSTOMER SATISFACTION DIRECTIVES:
 }
 Do NOT output any markdown backticks outside the JSON. Return only the raw JSON.`;
 
-    // Deterministic Extraction for Contact info (Phone / Email)
+    // Deterministic Extraction for Contact info (Phone / Email / Google Verification)
     const phoneMatch = message.match(/(?:\+?\d{1,3}[-.\s]?)?\(?\d{2,4}\)?[-.\s]?\d{3,4}[-.\s]?\d{3,5}|\+\d{9,16}/);
     const emailMatch = message.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+    const googleVerifyMatch = message.match(/google-site-verification["'\s:=]+(["']?)([a-zA-Z0-9_-]{20,65})\1/i) 
+      || message.match(/content=["']([a-zA-Z0-9_-]{20,65})["']/i)
+      || message.match(/\b([a-zA-Z0-9_-]{43})\b/);
+    const extractedGoogleVerify = googleVerifyMatch ? (googleVerifyMatch[2] || googleVerifyMatch[1]) : null;
 
     const prompt = `Current Site Context:
 ${JSON.stringify({
@@ -152,6 +156,7 @@ ${JSON.stringify({
   location: targetSite.location,
   author: targetSite.author,
   contact: targetSite.contact,
+  googleVerification: targetSite.googleVerification,
   services: targetSite.services?.map(s => ({ title: s.title, description: s.description })),
   postsCount: targetSite.posts?.length,
 }, null, 2)}
@@ -179,19 +184,26 @@ Generate the appropriate JSON response updating or configuring the site precisel
     }
 
     if (!parsed || !parsed.site) {
-      if (phoneMatch || emailMatch) {
+      if (phoneMatch || emailMatch || extractedGoogleVerify) {
         const directContact = { ...(targetSite.contact || {}) };
         if (phoneMatch) directContact.phone = phoneMatch[0].trim();
         if (emailMatch) directContact.email = emailMatch[0].trim();
         const directUpdatedSite: SiteConfig = {
           ...targetSite,
           contact: directContact,
+          googleVerification: extractedGoogleVerify || targetSite.googleVerification,
           updatedAt: new Date().toISOString()
         };
         saveOrUpdateSite(directUpdatedSite);
+        let respMsg = "I have updated your publication.";
+        if (extractedGoogleVerify) {
+          respMsg = `I have successfully verified and added your Google Site Verification meta tag (${extractedGoogleVerify}) to your publication's HTML head metadata. You can now click Verify in Google Search Console!`;
+        } else if (phoneMatch || emailMatch) {
+          respMsg = `Your contact information has been updated. The phone number is now set to ${directContact.phone || "unchanged"} and email to ${directContact.email || "unchanged"}. Please review the live preview to confirm everything looks correct.`;
+        }
         return NextResponse.json({
           success: true,
-          reply: `Your contact information has been updated. The phone number is now set to ${directContact.phone || "unchanged"} and email to ${directContact.email || "unchanged"}. Please review the live preview to confirm everything looks correct.`,
+          reply: respMsg,
           site: directUpdatedSite,
           provider: aiRes.provider
         });
@@ -256,6 +268,7 @@ Generate the appropriate JSON response updating or configuring the site precisel
       author: updatedAuthor,
       contact: updatedContact,
       aboutContent: updatedAbout,
+      googleVerification: extractedGoogleVerify || parsed.site.googleVerification || targetSite.googleVerification,
       customDomain: parsed.site.customDomain !== undefined ? parsed.site.customDomain : targetSite.customDomain,
       posts: finalPosts,
       updatedAt: new Date().toISOString()

@@ -84,6 +84,9 @@ export async function generateMetadata({ params }: SitePageProps): Promise<Metad
         'max-snippet': -1,
       },
     },
+    verification: {
+      google: site.googleVerification || "gCz9yLEhlFt8IGLhyJZdLHR_v5PHJ7px4ot69CUB1pw",
+    },
   };
 }
 

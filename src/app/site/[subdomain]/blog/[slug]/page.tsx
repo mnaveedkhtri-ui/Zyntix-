@@ -77,6 +77,9 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
       description: post.excerpt,
       images: [dynamicOgUrl],
     },
+    verification: {
+      google: site.googleVerification || "gCz9yLEhlFt8IGLhyJZdLHR_v5PHJ7px4ot69CUB1pw",
+    },
   };
 }
 
