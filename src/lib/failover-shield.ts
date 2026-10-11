@@ -132,6 +132,7 @@ class FailoverShield {
     prompt: string,
     systemInstruction: string = 'You are a master human essayist and craftsman. Write with grounded nuance, zero artificial buzzwords, and deep practical insight.'
   ): Promise<AICompletionResponse> {
+    this.refreshKeys();
     // 1. Try Gemini Key Pool (Loop through available keys on 429/quota error)
     for (let attempt = 0; attempt < Math.min(this.geminiKeys.length, 3); attempt++) {
       try {
@@ -161,6 +162,10 @@ class FailoverShield {
       text: `Grounded observations on craftsmanship and fundamental execution. True mastery requires stripping away secondary ornamentation and focusing strictly on durable, verifiable methods that stand up to daily use.`,
       provider: 'fallback'
     };
+  }
+
+  public async callWithFailover(prompt: string, systemInstruction?: string): Promise<AICompletionResponse> {
+    return this.executeWithFailover(prompt, systemInstruction);
   }
 }
 
