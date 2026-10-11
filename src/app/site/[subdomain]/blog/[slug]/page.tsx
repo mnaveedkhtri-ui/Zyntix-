@@ -16,7 +16,7 @@ import {
   Mail,
   Compass,
   CheckCircle2
-} from 'lucide-react';
+} from '@/components/Icons';
 
 interface ArticlePageProps {
   params: Promise<{ subdomain: string; slug: string }>;
@@ -84,11 +84,12 @@ export default async function BlogPostPage({ params }: ArticlePageProps) {
 
   const relatedPosts = site.posts.filter(p => p.slug !== slug).slice(0, 2);
 
-  const homeUrl = site.customDomain 
+  const isStaging = subdomain === 'demo' || subdomain === site.subdomain;
+  const homeUrl = isStaging ? `/site/${site.subdomain}` : '/';
+  const blogIndexUrl = isStaging ? `/site/${site.subdomain}/blog` : '/blog';
+  const canonicalBase = site.customDomain 
     ? `https://${site.customDomain}` 
-    : `/site/${site.subdomain}`;
-
-  const blogIndexUrl = `${homeUrl}/blog`;
+    : `${process.env.NEXT_PUBLIC_APP_URL || 'https://zyntix-studio-ivory.vercel.app'}/site/${site.subdomain}`;
 
   // Dedicated JSON-LD Structured Data Schema for Article Rich Results
   const articleSchema = {
@@ -106,11 +107,11 @@ export default async function BlogPostPage({ params }: ArticlePageProps) {
     'publisher': {
       '@type': 'Organization',
       'name': site.name,
-      'url': homeUrl
+      'url': canonicalBase
     },
     'mainEntityOfPage': {
       '@type': 'WebPage',
-      '@id': `${homeUrl}/blog/${post.slug}`
+      '@id': `${canonicalBase}/blog/${post.slug}`
     }
   };
 
@@ -351,7 +352,7 @@ export default async function BlogPostPage({ params }: ArticlePageProps) {
               {relatedPosts.map((rel, rIdx) => (
                 <a 
                   key={rIdx} 
-                  href={`${homeUrl}/blog/${rel.slug}`}
+                  href={`${blogIndexUrl}/${rel.slug}`}
                   className="p-6 rounded-2xl bg-white border border-stone-200/90 hover:shadow-md transition flex flex-col justify-between group"
                 >
                   <div>

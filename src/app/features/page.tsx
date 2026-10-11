@@ -1,7 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import { Database, Zap } from "lucide-react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
+
+export const dynamic = 'force-dynamic';
 
 export default function Features() {
   return (

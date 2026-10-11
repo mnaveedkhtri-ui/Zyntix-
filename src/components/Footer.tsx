@@ -1,4 +1,6 @@
-﻿import Link from "next/link";
+"use client";
+
+import Link from "next/link";
 import { Database, Mail, Phone, MapPin } from "lucide-react";
 
 export default function Footer() {

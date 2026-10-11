@@ -59,7 +59,7 @@ export function injectBiDirectionalLinks(
   if (existingPosts.length > 0) {
     const target = existingPosts[Math.floor(Math.random() * existingPosts.length)];
     enriched.push(
-      `*(For further exploration, see our earlier journal inquiry: [${target.title}](/site/demo#${target.slug}))*`
+      `*(For further exploration, see our earlier research article: [${target.title}](/blog/${target.slug}))*`
     );
   }
 

@@ -22,6 +22,11 @@ export function middleware(req: NextRequest) {
   const isApex = currentHost === "localhost" || currentHost === "127.0.0.1" || currentHost === "zyntix.app";
 
   if (isVercelDomain || isApex) {
+    if (url.pathname === "/blog" || url.pathname.startsWith("/blog/")) {
+      const rewriteUrl = new URL(`/site/demo${url.pathname}`, req.url);
+      rewriteUrl.search = url.search;
+      return NextResponse.rewrite(rewriteUrl);
+    }
     // Normal platform access (Landing, Studio, etc.)
     return NextResponse.next();
   }

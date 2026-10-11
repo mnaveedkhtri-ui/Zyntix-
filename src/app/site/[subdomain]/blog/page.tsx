@@ -12,7 +12,7 @@ import {
   ArrowRight,
   Phone,
   Mail
-} from 'lucide-react';
+} from '@/components/Icons';
 
 interface BlogIndexProps {
   params: Promise<{ subdomain: string }>;
@@ -57,9 +57,9 @@ export default async function BlogIndexPage({ params }: BlogIndexProps) {
   const featuredPost = posts[0];
   const remainingPosts = posts.slice(1);
 
-  const homeUrl = site.customDomain 
-    ? `https://${site.customDomain}` 
-    : `/site/${site.subdomain}`;
+  const isStaging = subdomain === 'demo' || subdomain === site.subdomain;
+  const homeUrl = isStaging ? `/site/${site.subdomain}` : '/';
+  const blogUrl = isStaging ? `/site/${site.subdomain}/blog` : '/blog';
 
   return (
     <div className="min-h-screen bg-[#faf8f5] text-stone-900 font-serif selection:bg-amber-100 selection:text-stone-900 antialiased flex flex-col justify-between">
@@ -171,7 +171,7 @@ export default async function BlogIndexPage({ params }: BlogIndexProps) {
             </p>
 
             <a 
-              href={`${homeUrl}/blog/${featuredPost.slug}`}
+              href={`${blogUrl}/${featuredPost.slug}`}
               className="inline-flex items-center gap-2 font-sans text-xs font-semibold text-stone-950 uppercase tracking-wider hover:text-amber-950"
             >
               Read Full Monograph &rarr;
@@ -195,7 +195,7 @@ export default async function BlogIndexPage({ params }: BlogIndexProps) {
                 </div>
 
                 <h3 className="font-serif text-2xl text-stone-950 group-hover:text-stone-600 transition leading-snug mb-3">
-                  <a href={`${homeUrl}/blog/${post.slug}`}>
+                  <a href={`${blogUrl}/${post.slug}`}>
                     {post.title}
                   </a>
                 </h3>
@@ -208,7 +208,7 @@ export default async function BlogIndexPage({ params }: BlogIndexProps) {
               <div className="pt-4 border-t border-stone-100 flex items-center justify-between font-sans text-xs">
                 <span className="text-stone-400">{post.date}</span>
                 <a 
-                  href={`${homeUrl}/blog/${post.slug}`}
+                  href={`${blogUrl}/${post.slug}`}
                   className="font-semibold text-stone-950 group-hover:translate-x-1 transition-transform inline-flex items-center gap-1"
                 >
                   <span>Read Essay</span>

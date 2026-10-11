@@ -66,7 +66,7 @@ const INITIAL_DEMO_SITES: SiteConfig[] = [
   {
     id: 'site-default-demo',
     subdomain: 'demo',
-    customDomain: null,
+    customDomain: 'moderntrendsnow.org',
     name: 'Meridian Craft & Architecture',
     tagline: 'Architectural Craftsmanship, Sustainable Engineering & Thoughtful Construction',
     description: 'An independent architectural studio and research journal dedicated to timeless masonry, sustainable timber framing, and grounded regional engineering.',
@@ -230,9 +230,12 @@ export function getAllSites(): SiteConfig[] {
 export function getSiteBySubdomainOrDomain(identifier: string): SiteConfig | null {
   const sites = getAllSites();
   const cleanId = identifier.toLowerCase().trim();
+  const strippedId = cleanId.replace(/\.(org|com|net|app|io|co)$/i, '');
   return sites.find(s => 
     s.subdomain.toLowerCase() === cleanId || 
-    (s.customDomain && s.customDomain.toLowerCase() === cleanId)
+    (s.customDomain && s.customDomain.toLowerCase() === cleanId) ||
+    s.subdomain.toLowerCase() === strippedId ||
+    (s.customDomain && s.customDomain.toLowerCase().replace(/\.[a-z]+$/i, '') === strippedId)
   ) || sites[0] || null;
 }
 

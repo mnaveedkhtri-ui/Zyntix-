@@ -1,6 +1,10 @@
+"use client";
+
 import Link from "next/link";
 import { Check, Mail, MessageCircle, Zap, Shield, Crown } from "lucide-react";
 import NavBar from "@/components/NavBar";
+
+export const dynamic = 'force-dynamic';
 
 export default function PricingPage() {
   return (

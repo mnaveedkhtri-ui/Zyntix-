@@ -20,7 +20,7 @@ import {
   Sparkles,
   ExternalLink,
   BookOpen
-} from 'lucide-react';
+} from '@/components/Icons';
 import type { Metadata } from 'next';
 
 interface SitePageProps {
@@ -104,6 +104,10 @@ export default async function TenantSitePage({ params }: SitePageProps) {
   const featuredPost = site.posts[0];
   const regularPosts = site.posts.slice(1);
 
+  const isStaging = subdomain === 'demo' || subdomain === site.subdomain;
+  const homePath = isStaging ? `/site/${site.subdomain}` : '/';
+  const blogPath = isStaging ? `/site/${site.subdomain}/blog` : '/blog';
+
   // Structured Data for Google Rich Snippets & GEO/AEO
   const schemaJson = {
     '@context': 'https://schema.org',
@@ -176,7 +180,7 @@ export default async function TenantSitePage({ params }: SitePageProps) {
       {/* Main Luxury Header & Navigation */}
       <header className="border-b border-stone-200/90 bg-[#faf8f5]/95 backdrop-blur-md sticky top-0 z-40">
         <div className="max-w-6xl mx-auto px-6 sm:px-10 h-20 sm:h-24 flex items-center justify-between">
-          <a href={`/site/${site.subdomain}`} className="flex items-center gap-3.5 group">
+          <a href={homePath} className="flex items-center gap-3.5 group">
             <div className="w-10 h-10 rounded-xl bg-stone-900 text-stone-50 flex items-center justify-center font-serif text-lg font-bold shadow-sm group-hover:bg-amber-900 transition">
               {site.name.slice(0, 1)}
             </div>
@@ -192,7 +196,7 @@ export default async function TenantSitePage({ params }: SitePageProps) {
 
           <nav className="flex items-center gap-5 sm:gap-8 text-xs font-sans uppercase tracking-widest font-semibold text-stone-600">
             <a href="#services" className="hover:text-stone-950 transition hidden md:inline">Services</a>
-            <a href={`/site/${site.subdomain}/blog`} className="text-stone-950 font-bold hover:text-amber-950 transition flex items-center gap-1.5 bg-stone-200/60 px-3 py-1.5 rounded-full">
+            <a href={blogPath} className="text-stone-950 font-bold hover:text-amber-950 transition flex items-center gap-1.5 bg-stone-200/60 px-3 py-1.5 rounded-full">
               <span>Blog</span>
               <span className="w-1.5 h-1.5 rounded-full bg-amber-900" />
             </a>
@@ -331,7 +335,7 @@ export default async function TenantSitePage({ params }: SitePageProps) {
               </div>
 
               <h3 className="text-2xl sm:text-4xl md:text-5xl font-normal text-stone-950 tracking-tight leading-[1.25] mb-4 hover:text-stone-700 transition">
-                <a href={`/site/${site.subdomain}/blog/${featuredPost.slug}`}>
+                <a href={`${blogPath}/${featuredPost.slug}`}>
                   {featuredPost.title}
                 </a>
               </h3>
@@ -415,7 +419,7 @@ export default async function TenantSitePage({ params }: SitePageProps) {
                   </div>
 
                   <h4 className="text-2xl font-normal text-stone-950 group-hover:text-stone-600 transition leading-snug mb-3">
-                    <a href={`/site/${site.subdomain}/blog/${post.slug}`}>
+                    <a href={`${blogPath}/${post.slug}`}>
                       {post.title}
                     </a>
                   </h4>
@@ -428,7 +432,7 @@ export default async function TenantSitePage({ params }: SitePageProps) {
                 <div className="pt-4 border-t border-stone-100 flex items-center justify-between font-sans text-xs text-stone-500">
                   <span>{post.date}</span>
                   <a 
-                    href={`/site/${site.subdomain}/blog/${post.slug}`}
+                    href={`${blogPath}/${post.slug}`}
                     className="font-semibold text-stone-900 group-hover:translate-x-1 transition-transform inline-flex items-center gap-1"
                   >
                     <span>Read Essay</span>
@@ -442,7 +446,7 @@ export default async function TenantSitePage({ params }: SitePageProps) {
           {/* Explore Full Archive CTA */}
           <div className="mt-14 text-center">
             <a
-              href={`/site/${site.subdomain}/blog`}
+              href={blogPath}
               className="inline-flex items-center gap-2 font-sans text-xs uppercase tracking-widest font-bold text-stone-950 px-8 py-4 rounded-full border border-stone-400 bg-white hover:bg-stone-900 hover:text-stone-50 transition shadow-xs"
             >
               <span>Explore Complete Journal Archive ({site.posts?.length || 0} Field Notes)</span>
@@ -540,31 +544,43 @@ export default async function TenantSitePage({ params }: SitePageProps) {
 
           {/* Interactive Form */}
           <div className="bg-stone-900 p-8 sm:p-12 rounded-3xl border border-stone-800 shadow-2xl max-w-2xl mx-auto font-sans">
-            <form className="space-y-4">
+            <form 
+              action={`mailto:${site.contact.email}?subject=Project Commission Inquiry for ${site.name}`}
+              method="POST"
+              encType="text/plain"
+              className="space-y-4"
+            >
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <input 
                   type="text" 
+                  name="Name"
+                  required
                   placeholder="Your Full Name" 
                   className="w-full bg-stone-950 border border-stone-800 rounded-xl px-4 py-3 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-amber-400"
                 />
                 <input 
                   type="email" 
+                  name="Email"
+                  required
                   placeholder="Your Email Address" 
                   className="w-full bg-stone-950 border border-stone-800 rounded-xl px-4 py-3 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-amber-400"
                 />
               </div>
               <input 
                 type="text" 
+                name="Scope"
                 placeholder="Project Scope / Location" 
                 className="w-full bg-stone-950 border border-stone-800 rounded-xl px-4 py-3 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-amber-400"
               />
               <textarea 
                 rows={4} 
+                name="Message"
+                required
                 placeholder="Describe your site requirements or questions..." 
                 className="w-full bg-stone-950 border border-stone-800 rounded-xl px-4 py-3 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-amber-400"
               />
               <button
-                type="button"
+                type="submit"
                 className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold rounded-xl text-xs sm:text-sm tracking-wider uppercase transition shadow-lg shadow-amber-500/10 cursor-pointer"
               >
                 Transmit Inquiry to Studio
@@ -616,7 +632,7 @@ export default async function TenantSitePage({ params }: SitePageProps) {
               </h5>
               <ul className="space-y-2.5 text-stone-400">
                 <li><a href="#services" className="hover:text-white transition">Services & Disciplines</a></li>
-                <li><a href={`/site/${site.subdomain}/blog`} className="text-amber-400 font-semibold hover:text-white transition">Official Blog & Articles</a></li>
+                <li><a href={blogPath} className="text-amber-400 font-semibold hover:text-white transition">Official Blog & Articles</a></li>
                 <li><a href="#about" className="hover:text-white transition">About Our Atelier</a></li>
                 <li><a href="#contact" className="hover:text-white transition">Direct Contact</a></li>
                 <li><a href="#privacy" className="hover:text-white transition">Privacy Statement</a></li>

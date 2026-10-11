@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowRight, BookOpen, Sparkles, Globe, Shield } from "lucide-react";
 
@@ -13,7 +15,7 @@ export default function Home() {
 
           <nav className="flex items-center gap-6 font-sans text-xs uppercase tracking-widest font-medium text-stone-600">
             <Link href="/site/demo" className="hover:text-stone-950 transition">
-              Live Demo Journal
+              Live Showcase Publication
             </Link>
             <Link 
               href="/studio"
@@ -51,7 +53,7 @@ export default function Home() {
             href="/site/demo"
             className="w-full sm:w-auto px-8 py-3.5 bg-white border border-stone-300 text-stone-800 rounded-md font-medium hover:bg-stone-50 transition"
           >
-            Inspect Demo Publication
+            Explore Showcase Publication
           </Link>
         </div>
 
@@ -95,7 +97,7 @@ export default function Home() {
           <p>&copy; {new Date().getFullYear()} Zyntix Platform. Built with deliberate craftsmanship.</p>
           <div className="flex items-center gap-6">
             <Link href="/studio" className="hover:text-stone-900">Studio</Link>
-            <Link href="/site/demo" className="hover:text-stone-900">Demo Journal</Link>
+            <Link href="/site/demo" className="hover:text-stone-900">Showcase Publication</Link>
           </div>
         </div>
       </footer>
