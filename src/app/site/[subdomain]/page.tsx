@@ -1,6 +1,7 @@
 import React from 'react';
 import { getSiteBySubdomainOrDomain } from '@/lib/sites';
 import { SiteLiveSync } from '@/components/SiteLiveSync';
+import { optimizeMetaTitle, optimizeMetaDescription } from '@/lib/seo-helpers';
 
 export const dynamic = 'force-dynamic';
 import { 
@@ -40,9 +41,12 @@ export async function generateMetadata({ params }: SitePageProps): Promise<Metad
   const iconUrl = `${baseUrl}/api/sites/${site.subdomain}/icon`;
   const ogUrl = `${baseUrl}/api/sites/${site.subdomain}/og`;
 
+  const metaTitle = site.seo?.metaTitle || optimizeMetaTitle(`${site.name} | Architectural Studio`, site.name);
+  const metaDescription = site.seo?.metaDescription || optimizeMetaDescription(site.description);
+
   return {
-    title: `${site.name} — ${site.location} Official Publication`,
-    description: site.description || `${site.name} specializes in high-integrity craftsmanship and editorial insights in ${site.location}.`,
+    title: metaTitle,
+    description: metaDescription,
     metadataBase: new URL(baseUrl),
     alternates: {
       canonical: siteUrl,
@@ -53,8 +57,8 @@ export async function generateMetadata({ params }: SitePageProps): Promise<Metad
       apple: iconUrl,
     },
     openGraph: {
-      title: `${site.name} — ${site.location}`,
-      description: site.description,
+      title: metaTitle,
+      description: metaDescription,
       url: siteUrl,
       siteName: site.name,
       images: [
@@ -69,8 +73,8 @@ export async function generateMetadata({ params }: SitePageProps): Promise<Metad
     },
     twitter: {
       card: 'summary_large_image',
-      title: site.name,
-      description: site.description,
+      title: metaTitle,
+      description: metaDescription,
       images: [ogUrl],
     },
     robots: {

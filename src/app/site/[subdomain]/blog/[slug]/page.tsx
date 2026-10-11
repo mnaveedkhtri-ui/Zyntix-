@@ -18,6 +18,8 @@ import {
   CheckCircle2
 } from '@/components/Icons';
 
+import { optimizeMetaTitle, optimizeMetaDescription } from '@/lib/seo-helpers';
+
 interface ArticlePageProps {
   params: Promise<{ subdomain: string; slug: string }>;
 }
@@ -42,9 +44,28 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
   const iconUrl = `${baseUrl}/api/sites/${site.subdomain}/icon`;
   const dynamicOgUrl = `${baseUrl}/api/sites/${site.subdomain}/og?slug=${post.slug}`;
 
+  let metaTitle = post.metaTitle;
+  let metaDescription = post.metaDescription;
+
+  if (!metaTitle) {
+    if (post.slug === 'the-art-of-quiet-structures' || post.slug === 'the-art-of-quiet-software') {
+      metaTitle = 'The Art of Quiet Structures: Principles of Honest Craft';
+      metaDescription = 'An in-depth monograph on why monolithic stone, seasoned timber framing, and breathable lime mortar consistently outlast disposable synthetic buildings.';
+    } else if (post.slug === 'sustainable-local-craftsmanship') {
+      metaTitle = 'Why Genuine Local Artisans Win in the Modern Economy';
+      metaDescription = 'Field notes on why independent builders and niche craft ateliers outperform corporate directories through radical transparency and heirloom craftsmanship.';
+    } else if (post.slug === 'restoring-historic-timber') {
+      metaTitle = 'Chemistry of Seasoned Oak: Structural Timber Restoration';
+      metaDescription = 'Historical woodworking methods that stabilize century-old timber structures without relying on brittle toxic epoxy resins or hazardous synthetic binders.';
+    } else {
+      metaTitle = optimizeMetaTitle(post.title, site.name);
+      metaDescription = optimizeMetaDescription(post.excerpt, site.description);
+    }
+  }
+
   return {
-    title: `${post.title} — ${site.name}`,
-    description: post.excerpt,
+    title: metaTitle,
+    description: metaDescription,
     metadataBase: new URL(baseUrl),
     alternates: {
       canonical: articleUrl,
@@ -55,8 +76,8 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
       apple: iconUrl,
     },
     openGraph: {
-      title: post.title,
-      description: post.excerpt,
+      title: metaTitle,
+      description: metaDescription,
       url: articleUrl,
       siteName: site.name,
       images: [
@@ -73,8 +94,8 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
     },
     twitter: {
       card: 'summary_large_image',
-      title: post.title,
-      description: post.excerpt,
+      title: metaTitle,
+      description: metaDescription,
       images: [dynamicOgUrl],
     },
     verification: {

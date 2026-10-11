@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { failoverShield } from '@/lib/failover-shield';
 import { getSiteById, saveOrUpdateSite, SiteConfig, BlogPost } from '@/lib/sites';
+import { optimizeMetaTitle, optimizeMetaDescription } from '@/lib/seo-helpers';
 
 export async function POST(req: Request) {
   try {
@@ -90,8 +91,9 @@ CUSTOMER SATISFACTION DIRECTIVES:
    - Structured FAQ section for Google FAQ schema rich results: At least 3-4 entries formatted as "**Question in bold ending with question mark?** Complete technical answer with actionable detail."
 4. LOCATION & ADDRESS SYNCHRONIZATION: Whenever the client mentions their city, country, or location (e.g. "I live in Latifabad, Sindh, Pakistan", "based in Dubai", "change city to New York"), you MUST update BOTH "site.location" AND "site.contact.address" to the exact city/location requested! Never leave one pointing to an old location while changing the other.
 5. BUG REPORT / COMPLAINT INTERPRETATION: If the client writes "there is nothing change in the footer", "nothing changed", "didn't change", "not updated", or "still old", this is NEVER a request to keep things unchanged! It is a complaint that an update was missed. You MUST apologize politely, immediately enforce the requested update (e.g. update the location and footer address), and reassure them that the change is now live.
-6. REASSURING, PROFESSIONAL ENGLISH: In the "reply" field, always respond in articulate, polite, and reassuring professional English. Explicitly confirm the exact items that you modified or created, and invite them to view the live preview.
-7. ALWAYS RETURN VALID JSON matching this schema:
+6. GOOGLE SERP META PRECISION: Always calibrate meta titles and descriptions for maximum Google click-through rate with zero truncation: meta title strictly 50-60 characters, and meta description strictly 145-155 characters.
+7. REASSURING, PROFESSIONAL ENGLISH: In the "reply" field, always respond in articulate, polite, and reassuring professional English. Explicitly confirm the exact items that you modified or created, and invite them to view the live preview.
+8. ALWAYS RETURN VALID JSON matching this schema:
 {
   "reply": "Polite and reassuring professional English confirmation of what was updated or created.",
   "action": "update_site" | "create_site" | "add_post" | "general_chat",
@@ -119,6 +121,8 @@ CUSTOMER SATISFACTION DIRECTIVES:
       {
         "slug": "string",
         "title": "string",
+        "metaTitle": "string",
+        "metaDescription": "string",
         "excerpt": "string",
         "date": "string",
         "readTime": "string",
@@ -136,6 +140,11 @@ CUSTOMER SATISFACTION DIRECTIVES:
       "email": "string",
       "phone": "string",
       "address": "string"
+    },
+    "seo": {
+      "metaTitle": "string",
+      "metaDescription": "string",
+      "keywords": ["string"]
     }
   }
 }
@@ -259,6 +268,12 @@ Generate the appropriate JSON response updating or configuring the site precisel
       finalPosts = [];
     }
 
+    finalPosts = finalPosts.map((p: any) => ({
+      ...p,
+      metaTitle: p.metaTitle || optimizeMetaTitle(p.title, targetSite.name),
+      metaDescription: p.metaDescription || optimizeMetaDescription(p.excerpt, targetSite.description)
+    }));
+
     // Deep merge contact and author
     const updatedContact = {
       ...(targetSite.contact || {}),
@@ -289,6 +304,13 @@ Generate the appropriate JSON response updating or configuring the site precisel
       ...(parsed.site.aboutContent || {}),
     };
 
+    const updatedSeo = {
+      ...(targetSite.seo || {}),
+      ...(parsed.site?.seo || {}),
+      metaTitle: parsed.site?.seo?.metaTitle || targetSite.seo?.metaTitle || optimizeMetaTitle(`${targetSite.name} | Architectural Studio`, targetSite.name),
+      metaDescription: parsed.site?.seo?.metaDescription || targetSite.seo?.metaDescription || optimizeMetaDescription(targetSite.description)
+    };
+
     const isNewSiteRequest = parsed.action === 'create_site' || 
       (/\b(create|launch|build|start)\s+(a\s+)?(new\s+)?(site|website|publication)\b/i.test(message) &&
        parsed.site?.name && parsed.site.name !== targetSite.name);
@@ -316,6 +338,7 @@ Generate the appropriate JSON response updating or configuring the site precisel
       author: updatedAuthor,
       contact: updatedContact,
       aboutContent: updatedAbout,
+      seo: updatedSeo,
       googleVerification: extractedGoogleVerify || parsed.site.googleVerification || targetSite.googleVerification,
       customDomain: isNewSiteRequest ? (parsed.site.customDomain || null) : (parsed.site.customDomain !== undefined ? parsed.site.customDomain : targetSite.customDomain),
       posts: finalPosts,

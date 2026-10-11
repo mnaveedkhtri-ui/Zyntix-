@@ -5,6 +5,8 @@ export interface BlogPost {
   slug: string;
   title: string;
   excerpt: string;
+  metaTitle?: string;
+  metaDescription?: string;
   date: string;
   readTime: string;
   category: string;
@@ -141,6 +143,8 @@ const INITIAL_DEMO_SITES: SiteConfig[] = [
     {
       "slug": "the-art-of-quiet-structures",
       "title": "The Art of Quiet Structures: Why Timeless Materials Outlast Artificial Trends",
+      "metaTitle": "The Art of Quiet Structures: Principles of Honest Craft",
+      "metaDescription": "An in-depth monograph on why monolithic stone, seasoned timber framing, and breathable lime mortar consistently outlast disposable synthetic buildings.",
       "excerpt": "Modern construction has become saturated with plastic composites and hollow facades. What happens when we strip everything back to monolithic stone, honest wood, and calibrated natural light?",
       "date": "October 10, 2026",
       "readTime": "15 min read",
@@ -190,6 +194,8 @@ const INITIAL_DEMO_SITES: SiteConfig[] = [
     {
       "slug": "sustainable-local-craftsmanship",
       "title": "Why Genuine Local Artisans Win the Modern Economy: Field Notes on Trust",
+      "metaTitle": "Why Genuine Local Artisans Win in the Modern Economy",
+      "metaDescription": "Field notes on why independent builders and niche craft ateliers outperform corporate directories through radical transparency and heirloom craftsmanship.",
       "excerpt": "How thoughtful independent builders and niche craft studios are outranking massive generic corporate directories by proving their craftsmanship through unvarnished transparency.",
       "date": "October 2, 2026",
       "readTime": "13 min read",
@@ -231,6 +237,8 @@ const INITIAL_DEMO_SITES: SiteConfig[] = [
     {
       "slug": "restoring-historic-timber",
       "title": "The Chemistry of Seasoned Oak: Structural Restoration Without Toxic Binders",
+      "metaTitle": "Chemistry of Seasoned Oak: Structural Timber Restoration",
+      "metaDescription": "Historical woodworking methods that stabilize century-old timber structures without relying on brittle toxic epoxy resins or hazardous synthetic binders.",
       "excerpt": "A deep dive into historical woodworking techniques that stabilize century-old timber structures without relying on brittle epoxy resins or synthetic lacquers.",
       "date": "September 24, 2026",
       "readTime": "14 min read",
@@ -291,8 +299,8 @@ const INITIAL_DEMO_SITES: SiteConfig[] = [
     "linkedin": "linkedin.com/company/meridian-craft"
   },
   "seo": {
-    "metaTitle": "Meridian Craft & Architecture | Sustainable Historic Restorations | Latifabad, Hyderabad",
-    "metaDescription": "Award-winning architectural studio & research journal in Latifabad, Hyderabad, Sindh, Pakistan. Specializing in sustainable timber framing, historic masonry restoration, and passive solar design.",
+    "metaTitle": "Meridian Craft & Architecture | Architectural Studio",
+    "metaDescription": "Architectural atelier in Latifabad, Hyderabad specializing in sustainable timber framing, historic masonry restoration, and passive solar engineering.",
     "keywords": [
       "sustainable architecture hyderabad",
       "historic timber restoration sindh",

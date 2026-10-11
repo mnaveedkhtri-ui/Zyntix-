@@ -14,6 +14,8 @@ import {
   Mail
 } from '@/components/Icons';
 
+import { optimizeMetaTitle, optimizeMetaDescription } from '@/lib/seo-helpers';
+
 interface BlogIndexProps {
   params: Promise<{ subdomain: string }>;
 }
@@ -30,9 +32,14 @@ export async function generateMetadata({ params }: BlogIndexProps): Promise<Meta
   const iconUrl = `${baseUrl}/api/sites/${site.subdomain}/icon`;
   const ogUrl = `${baseUrl}/api/sites/${site.subdomain}/og`;
 
+  const metaTitle = optimizeMetaTitle("Research Journal & Field Monographs", site.name);
+  const metaDescription = optimizeMetaDescription(
+    "Explore technical monographs and field case studies on sustainable timber framing, breathable lime masonry, and authentic architectural craftsmanship."
+  );
+
   return {
-    title: `The Research Journal & Field Notes — ${site.name}`,
-    description: `Complete archive of research essays, architectural monographs, and practical craftsmanship studies published by ${site.name}.`,
+    title: metaTitle,
+    description: metaDescription,
     metadataBase: new URL(baseUrl),
     alternates: {
       canonical: `${siteUrl}/blog`,
@@ -43,8 +50,8 @@ export async function generateMetadata({ params }: BlogIndexProps): Promise<Meta
       apple: iconUrl,
     },
     openGraph: {
-      title: `The Research Journal — ${site.name}`,
-      description: `Complete archive of research essays and practical craftsmanship studies in ${site.location}.`,
+      title: metaTitle,
+      description: metaDescription,
       url: `${siteUrl}/blog`,
       siteName: site.name,
       images: [
@@ -59,8 +66,8 @@ export async function generateMetadata({ params }: BlogIndexProps): Promise<Meta
     },
     twitter: {
       card: 'summary_large_image',
-      title: `The Research Journal — ${site.name}`,
-      description: `Complete archive of research essays and practical craftsmanship studies in ${site.location}.`,
+      title: metaTitle,
+      description: metaDescription,
       images: [ogUrl],
     },
     verification: {
