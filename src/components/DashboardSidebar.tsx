@@ -2,52 +2,52 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Database, Settings, FileSpreadsheet, Activity, Target } from "lucide-react";
-import { UserButton } from "@clerk/nextjs";
+import { 
+  BarChart3, 
+  FileSpreadsheet, 
+  Settings, 
+  Activity,
+  Layers,
+  Sparkles
+} from "lucide-react";
 
 export default function DashboardSidebar() {
   const pathname = usePathname();
 
   return (
-    <div className="w-72 bg-[#050B14] border-r border-slate-800 p-6 flex flex-col">
-      <div className="flex items-center gap-3 mb-12">
-        <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center">
-          <Database className="w-5 h-5 text-slate-900" />
+    <div className="w-64 border-r border-slate-800 bg-[#020617] p-6 flex flex-col justify-between shrink-0">
+      <div>
+        <div className="flex items-center gap-3 mb-8">
+          <div className="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold text-sm">
+            Z
+          </div>
+          <span className="font-extrabold text-white text-base">Zyntix Studio</span>
         </div>
-        <span className="text-xl font-black text-white tracking-tight">Zyntix</span>
+
+        <nav className="space-y-1 text-xs">
+          <Link 
+            href="/studio" 
+            className={`flex items-center gap-2.5 px-3 py-2 rounded-lg transition ${pathname === '/studio' ? 'bg-emerald-500/10 text-emerald-400 font-bold' : 'text-slate-400 hover:text-white'}`}
+          >
+            <Sparkles className="w-4 h-4" />
+            <span>AI Studio</span>
+          </Link>
+          <Link 
+            href="/site/demo" 
+            className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-400 hover:text-white transition"
+          >
+            <Layers className="w-4 h-4" />
+            <span>Demo Site</span>
+          </Link>
+        </nav>
       </div>
 
-      <nav className="flex-1 space-y-2">
-        <Link href="/dashboard/google" className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${pathname === '/dashboard/google' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white'}`}>
-          <Database className="w-5 h-5" />
-          Google Stacking
-        </Link>
-        
-        <div className="mt-8 mb-4">
-          <div className="text-xs font-bold text-slate-500 mb-4 tracking-wider">ANALYTICS & CONFIG</div>
-          <Link href="/dashboard/audit" className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all mb-2 ${pathname === '/dashboard/audit' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white'}`}>
-            <Target className="w-5 h-5" />
-            AEO SERP Audit
-          </Link>
-          <Link href="/dashboard/reports" className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all mb-2 ${pathname === '/dashboard/reports' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white'}`}>
-            <FileSpreadsheet className="w-5 h-5" />
-            Detailed Reports
-          </Link>
-          <Link href="/dashboard/settings" className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${pathname === '/dashboard/settings' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white'}`}>
-            <Settings className="w-5 h-5" />
-            API Settings
-          </Link>
-        </div>
-      </nav>
-
-      <div className="mt-auto pt-6 border-t border-slate-800">
-        <div className="flex items-center justify-between px-4 py-3 bg-slate-800/30 rounded-xl">
-          <div className="flex items-center gap-3">
-            <Activity className="w-4 h-4 text-emerald-500 animate-pulse" />
-            <span className="text-sm font-medium text-slate-300">System Online</span>
-          </div>
-          <UserButton />
-        </div>
+      <div className="pt-4 border-t border-slate-800 text-xs text-slate-500 flex items-center justify-between">
+        <span className="flex items-center gap-1.5 text-emerald-400">
+          <Activity className="w-3.5 h-3.5 animate-pulse" />
+          <span>Engine Online</span>
+        </span>
+        <span>v2.0</span>
       </div>
     </div>
   );
