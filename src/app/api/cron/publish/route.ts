@@ -5,6 +5,7 @@ import { injectBiDirectionalLinks } from '@/lib/link-mesh';
 import { generateHeadingMatchedImage } from '@/lib/image-engine';
 import { pingIndexNow, pingGoogleSitemap } from '@/lib/indexing';
 import { optimizeMetaTitle, optimizeMetaDescription } from '@/lib/seo-helpers';
+import { generatePinterestCampaign } from '@/services/pinterest/pipeline';
 
 export async function GET(req: Request) {
   try {
@@ -83,11 +84,33 @@ export async function GET(req: Request) {
         pingGoogleSitemap(sitemapUrl)
       ]);
 
+      // 5. Autonomous Pinterest Traffic Engine (5 Viral Pins Generation)
+      let pinterestResult = null;
+      try {
+        const campaign = await generatePinterestCampaign({
+          articleTitle: optimizedTitle,
+          articleUrl: targetUrl,
+          niche: site.niche,
+          slug: article.slug,
+          domain: cleanDomain || host,
+          excerpt: optimizedExcerpt,
+          authorName: site.author.name
+        });
+        pinterestResult = {
+          campaignId: campaign.campaignId,
+          totalPins: campaign.totalPins,
+          dripIntervals: campaign.antiBanStatus.dripIntervals
+        };
+      } catch (pinErr) {
+        console.warn('[Cron] Pinterest generation warning:', pinErr);
+      }
+
       results.push({
         site: site.name,
         subdomain: site.subdomain,
         publishedArticle: article.title,
-        indexing: { indexNowRes, googleRes }
+        indexing: { indexNowRes, googleRes },
+        pinterest: pinterestResult
       });
     }
 
