@@ -17,7 +17,8 @@ import {
   Eye, 
   ChevronRight, 
   SlidersHorizontal,
-  Maximize2
+  Maximize2,
+  Trash2
 } from "lucide-react";
 
 interface BlogPost {
@@ -89,6 +90,11 @@ export default function ZyntixStudio() {
   const [newSiteNiche, setNewSiteNiche] = useState("");
   const [newSiteBrand, setNewSiteBrand] = useState("");
   const [newSiteAuthor, setNewSiteAuthor] = useState("Naveed Khatri");
+
+  // Settings / Editor State
+  const [editorSaved, setEditorSaved] = useState(false);
+  const [newServiceTitle, setNewServiceTitle] = useState("");
+  const [newServiceDesc, setNewServiceDesc] = useState("");
 
   useEffect(() => {
     fetchSites();
@@ -623,47 +629,280 @@ export default function ZyntixStudio() {
             </div>
           )}
 
-          {/* Tab 4: Publication Settings */}
+          {/* Tab 4: Direct Publication Customizer */}
           {activeTab === "editor" && currentSite && (
-            <div className="flex-1 p-6 overflow-y-auto space-y-5 text-xs max-w-xl mx-auto w-full">
+            <div className="flex-1 p-6 overflow-y-auto space-y-6 text-xs max-w-2xl mx-auto w-full">
               <div>
-                <label className="text-zinc-400 font-medium block mb-1.5 uppercase text-[10px] tracking-wider">
-                  Publication Name
-                </label>
-                <input
-                  type="text"
-                  value={currentSite.name}
-                  onChange={(e) => setCurrentSite({ ...currentSite, name: e.target.value })}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white font-serif"
-                />
+                <h3 className="font-serif text-lg text-stone-100 font-semibold mb-1">
+                  Manual Site Customizer & Settings
+                </h3>
+                <p className="text-zinc-400 text-xs leading-relaxed">
+                  Modify any exact detail of your publication by hand. All changes apply immediately to your live site and preview.
+                </p>
               </div>
 
-              <div>
-                <label className="text-zinc-400 font-medium block mb-1.5 uppercase text-[10px] tracking-wider">
-                  Masthead Tagline
-                </label>
-                <textarea
-                  rows={2}
-                  value={currentSite.tagline}
-                  onChange={(e) => setCurrentSite({ ...currentSite, tagline: e.target.value })}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white font-serif"
-                />
+              {/* Brand & Location */}
+              <div className="bg-zinc-900/80 p-5 rounded-2xl border border-zinc-800 space-y-4 shadow-sm">
+                <span className="font-semibold text-stone-200 uppercase tracking-wider text-[11px] block">
+                  Brand & Identity
+                </span>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-zinc-400 block mb-1.5 uppercase text-[10px] tracking-wider">
+                      Business / Studio Name
+                    </label>
+                    <input
+                      type="text"
+                      value={currentSite.name}
+                      onChange={(e) => setCurrentSite({ ...currentSite, name: e.target.value })}
+                      className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white font-serif"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-zinc-400 block mb-1.5 uppercase text-[10px] tracking-wider">
+                      Studio Location (City, State)
+                    </label>
+                    <input
+                      type="text"
+                      value={currentSite.location}
+                      onChange={(e) => setCurrentSite({ ...currentSite, location: e.target.value })}
+                      className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white font-sans"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-zinc-400 block mb-1.5 uppercase text-[10px] tracking-wider">
+                    Masthead Tagline
+                  </label>
+                  <input
+                    type="text"
+                    value={currentSite.tagline}
+                    onChange={(e) => setCurrentSite({ ...currentSite, tagline: e.target.value })}
+                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white font-serif"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-zinc-400 block mb-1.5 uppercase text-[10px] tracking-wider">
+                    Editorial Description
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={currentSite.description}
+                    onChange={(e) => setCurrentSite({ ...currentSite, description: e.target.value })}
+                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2 text-xs text-white font-sans leading-relaxed"
+                  />
+                </div>
               </div>
 
-              <button
-                onClick={async () => {
-                  await fetch("/api/sites", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(currentSite)
-                  });
-                  setIframeKey(k => k + 1);
-                  fetchSites();
-                }}
-                className="w-full py-3 bg-stone-100 hover:bg-stone-200 text-zinc-950 rounded-xl text-xs font-bold transition cursor-pointer"
-              >
-                Save Changes
-              </button>
+              {/* Direct Contact Details */}
+              <div className="bg-zinc-900/80 p-5 rounded-2xl border border-zinc-800 space-y-4 shadow-sm">
+                <span className="font-semibold text-stone-200 uppercase tracking-wider text-[11px] block">
+                  Direct Contact & Address (Public On Site)
+                </span>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-zinc-400 block mb-1.5 uppercase text-[10px] tracking-wider">
+                      Public Phone Number
+                    </label>
+                    <input
+                      type="text"
+                      value={currentSite.contact?.phone || ""}
+                      onChange={(e) => setCurrentSite({
+                        ...currentSite,
+                        contact: { ...currentSite.contact, phone: e.target.value }
+                      })}
+                      className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white font-mono"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-zinc-400 block mb-1.5 uppercase text-[10px] tracking-wider">
+                      Public Inquiry Email
+                    </label>
+                    <input
+                      type="text"
+                      value={currentSite.contact?.email || ""}
+                      onChange={(e) => setCurrentSite({
+                        ...currentSite,
+                        contact: { ...currentSite.contact, email: e.target.value }
+                      })}
+                      className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white font-mono"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-zinc-400 block mb-1.5 uppercase text-[10px] tracking-wider">
+                    Physical Studio / Office Address
+                  </label>
+                  <input
+                    type="text"
+                    value={currentSite.contact?.address || ""}
+                    onChange={(e) => setCurrentSite({
+                      ...currentSite,
+                      contact: { ...currentSite.contact, address: e.target.value }
+                    })}
+                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white font-sans"
+                  />
+                </div>
+              </div>
+
+              {/* Founder / Principal Profile */}
+              <div className="bg-zinc-900/80 p-5 rounded-2xl border border-zinc-800 space-y-4 shadow-sm">
+                <span className="font-semibold text-stone-200 uppercase tracking-wider text-[11px] block">
+                  Founder & Principal Craftsman
+                </span>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-zinc-400 block mb-1.5 uppercase text-[10px] tracking-wider">
+                      Founder / Author Name
+                    </label>
+                    <input
+                      type="text"
+                      value={currentSite.author?.name || ""}
+                      onChange={(e) => setCurrentSite({
+                        ...currentSite,
+                        author: { ...currentSite.author, name: e.target.value }
+                      })}
+                      className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-zinc-400 block mb-1.5 uppercase text-[10px] tracking-wider">
+                      Professional Credentials
+                    </label>
+                    <input
+                      type="text"
+                      value={currentSite.author?.credentials || ""}
+                      onChange={(e) => setCurrentSite({
+                        ...currentSite,
+                        author: { ...currentSite.author, credentials: e.target.value }
+                      })}
+                      className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Services & Offerings Editor */}
+              <div className="bg-zinc-900/80 p-5 rounded-2xl border border-zinc-800 space-y-4 shadow-sm">
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-stone-200 uppercase tracking-wider text-[11px]">
+                    Services & Disciplines ({currentSite.services?.length || 0})
+                  </span>
+                </div>
+
+                <div className="space-y-3">
+                  {currentSite.services?.map((svc, sIdx) => (
+                    <div key={sIdx} className="p-3.5 bg-zinc-950 rounded-xl border border-zinc-800 flex items-start justify-between gap-3">
+                      <div className="flex-1">
+                        <span className="font-medium text-stone-200 block text-xs mb-1 font-serif">
+                          {svc.title}
+                        </span>
+                        <p className="text-zinc-400 text-[11px] leading-relaxed">
+                          {svc.description}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = currentSite.services.filter((_, idx) => idx !== sIdx);
+                          setCurrentSite({ ...currentSite, services: updated });
+                        }}
+                        className="text-zinc-500 hover:text-red-400 p-1.5 rounded transition cursor-pointer"
+                        title="Delete Service"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Quick Add Service */}
+                <div className="pt-2 border-t border-zinc-800/80 space-y-2">
+                  <span className="text-[10px] text-zinc-400 uppercase tracking-wider block">
+                    Add New Service
+                  </span>
+                  <input
+                    type="text"
+                    value={newServiceTitle}
+                    onChange={(e) => setNewServiceTitle(e.target.value)}
+                    placeholder="Service title (e.g. Historic Stone Stabilization)"
+                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3.5 py-2 text-xs text-white"
+                  />
+                  <input
+                    type="text"
+                    value={newServiceDesc}
+                    onChange={(e) => setNewServiceDesc(e.target.value)}
+                    placeholder="Service description / scope"
+                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3.5 py-2 text-xs text-white"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!newServiceTitle.trim()) return;
+                      const updated = [
+                        ...(currentSite.services || []),
+                        { title: newServiceTitle.trim(), description: newServiceDesc.trim() || "Bespoke commission scope." }
+                      ];
+                      setCurrentSite({ ...currentSite, services: updated });
+                      setNewServiceTitle("");
+                      setNewServiceDesc("");
+                    }}
+                    disabled={!newServiceTitle.trim()}
+                    className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-stone-200 rounded-xl text-xs font-medium transition cursor-pointer flex items-center gap-1.5 disabled:opacity-40"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Add Service to Site</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Master Save Button */}
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={async () => {
+                    setIsProcessing(true);
+                    try {
+                      const res = await fetch("/api/sites", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(currentSite)
+                      });
+                      const data = await res.json();
+                      if (data.success) {
+                        setEditorSaved(true);
+                        setIframeKey(k => k + 1);
+                        await fetchSites();
+                        setTimeout(() => setEditorSaved(false), 3000);
+                      }
+                    } catch (e) {
+                      alert("Error: " + String(e));
+                    } finally {
+                      setIsProcessing(false);
+                    }
+                  }}
+                  disabled={isProcessing}
+                  className="w-full py-4 bg-stone-100 hover:bg-stone-200 text-zinc-950 rounded-xl text-xs font-bold transition cursor-pointer shadow-lg flex items-center justify-center gap-2"
+                >
+                  {editorSaved ? (
+                    <>
+                      <Check className="w-4 h-4 text-emerald-700" />
+                      <span>Changes Saved to Live Site Successfully!</span>
+                    </>
+                  ) : (
+                    <span>Save & Apply All Changes to Live Site &rarr;</span>
+                  )}
+                </button>
+              </div>
             </div>
           )}
         </div>
