@@ -328,6 +328,7 @@ export default function ZyntixStudio() {
 
       if (data.success && data.site) {
         setCurrentSite(data.site);
+        setShowPreview(true);
         if (typeof window !== "undefined") {
           try {
             localStorage.setItem(`zyntix_preview_${data.site.subdomain}`, JSON.stringify(data.site));
