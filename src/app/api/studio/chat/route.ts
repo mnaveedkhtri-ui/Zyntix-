@@ -172,12 +172,26 @@ Generate the appropriate JSON response updating or configuring the site precisel
       });
     }
 
-    // Merge and persist updated site
+    // Intelligently merge posts so existing articles are never lost
+    let mergedPosts = targetSite.posts || [];
+    if (Array.isArray(parsed.site.posts) && parsed.site.posts.length > 0) {
+      const existingSlugs = new Set(mergedPosts.map((p: any) => p.slug));
+      const newPosts = parsed.site.posts.filter((p: any) => !existingSlugs.has(p.slug));
+      const updatedExisting = mergedPosts.map((p: any) => {
+        const found = parsed.site.posts.find((np: any) => np.slug === p.slug);
+        return found ? { ...p, ...found } : p;
+      });
+      mergedPosts = [...newPosts, ...updatedExisting];
+    }
+
+    // Merge and persist updated site with 100% data preservation
     const updatedSite: SiteConfig = {
       ...targetSite,
       ...parsed.site,
       id: targetSite.id,
       subdomain: targetSite.subdomain,
+      customDomain: parsed.site.customDomain !== undefined ? parsed.site.customDomain : targetSite.customDomain,
+      posts: mergedPosts,
       updatedAt: new Date().toISOString()
     };
 
