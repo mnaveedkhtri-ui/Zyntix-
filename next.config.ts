@@ -2,11 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   typescript: {
-    // Ignore build errors during SaaS edge multi-tenant compilation
     ignoreBuildErrors: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
   },
 };
 
