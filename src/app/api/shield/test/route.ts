@@ -1,24 +1,42 @@
 import { NextResponse } from 'next/server';
-import { failoverShield } from '@/lib/failover-shield';
 
-export async function POST(req: Request) {
+export async function GET() {
   try {
-    const body = await req.json();
-    const prompt = body.prompt || 'Summarize the core tenets of timeless craftsmanship in 3 sentences.';
+    const rawGemini = process.env.GEMINI_KEY_POOL || process.env.GEMINI_API_KEY || '';
+    const geminiKey = rawGemini.split(',')[0]?.trim();
+    const groqKey = process.env.GROQ_API_KEY || '';
 
-    const result = await failoverShield.executeWithFailover(
-      prompt,
-      'You are an authoritative editor writing for a prestigious publication. Write in a thoughtful, calm, and grounded voice.'
-    );
+    let geminiModels: string[] = [];
+    let groqModels: string[] = [];
 
-    return NextResponse.json({
-      success: true,
-      provider: result.provider,
-      keysCount: result.keysCount,
-      errors: result.errors,
-      output: result.text
-    });
-  } catch (err) {
-    return NextResponse.json({ success: false, error: String(err) }, { status: 500 });
+    if (geminiKey) {
+      try {
+        const gRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${geminiKey}`);
+        const gData = await gRes.json();
+        if (gData.models) {
+          geminiModels = gData.models.map((m: any) => m.name.replace('models/', ''));
+        }
+      } catch (e: any) {
+        geminiModels = [e.message];
+      }
+    }
+
+    if (groqKey) {
+      try {
+        const grRes = await fetch('https://api.groq.com/openai/v1/models', {
+          headers: { Authorization: `Bearer ${groqKey}` }
+        });
+        const grData = await grRes.json();
+        if (grData.data) {
+          groqModels = grData.data.map((m: any) => m.id);
+        }
+      } catch (e: any) {
+        groqModels = [e.message];
+      }
+    }
+
+    return NextResponse.json({ geminiModels, groqModels });
+  } catch (err: any) {
+    return NextResponse.json({ error: String(err) }, { status: 500 });
   }
 }
