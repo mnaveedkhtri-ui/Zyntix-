@@ -1,13 +1,15 @@
 import { MetadataRoute } from "next";
-import { getAllSites } from "@/lib/sites";
+import { headers } from "next/headers";
 
-export default function robots(): MetadataRoute.Robots {
+export default async function robots(): Promise<MetadataRoute.Robots> {
+  const headersList = await headers();
+  const hostHeader = headersList.get("host") || "";
+  const host = hostHeader.toLowerCase().replace(/:\d+$/, "");
+  const protocol = headersList.get("x-forwarded-proto") || "https";
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://zyntix-studio-ivory.vercel.app";
-  
-  const sites = getAllSites();
-  const customSitemaps = sites
-    .filter((s) => s.customDomain)
-    .map((s) => `https://${s.customDomain}/sitemap.xml`);
+
+  const targetHost = host || "zyntix-studio-ivory.vercel.app";
+  const sitemapUrl = `${protocol}://${targetHost}/sitemap.xml`;
 
   return {
     rules: [
@@ -21,6 +23,6 @@ export default function robots(): MetadataRoute.Robots {
         allow: "/",
       }
     ],
-    sitemap: Array.from(new Set([`${baseUrl}/sitemap.xml`, ...customSitemaps])),
+    sitemap: sitemapUrl,
   };
 }

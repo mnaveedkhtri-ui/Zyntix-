@@ -259,17 +259,29 @@ Generate the appropriate JSON response updating or configuring the site precisel
       ...(parsed.site.aboutContent || {}),
     };
 
+    const isNewSiteRequest = parsed.action === 'create_site' || 
+      (/\b(create|launch|build|start)\s+(a\s+)?(new\s+)?(site|website|publication)\b/i.test(message) &&
+       parsed.site?.name && parsed.site.name !== targetSite.name);
+
+    let finalSiteId = targetSite.id;
+    let finalSiteSubdomain = targetSite.subdomain;
+
+    if (isNewSiteRequest) {
+      finalSiteSubdomain = (parsed.site.name || "brand").toLowerCase().replace(/[^a-z0-9]/g, "") + "-" + Math.floor(100 + Math.random() * 900);
+      finalSiteId = `site-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+    }
+
     // Merge and persist updated site with 100% data preservation
     const updatedSite: SiteConfig = {
       ...targetSite,
       ...parsed.site,
-      id: targetSite.id,
-      subdomain: targetSite.subdomain,
+      id: finalSiteId,
+      subdomain: finalSiteSubdomain,
       author: updatedAuthor,
       contact: updatedContact,
       aboutContent: updatedAbout,
       googleVerification: extractedGoogleVerify || parsed.site.googleVerification || targetSite.googleVerification,
-      customDomain: parsed.site.customDomain !== undefined ? parsed.site.customDomain : targetSite.customDomain,
+      customDomain: isNewSiteRequest ? (parsed.site.customDomain || null) : (parsed.site.customDomain !== undefined ? parsed.site.customDomain : targetSite.customDomain),
       posts: finalPosts,
       updatedAt: new Date().toISOString()
     };
