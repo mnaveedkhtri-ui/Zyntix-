@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -10,44 +12,76 @@ export async function GET(req: Request) {
     }
 
     const cleanDomain = domain.toLowerCase().trim().replace(/^https?:\/\//, '').replace(/\/$/, '');
+    const isWwwInput = cleanDomain.startsWith('www.');
+    const rootDomain = isWwwInput ? cleanDomain.replace(/^www\./, '') : cleanDomain;
+    const wwwDomain = `www.${rootDomain}`;
 
-    // Query Google Public DNS over HTTPS (DoH) for Type A record
-    const dnsRes = await fetch(`https://dns.google/resolve?name=${encodeURIComponent(cleanDomain)}&type=A`, {
-      headers: { Accept: 'application/dns-json' },
-      cache: 'no-store'
-    });
-
-    const dnsData = await dnsRes.json();
-    const answers = dnsData.Answer || [];
-    const aRecords = answers.filter((a: any) => a.type === 1).map((a: any) => a.data);
-
-    // Vercel Anycast IPs (legacy 76.76.21.21 and newly expanded 216.198.79.1)
     const validIps = ['76.76.21.21', '216.198.79.1'];
     const expectedIp = '76.76.21.21';
-    const isVercelConnected = aRecords.some((ip: string) => validIps.includes(ip));
+
+    // 1. Resolve Root Domain A Record
+    let aRecords: string[] = [];
+    try {
+      const dnsResA = await fetch(`https://dns.google/resolve?name=${encodeURIComponent(rootDomain)}&type=A`, {
+        headers: { Accept: 'application/dns-json' },
+        cache: 'no-store'
+      });
+      const dataA = await dnsResA.json();
+      const answersA = dataA.Answer || [];
+      aRecords = answersA.filter((a: any) => a.type === 1).map((a: any) => a.data);
+    } catch (e) {
+      console.warn('DNS A resolve error:', e);
+    }
+
+    // 2. Resolve WWW Subdomain (CNAME or A)
+    let wwwRecords: string[] = [];
+    try {
+      const dnsResWww = await fetch(`https://dns.google/resolve?name=${encodeURIComponent(wwwDomain)}&type=CNAME`, {
+        headers: { Accept: 'application/dns-json' },
+        cache: 'no-store'
+      });
+      const dataWww = await dnsResWww.json();
+      const answersWww = dataWww.Answer || [];
+      wwwRecords = answersWww.map((a: any) => a.data?.toLowerCase().replace(/\.$/, ''));
+    } catch (e) {
+      console.warn('DNS WWW resolve error:', e);
+    }
+
+    const isRootConnected = aRecords.some((ip: string) => validIps.includes(ip));
+    const isWwwConnected = wwwRecords.some(
+      (cname: string) => cname.includes('vercel-dns.com') || cname.includes('vercel.app')
+    ) || isRootConnected;
+
+    const isVercelConnected = isRootConnected;
 
     let status = 'not_configured';
     let message = 'No DNS records detected yet.';
+    let urduMessage = 'Abhi tak koi DNS record detect nahi hua. Baraye meherbani registrar mein A Record (76.76.21.21) add kar ke Save karein.';
 
     if (isVercelConnected) {
       status = 'connected';
-      message = `Success! ${cleanDomain} is pointing to Zyntix Edge servers (${aRecords.filter((ip: string) => validIps.includes(ip)).join(', ')}).`;
+      message = `Success! ${rootDomain} is pointing directly to Zyntix Edge servers (${aRecords.filter(ip => validIps.includes(ip)).join(', ')}).`;
+      urduMessage = `Mubarak ho! ${rootDomain} 100% Zyntix servers se connect ho chuka hai. SSL active hai aur website live hai!`;
     } else if (aRecords.length > 0) {
       status = 'pointing_elsewhere';
-      message = `${cleanDomain} is currently pointing to ${aRecords.join(', ')}. Please update your A Record to 216.198.79.1 or 76.76.21.21.`;
+      message = `${rootDomain} is currently pointing to ${aRecords.join(', ')}. Please update your A Record (@) to 76.76.21.21 in your registrar.`;
+      urduMessage = `${rootDomain} abhi puranay IP (${aRecords.join(', ')}) par point kar raha hai. Apne registrar mein ja kar A Record ko badal kar 76.76.21.21 kar dein.`;
     }
 
     return NextResponse.json({
       success: true,
-      domain: cleanDomain,
+      domain: rootDomain,
       status,
       currentIps: aRecords,
       expectedIp,
       isVercelConnected,
+      isRootConnected,
+      isWwwConnected,
+      wwwRecords,
       message,
+      urduMessage,
       checkedAt: new Date().toISOString()
     });
-
   } catch (error: any) {
     console.error('DNS Check error:', error);
     return NextResponse.json({ success: false, error: String(error?.message || error) }, { status: 500 });

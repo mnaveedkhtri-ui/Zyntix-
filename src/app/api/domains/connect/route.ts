@@ -14,6 +14,8 @@ export async function POST(req: Request) {
     }
 
     const cleanDomain = domain.toLowerCase().trim().replace(/^https?:\/\//, '').replace(/\/$/, '');
+    const rootDomain = cleanDomain.replace(/^www\./, '');
+    const wwwDomain = `www.${rootDomain}`;
     const site = getSiteById(siteId);
 
     if (!site) {
@@ -34,7 +36,7 @@ export async function POST(req: Request) {
             Authorization: `Bearer ${vercelToken}`,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ name: cleanDomain }),
+          body: JSON.stringify({ name: rootDomain }),
         });
         // Also add www subdomain to Vercel
         await fetch(`https://api.vercel.com/v10/projects/${vercelProjectId}/domains`, {
@@ -43,7 +45,7 @@ export async function POST(req: Request) {
             Authorization: `Bearer ${vercelToken}`,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ name: `www.${cleanDomain}` }),
+          body: JSON.stringify({ name: wwwDomain }),
         });
         const vData = await vRes.json();
         vercelApiResult = { added: vRes.ok, message: vData.message || 'Domain submitted to Vercel API' };
@@ -52,7 +54,7 @@ export async function POST(req: Request) {
       }
     }
 
-    // Step 2: Save custom domain in tenant config
+    // Step 2: Save custom domain in tenant config (store www version or root as desired, here cleanDomain)
     const updatedSite = saveOrUpdateSite({
       ...site,
       customDomain: cleanDomain,
