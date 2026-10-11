@@ -2,27 +2,39 @@ import { MetadataRoute } from "next";
 import { headers } from "next/headers";
 import { getAllSites } from "@/lib/sites";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const headersList = await headers();
-  const hostHeader = headersList.get("host") || "";
+  const hostHeader = headersList.get("x-forwarded-host") || headersList.get("host") || "";
   const host = hostHeader.toLowerCase().replace(/:\d+$/, "");
   const protocol = headersList.get("x-forwarded-proto") || "https";
   const now = new Date();
 
   const sites = getAllSites();
 
-  // If request is from a custom domain (e.g. www.moderntrendsnow.org or moderntrendsnow.org)
-  const matchingSite = sites.find(s => 
-    (s.customDomain && (
-      host === s.customDomain.toLowerCase() ||
-      host === `www.${s.customDomain.toLowerCase()}` ||
-      s.customDomain.toLowerCase() === `www.${host}`
-    )) ||
-    host === `${s.subdomain}.zyntix.app`
-  );
+  // Check if this is a platform domain (zyntix.app or vercel.app)
+  const isPlatform = 
+    host === "" ||
+    host === "localhost" ||
+    host === "zyntix.app" ||
+    host === "www.zyntix.app" ||
+    host.endsWith(".vercel.app");
 
-  if (matchingSite) {
-    const domainBase = `${protocol}://${host}`;
+  // If request is from a custom domain (e.g. www.moderntrendsnow.org or moderntrendsnow.org)
+  if (!isPlatform) {
+    const matchingSite = sites.find(s => 
+      (s.customDomain && (
+        host === s.customDomain.toLowerCase() ||
+        host === `www.${s.customDomain.toLowerCase()}` ||
+        s.customDomain.toLowerCase() === `www.${host}` ||
+        host.includes(s.customDomain.toLowerCase().replace(/^www\./, ""))
+      )) ||
+      host === `${s.subdomain}.zyntix.app`
+    ) || sites[0];
+
+    const domainBase = `https://${host}`;
     const siteRoutes: MetadataRoute.Sitemap = [
       {
         url: domainBase,
@@ -52,7 +64,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     return siteRoutes;
   }
 
-  // Fallback for platform root domain (zyntix.app / vercel.app)
+  // Fallback ONLY for platform root domain (zyntix.app / vercel.app)
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || `${protocol}://${host || "zyntix-studio-ivory.vercel.app"}`;
 
   const platformRoutes: MetadataRoute.Sitemap = [
