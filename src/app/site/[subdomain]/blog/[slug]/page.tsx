@@ -27,7 +27,11 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
   const site = getSiteBySubdomainOrDomain(subdomain);
   if (!site) return { title: 'Article Not Found | Zyntix' };
 
-  const post = site.posts?.find(p => p.slug === slug);
+  const post = site.posts?.find(p => 
+    p.slug === slug || 
+    (slug === 'the-art-of-quiet-software' && p.slug === 'the-art-of-quiet-structures') || 
+    (slug === 'the-art-of-quiet-structures' && p.slug === 'the-art-of-quiet-software')
+  );
   if (!post) return { title: 'Article Not Found | Zyntix' };
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://zyntix-studio-ivory.vercel.app';
@@ -70,10 +74,49 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
 }
 
 function renderInlineMarkdown(text: string) {
-  // Support bold: **text**
-  // Support italic: *text*
-  const parts = text.split(/(\*\*.*?\*\*|\*.*?\*)/g);
+  // Regex matches: [markdown link](url) OR **bold** OR *italic* OR `code`
+  const regex = /(\[[^\]]+\]\([^)]+\)|\*\*.*?\*\*|\*.*?\*|`.*?`)/g;
+  const parts = text.split(regex);
+
   return parts.map((part, i) => {
+    // 1. Markdown link: [text](url)
+    if (part.startsWith('[') && part.includes('](') && part.endsWith(')')) {
+      const match = part.match(/^\[(.*?)\]\((.*?)\)$/);
+      if (match) {
+        const linkText = match[1];
+        const url = match[2];
+        const isExternal = url.startsWith('http://') || url.startsWith('https://');
+
+        if (isExternal) {
+          return (
+            <a
+              key={i}
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-amber-950 underline underline-offset-4 decoration-amber-900/50 hover:decoration-amber-950 hover:text-amber-900 font-medium inline-flex items-center gap-1 transition"
+            >
+              <span>{linkText}</span>
+              <svg className="w-3 h-3 inline-block shrink-0 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </a>
+          );
+        }
+
+        return (
+          <a
+            key={i}
+            href={url}
+            className="text-amber-950 underline underline-offset-4 decoration-amber-900/50 hover:decoration-amber-900 font-semibold transition"
+          >
+            {linkText}
+          </a>
+        );
+      }
+    }
+
+    // 2. Bold: **text**
     if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
       return (
         <strong key={i} className="font-semibold text-stone-950 font-sans tracking-tight">
@@ -81,6 +124,8 @@ function renderInlineMarkdown(text: string) {
         </strong>
       );
     }
+
+    // 3. Italic: *text*
     if (part.startsWith('*') && part.endsWith('*') && part.length > 2) {
       return (
         <em key={i} className="italic text-stone-700">
@@ -88,6 +133,16 @@ function renderInlineMarkdown(text: string) {
         </em>
       );
     }
+
+    // 4. Code: `code`
+    if (part.startsWith('`') && part.endsWith('`') && part.length > 2) {
+      return (
+        <code key={i} className="px-1.5 py-0.5 rounded bg-stone-200/80 text-stone-900 font-mono text-[0.88em]">
+          {part.slice(1, -1)}
+        </code>
+      );
+    }
+
     return part;
   });
 }
@@ -100,7 +155,11 @@ export default async function BlogPostPage({ params }: ArticlePageProps) {
     notFound();
   }
 
-  const post = site.posts?.find(p => p.slug === slug);
+  const post = site.posts?.find(p => 
+    p.slug === slug || 
+    (slug === 'the-art-of-quiet-software' && p.slug === 'the-art-of-quiet-structures') || 
+    (slug === 'the-art-of-quiet-structures' && p.slug === 'the-art-of-quiet-software')
+  );
   if (!post) {
     notFound();
   }
@@ -113,6 +172,26 @@ export default async function BlogPostPage({ params }: ArticlePageProps) {
   const canonicalBase = site.customDomain 
     ? `https://${site.customDomain}` 
     : `${process.env.NEXT_PUBLIC_APP_URL || 'https://zyntix-studio-ivory.vercel.app'}/site/${site.subdomain}`;
+
+  // Extract FAQs for Schema and Rich Snippets
+  const faqs = post.content
+    .filter(b => b.startsWith('**') && b.includes('?**'))
+    .map(b => {
+      const [qRaw, ...rest] = b.split('?**');
+      return {
+        question: qRaw.replace(/^\*\*/, '').trim() + '?',
+        answer: rest.join('?**').trim()
+      };
+    });
+
+  // Extract Headings for Interactive Monograph Table of Contents
+  const headings = post.content
+    .filter(b => b.startsWith('### ') || b.startsWith('## '))
+    .map(b => {
+      const text = b.replace(/^(### |## )/, '').trim();
+      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      return { text, id };
+    });
 
   // Dedicated JSON-LD Structured Data Schema for Article Rich Results
   const articleSchema = {
@@ -138,12 +217,60 @@ export default async function BlogPostPage({ params }: ArticlePageProps) {
     }
   };
 
+  const faqSchema = faqs.length > 0 ? {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    'mainEntity': faqs.map(f => ({
+      '@type': 'Question',
+      'name': f.question,
+      'acceptedAnswer': {
+        '@type': 'Answer',
+        'text': f.answer
+      }
+    }))
+  } : null;
+
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    'itemListElement': [
+      {
+        '@type': 'ListItem',
+        'position': 1,
+        'name': site.name,
+        'item': canonicalBase
+      },
+      {
+        '@type': 'ListItem',
+        'position': 2,
+        'name': 'Research Journal',
+        'item': `${canonicalBase}/blog`
+      },
+      {
+        '@type': 'ListItem',
+        'position': 3,
+        'name': post.title,
+        'item': `${canonicalBase}/blog/${post.slug}`
+      }
+    ]
+  };
+
   return (
     <div className="min-h-screen bg-[#faf8f5] text-stone-900 font-serif selection:bg-amber-100 selection:text-stone-900 antialiased flex flex-col justify-between">
       {/* Schema.org BlogPosting */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
+      {faqSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        />
+      )}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
 
       {/* Top Announcement Ribbon */}
@@ -280,6 +407,30 @@ export default async function BlogPostPage({ params }: ArticlePageProps) {
           </div>
         )}
 
+        {/* Table of Contents / Monograph Index */}
+        {headings.length > 0 && (
+          <div className="mb-12 p-6 sm:p-7 bg-[#fbf9f6] rounded-2xl border border-stone-200/90 shadow-xs">
+            <div className="flex items-center gap-2.5 mb-4">
+              <Compass className="w-4 h-4 text-amber-900" />
+              <span className="font-sans text-xs uppercase tracking-widest font-bold text-amber-950">
+                Monograph Index & Field Inquiries
+              </span>
+            </div>
+            <nav className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2.5 text-xs font-sans">
+              {headings.map((h, i) => (
+                <a
+                  key={i}
+                  href={`#${h.id}`}
+                  className="text-stone-700 hover:text-amber-950 hover:underline flex items-start gap-2 py-1 transition group"
+                >
+                  <span className="text-amber-900/60 font-mono font-bold group-hover:text-amber-900">{String(i + 1).padStart(2, '0')}.</span>
+                  <span className="font-medium line-clamp-1 text-stone-800 group-hover:text-amber-950">{h.text}</span>
+                </a>
+              ))}
+            </nav>
+          </div>
+        )}
+
         {/* Rich Long-Form Body Content */}
         <article className="space-y-7 text-stone-800 leading-[1.95] text-base sm:text-lg font-serif">
           {post.content.map((block, pIdx) => {
@@ -300,16 +451,20 @@ export default async function BlogPostPage({ params }: ArticlePageProps) {
               );
             }
             if (block.startsWith('### ') || block.startsWith('## ')) {
+              const text = block.replace(/^(### |## )/, '').trim();
+              const headingId = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
               return (
-                <h2 key={pIdx} className="text-2xl sm:text-4xl font-normal text-stone-950 pt-12 pb-3 border-b border-stone-200/90 font-serif tracking-tight">
-                  {block.replace(/^(### |## )/, '')}
+                <h2 key={pIdx} id={headingId} className="text-2xl sm:text-4xl font-normal text-stone-950 pt-12 pb-3 border-b border-stone-200/90 font-serif tracking-tight scroll-mt-24">
+                  {text}
                 </h2>
               );
             }
             if (block.startsWith('#### ')) {
+              const text = block.replace('#### ', '').trim();
+              const headingId = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
               return (
-                <h3 key={pIdx} className="text-xl sm:text-2xl font-medium text-stone-900 pt-8 pb-2 font-serif text-amber-950">
-                  {block.replace('#### ', '')}
+                <h3 key={pIdx} id={headingId} className="text-xl sm:text-2xl font-medium text-stone-900 pt-8 pb-2 font-serif text-amber-950 scroll-mt-24">
+                  {text}
                 </h3>
               );
             }

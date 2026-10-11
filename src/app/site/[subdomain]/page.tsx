@@ -80,6 +80,75 @@ export async function generateMetadata({ params }: SitePageProps): Promise<Metad
   };
 }
 
+function renderInlineMarkdown(text: string) {
+  const regex = /(\[[^\]]+\]\([^)]+\)|\*\*.*?\*\*|\*.*?\*|`.*?`)/g;
+  const parts = text.split(regex);
+
+  return parts.map((part, i) => {
+    if (part.startsWith('[') && part.includes('](') && part.endsWith(')')) {
+      const match = part.match(/^\[(.*?)\]\((.*?)\)$/);
+      if (match) {
+        const linkText = match[1];
+        const url = match[2];
+        const isExternal = url.startsWith('http://') || url.startsWith('https://');
+
+        if (isExternal) {
+          return (
+            <a
+              key={i}
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-amber-950 underline underline-offset-4 decoration-amber-900/50 hover:decoration-amber-950 font-medium inline-flex items-center gap-1 transition"
+            >
+              <span>{linkText}</span>
+              <svg className="w-3 h-3 inline-block shrink-0 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </a>
+          );
+        }
+
+        return (
+          <a
+            key={i}
+            href={url}
+            className="text-amber-950 underline underline-offset-4 decoration-amber-900/50 hover:decoration-amber-900 font-semibold transition"
+          >
+            {linkText}
+          </a>
+        );
+      }
+    }
+
+    if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
+      return (
+        <strong key={i} className="font-semibold text-stone-950 font-sans tracking-tight">
+          {part.slice(2, -2)}
+        </strong>
+      );
+    }
+
+    if (part.startsWith('*') && part.endsWith('*') && part.length > 2) {
+      return (
+        <em key={i} className="italic text-stone-700">
+          {part.slice(1, -1)}
+        </em>
+      );
+    }
+
+    if (part.startsWith('`') && part.endsWith('`') && part.length > 2) {
+      return (
+        <code key={i} className="px-1.5 py-0.5 rounded bg-stone-200/80 text-stone-900 font-mono text-[0.88em]">
+          {part.slice(1, -1)}
+        </code>
+      );
+    }
+
+    return part;
+  });
+}
+
 export default async function TenantSitePage({ params }: SitePageProps) {
   const { subdomain } = await params;
   const site = getSiteBySubdomainOrDomain(subdomain);
@@ -311,7 +380,7 @@ export default async function TenantSitePage({ params }: SitePageProps) {
                 Official Blog & Research Articles
               </h2>
               <a 
-                href={`/site/${site.subdomain}/blog`}
+                href={blogPath}
                 className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-stone-900 text-stone-50 font-sans text-xs font-semibold hover:bg-stone-800 transition shadow-sm"
               >
                 <BookOpen className="w-3.5 h-3.5 text-amber-400" />
@@ -375,7 +444,7 @@ export default async function TenantSitePage({ params }: SitePageProps) {
                         <span className="block text-xs uppercase tracking-widest font-bold text-amber-950 mb-2">
                           Executive Answer (#0 Featured Snippet)
                         </span>
-                        {answer}
+                        {renderInlineMarkdown(answer)}
                       </div>
                     );
                   }
@@ -384,6 +453,13 @@ export default async function TenantSitePage({ params }: SitePageProps) {
                       <h4 key={pIdx} className="text-2xl sm:text-3xl font-normal text-stone-950 pt-8 pb-3 border-b border-stone-200">
                         {block.replace('### ', '')}
                       </h4>
+                    );
+                  }
+                  if (block.startsWith('#### ')) {
+                    return (
+                      <h5 key={pIdx} className="text-xl sm:text-2xl font-medium text-amber-950 pt-6 pb-2 font-serif">
+                        {block.replace('#### ', '')}
+                      </h5>
                     );
                   }
                   if (block.startsWith('*') && block.endsWith('*')) {
@@ -400,8 +476,63 @@ export default async function TenantSitePage({ params }: SitePageProps) {
                       </blockquote>
                     );
                   }
-                  return <p key={pIdx}>{block}</p>;
+                  if (block.startsWith('![')) {
+                    const match = block.match(/!\[(.*?)\]\((.*?)\)/);
+                    if (match) {
+                      return (
+                        <figure key={pIdx} className="my-10 rounded-2xl overflow-hidden shadow-md border border-stone-200/90 bg-stone-100">
+                          <img src={match[2]} alt={match[1]} className="w-full h-[280px] sm:h-[420px] object-cover filter contrast-[1.02]" />
+                          <figcaption className="p-3 bg-stone-100/95 border-t border-stone-200/90 text-center font-sans text-xs text-stone-600">
+                            <span className="font-semibold text-stone-900 mr-1.5 uppercase tracking-wider text-[11px]">Plate &bull;</span>
+                            {match[1]}
+                          </figcaption>
+                        </figure>
+                      );
+                    }
+                  }
+                  const numMatch = block.match(/^(\d+)\.\s+(.*)$/);
+                  if (numMatch) {
+                    return (
+                      <div key={pIdx} className="my-3 p-4 sm:p-5 bg-stone-50 rounded-xl border border-stone-200/90 shadow-xs flex items-start gap-3.5">
+                        <span className="w-7 h-7 rounded-lg bg-amber-900 text-stone-100 font-sans text-xs font-bold flex items-center justify-center shrink-0">
+                          {numMatch[1]}
+                        </span>
+                        <div className="flex-1 font-sans text-sm sm:text-base text-stone-800 leading-relaxed">
+                          {renderInlineMarkdown(numMatch[2])}
+                        </div>
+                      </div>
+                    );
+                  }
+                  if (block.startsWith('**') && block.includes('?**')) {
+                    const [qRaw, ...rest] = block.split('?**');
+                    const question = qRaw.replace(/^\*\*/, '') + '?';
+                    const answer = rest.join('?**').trim();
+                    return (
+                      <div key={pIdx} className="my-4 p-5 sm:p-6 bg-white rounded-xl border border-stone-200/90 shadow-xs">
+                        <h6 className="font-serif text-lg font-medium text-stone-950 mb-2 flex items-start gap-2.5">
+                          <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-950 font-sans text-xs font-bold uppercase tracking-wider shrink-0 mt-0.5">
+                            Q
+                          </span>
+                          <span>{question}</span>
+                        </h6>
+                        <div className="font-sans text-sm sm:text-base text-stone-700 leading-relaxed pl-8 border-l-2 border-amber-900/10">
+                          {renderInlineMarkdown(answer)}
+                        </div>
+                      </div>
+                    );
+                  }
+                  return <p key={pIdx}>{renderInlineMarkdown(block)}</p>;
                 })}
+
+                <div className="pt-8 text-center sm:text-left">
+                  <a
+                    href={`${blogPath}/${featuredPost.slug}`}
+                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-stone-900 text-stone-50 font-sans text-xs font-semibold hover:bg-amber-950 transition shadow-sm"
+                  >
+                    <span>Read Full Monograph with Table of Contents & Citations</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </a>
+                </div>
               </div>
             </article>
           )}

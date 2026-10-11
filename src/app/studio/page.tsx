@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { SignedIn, SignedOut, RedirectToSignIn, UserButton } from "@clerk/nextjs";
+import { Show, RedirectToSignIn, UserButton } from "@clerk/nextjs";
 import { 
   Send, 
   ExternalLink, 
@@ -350,10 +350,10 @@ export default function ZyntixStudio() {
 
   return (
     <>
-      <SignedOut>
+      <Show when="signed-out">
         <RedirectToSignIn redirectUrl="/studio" />
-      </SignedOut>
-      <SignedIn>
+      </Show>
+      <Show when="signed-in">
         <div className="h-screen w-screen bg-[#121214] text-zinc-100 flex flex-col overflow-hidden font-sans antialiased">
       {/* Studio Header */}
       <header className="h-14 border-b border-zinc-800 bg-[#18181b] px-4 sm:px-6 flex items-center justify-between shrink-0">
@@ -1193,7 +1193,7 @@ export default function ZyntixStudio() {
         )}
       </div>
     </div>
-      </SignedIn>
+      </Show>
     </>
   );
 }

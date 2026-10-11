@@ -151,7 +151,7 @@ export default async function BlogIndexPage({ params }: BlogIndexProps) {
             </div>
 
             <h2 className="text-2xl sm:text-4xl font-normal text-stone-950 tracking-tight leading-snug mb-4 hover:text-stone-700 transition">
-              <a href={`${homeUrl}/blog/${featuredPost.slug}`}>
+              <a href={`${blogUrl}/${featuredPost.slug}`}>
                 {featuredPost.title}
               </a>
             </h2>

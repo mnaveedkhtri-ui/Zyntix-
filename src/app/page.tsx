@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { Show, UserButton } from "@clerk/nextjs";
 import { ArrowRight, BookOpen, Sparkles, Globe, Shield } from "lucide-react";
 
 export default function Home() {
@@ -19,7 +19,7 @@ export default function Home() {
               Showcase Publication
             </Link>
             
-            <SignedOut>
+            <Show when="signed-out">
               <Link href="/sign-in" className="hover:text-stone-950 transition font-semibold">
                 Sign In
               </Link>
@@ -29,9 +29,9 @@ export default function Home() {
               >
                 Open Studio &rarr;
               </Link>
-            </SignedOut>
+            </Show>
 
-            <SignedIn>
+            <Show when="signed-in">
               <Link 
                 href="/studio"
                 className="px-4 py-2 rounded-md bg-stone-900 text-stone-50 hover:bg-stone-800 transition font-sans text-xs"
@@ -39,7 +39,7 @@ export default function Home() {
                 Open Studio &rarr;
               </Link>
               <UserButton afterSignOutUrl="/" />
-            </SignedIn>
+            </Show>
           </nav>
         </div>
       </header>
@@ -59,7 +59,7 @@ export default function Home() {
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 font-sans text-xs">
-          <SignedOut>
+          <Show when="signed-out">
             <Link
               href="/sign-in"
               className="w-full sm:w-auto px-8 py-3.5 bg-stone-900 text-stone-50 rounded-md font-medium hover:bg-stone-800 transition flex items-center justify-center gap-2 shadow-md shadow-stone-900/10"
@@ -72,16 +72,16 @@ export default function Home() {
             >
               Launch Zyntix Studio
             </Link>
-          </SignedOut>
+          </Show>
 
-          <SignedIn>
+          <Show when="signed-in">
             <Link
               href="/studio"
               className="w-full sm:w-auto px-8 py-3.5 bg-stone-900 text-stone-50 rounded-md font-medium hover:bg-stone-800 transition flex items-center justify-center gap-2 shadow-md shadow-stone-900/10"
             >
               <span>Launch Zyntix Studio &rarr;</span>
             </Link>
-          </SignedIn>
+          </Show>
 
           <Link
             href="/site/demo"
