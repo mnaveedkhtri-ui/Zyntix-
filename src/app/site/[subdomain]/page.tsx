@@ -18,7 +18,8 @@ import {
   FileText, 
   Lock, 
   Sparkles,
-  ExternalLink
+  ExternalLink,
+  BookOpen
 } from 'lucide-react';
 import type { Metadata } from 'next';
 
