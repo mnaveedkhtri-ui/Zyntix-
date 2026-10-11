@@ -37,7 +37,7 @@ export default function DashboardSidebar() {
             className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-400 hover:text-white transition"
           >
             <Layers className="w-4 h-4" />
-            <span>Demo Site</span>
+            <span>Live Publication</span>
           </Link>
         </nav>
       </div>

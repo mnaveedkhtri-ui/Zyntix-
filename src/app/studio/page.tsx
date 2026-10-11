@@ -336,6 +336,7 @@ export default function ZyntixStudio() {
   };
 
   const previewUrl = currentSite ? `/site/${currentSite.subdomain}` : "/site/demo";
+  const liveUrl = currentSite?.customDomain ? `https://${currentSite.customDomain}` : previewUrl;
 
   return (
     <div className="h-screen w-screen bg-[#121214] text-zinc-100 flex flex-col overflow-hidden font-sans antialiased">
@@ -417,7 +418,7 @@ export default function ZyntixStudio() {
           )}
 
           <a
-            href={previewUrl}
+            href={liveUrl}
             target="_blank"
             rel="noreferrer"
             className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-stone-100 text-zinc-900 hover:bg-stone-200 text-xs font-medium transition"
