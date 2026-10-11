@@ -140,7 +140,7 @@ const INITIAL_DEMO_SITES: SiteConfig[] = [
           '### Heavy Timber Framing: Engineering Without Petrochemical Glues',
           'Consider the survival of centuries-old timber frames across Scandinavia and Japan. These structures utilize traditional mortise-and-tenon joinery secured with dried white oak trunnels (wooden pegs). Because wood expands and contracts perpendicular to its grain in response to seasonal humidity shifts, all-wood joinery tightens under pressure rather than pulling apart.',
           'When modern construction relies on steel gang-nail plates and polyurethane glues, differential thermal expansion between steel and wood causes fasteners to shear. Furthermore, heavy solid-sawn timbers exhibit extraordinary natural fire resistance: when exposed to flame, a dense timber chars at a predictable rate of roughly 1/40th of an inch per minute, creating an insulating carbon barrier that preserves the load-bearing interior core long after modern steel bar joists have softened and collapsed.',
-          '![Figure 2: Hand-hewn white oak heavy timber frame assembled with mortise-and-tenon interlocking joinery without chemical glues.](https://images.unsplash.com/photo-1541888946425-d0fbb186c5f7?auto=format&fit=crop&w=1200&q=80)',
+          '![Figure 2: Hand-hewn white oak heavy timber frame assembled with mortise-and-tenon interlocking joinery without chemical glues.](https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=1200&q=80)',
           '### The Real Economics: 50-Year Cost of Ownership',
           'Speculative developers often argue that authentic masonry and timber framing are cost-prohibitive compared to light-gauge steel studwork and exterior insulation finishing systems (EIFS). However, when calculated across a standard 50-year municipal or institutional lifecycle, the financial math completely reverses:',
           '1. Modern EIFS & Synthetic Panels: Require complete envelope replacement and seal re-caulking every 12 to 15 years, incurring recurring capital expenditures, scaffolding costs, and tenant disruption.',
@@ -199,7 +199,7 @@ const INITIAL_DEMO_SITES: SiteConfig[] = [
           avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
           role: 'Principal Architect'
         },
-        coverImage: 'https://images.unsplash.com/photo-1504917599217-d4dc5ebe6122?auto=format&fit=crop&w=1200&q=80',
+        coverImage: 'https://images.unsplash.com/photo-1588854337236-6889d631faa8?auto=format&fit=crop&w=1200&q=80',
         content: [
           '[AEO_ANSWER]: Restoring historic load-bearing timber without toxic synthetic binders requires moisture-compatible intervention methods, specifically traditional Dutchman joinery, kiln-seasoned heartwood splices, and pure boiled linseed oil saturated with natural pine turpentine. Unlike rigid epoxy polymers that trap internal moisture and accelerate latent fungal decay, organic stabilization allows the wood to breathe, flex, and endure for centuries.',
           'Modern restoration teams frequently default to chemical injection when dealing with weathered timbers. Structural engineers trained solely in steel and concrete will often recommend pumping thousands of pounds of epoxy resin into centuries-old oak or longleaf pine beams.',
@@ -211,7 +211,7 @@ const INITIAL_DEMO_SITES: SiteConfig[] = [
           '> "Understanding the grain of historic timber is an exercise in listening. The wood moves with seasonal humidity, and resisting that movement with brittle glues leads to catastrophic failure."',
           '### Traditional Dutchman Joinery & Trunnel Fastening',
           'Where structural rot has compromised the integrity of a timber tenon or beam tail, historical masons and carpenters never used steel plates. Instead, they executed a Dutchman splice: carefully chiseling away the decayed section along the grain and precision-fitting a matching block of seasoned heartwood.',
-          '![Figure 2: Dutchman heartwood timber joinery aligned with precision grain orientation.](https://images.unsplash.com/photo-1541888946425-d0fbb186c5f7?auto=format&fit=crop&w=1200&q=80)',
+          '![Figure 2: Dutchman heartwood timber joinery aligned with precision grain orientation.](https://images.unsplash.com/photo-1572981779307-38b8cabb2407?auto=format&fit=crop&w=1200&q=80)',
           'The replacement timber is secured using octagonal wooden trunnels (tree-nails) driven into slightly undersized round holes. This draws the splice together with immense friction while allowing the repair to flex synchronously during seismic shifts or high-wind buffeting.',
           '### Summary Guidelines for Timber Stewards',
           '1. Never seal historical timbers with synthetic polyurethane or waterproof exterior paints.',
