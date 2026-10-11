@@ -21,19 +21,19 @@ export async function GET(req: Request) {
     const answers = dnsData.Answer || [];
     const aRecords = answers.filter((a: any) => a.type === 1).map((a: any) => a.data);
 
-    // Vercel Anycast IP
-    const expectedIp = '76.76.21.21';
-    const isVercelConnected = aRecords.includes(expectedIp);
+    // Vercel Anycast IPs (legacy 76.76.21.21 and newly expanded 216.198.79.1)
+    const validIps = ['76.76.21.21', '216.198.79.1'];
+    const isVercelConnected = aRecords.some((ip: string) => validIps.includes(ip));
 
     let status = 'not_configured';
     let message = 'No DNS records detected yet.';
 
     if (isVercelConnected) {
       status = 'connected';
-      message = `Success! ${cleanDomain} is pointing to Zyntix Edge servers (${expectedIp}).`;
+      message = `Success! ${cleanDomain} is pointing to Zyntix Edge servers (${aRecords.filter((ip: string) => validIps.includes(ip)).join(', ')}).`;
     } else if (aRecords.length > 0) {
       status = 'pointing_elsewhere';
-      message = `${cleanDomain} is currently pointing to ${aRecords.join(', ')}. Please update your A Record to ${expectedIp}.`;
+      message = `${cleanDomain} is currently pointing to ${aRecords.join(', ')}. Please update your A Record to 216.198.79.1 or 76.76.21.21.`;
     }
 
     return NextResponse.json({
