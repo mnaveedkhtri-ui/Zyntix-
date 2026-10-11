@@ -1,16 +1,12 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { ClerkProvider } from '@clerk/nextjs'
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Zyntix | Google Entity Stacking for Agencies",
-  description: "Automate your high-authority link building with Zyntix. Bulk generate public, indexable DA-99 Google Docs and Sheets directly via API.",
-  verification: {
-    google: "XKqDOIporTLwhEyizWES5BzLGewgVKX3ymxqUbKwjvE",
-  },
+  title: "Zyntix Autonomous AI Web Platform",
+  description: "Autonomous multi-tenant editorial publications and high-authority organic web platform.",
 };
 
 export default function RootLayout({
@@ -19,12 +15,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
-      <html lang="en" className="dark">
-        <body className={`${inter.className} bg-[#020617] text-slate-50 antialiased selection:bg-emerald-500/30`}>
-          {children}
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en">
+      <body className={`${inter.className} bg-[#faf8f5] text-stone-900 antialiased`}>
+        {children}
+      </body>
+    </html>
   );
 }
