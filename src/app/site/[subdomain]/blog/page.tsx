@@ -26,6 +26,9 @@ export async function generateMetadata({ params }: BlogIndexProps): Promise<Meta
   if (!site) return { title: 'Journal Not Found | Zyntix' };
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://zyntix-studio-ivory.vercel.app';
+  const effectiveBase = site.customDomain 
+    ? (site.customDomain.startsWith('http') ? site.customDomain : `https://${site.customDomain}`)
+    : baseUrl;
   const siteUrl = site.customDomain 
     ? `https://${site.customDomain}` 
     : `${baseUrl}/site/${site.subdomain}`;
@@ -40,7 +43,7 @@ export async function generateMetadata({ params }: BlogIndexProps): Promise<Meta
   return {
     title: metaTitle,
     description: metaDescription,
-    metadataBase: new URL(baseUrl),
+    metadataBase: new URL(effectiveBase),
     alternates: {
       canonical: `${siteUrl}/blog`,
     },

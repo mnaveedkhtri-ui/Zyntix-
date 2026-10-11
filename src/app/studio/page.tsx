@@ -655,13 +655,23 @@ export default function ZyntixStudio() {
 
               {/* Option 2: Quick Self-Setup (2 Minutes Step-By-Step) */}
               <div className="bg-zinc-900/80 border border-zinc-800 rounded-2xl p-5 space-y-6 shadow-md">
-                <div>
-                  <h4 className="font-serif text-lg text-stone-100 font-semibold mb-1">
-                    Option 2: 2-Minute Step-by-Step Self Setup
-                  </h4>
-                  <p className="text-zinc-400 text-xs leading-relaxed">
-                    Apna domain connect karna intehai aasan hai. Sirf 2 DNS records add karnay hain:
-                  </p>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-serif text-lg text-stone-100 font-semibold mb-1">
+                      Option 2: 2-Minute Step-by-Step Self Setup
+                    </h4>
+                    <p className="text-zinc-400 text-xs leading-relaxed">
+                      Apna domain connect karna intehai aasan hai. Sirf 2 DNS records add karnay hain:
+                    </p>
+                  </div>
+                  <a
+                    href="/domain-guide"
+                    target="_blank"
+                    className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-emerald-400 text-[11px] font-medium border border-zinc-700 transition shrink-0"
+                  >
+                    <span>Full Visual Guide</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
                 </div>
 
                 {/* Step 1: Enter Custom Domain */}

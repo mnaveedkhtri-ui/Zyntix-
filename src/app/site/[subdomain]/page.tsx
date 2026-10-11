@@ -35,6 +35,9 @@ export async function generateMetadata({ params }: SitePageProps): Promise<Metad
   if (!site) return { title: 'Publication Not Found | Zyntix' };
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://zyntix-studio-ivory.vercel.app';
+  const effectiveBase = site.customDomain 
+    ? (site.customDomain.startsWith('http') ? site.customDomain : `https://${site.customDomain}`)
+    : baseUrl;
   const siteUrl = site.customDomain 
     ? `https://${site.customDomain}` 
     : `${baseUrl}/site/${site.subdomain}`;
@@ -47,7 +50,7 @@ export async function generateMetadata({ params }: SitePageProps): Promise<Metad
   return {
     title: metaTitle,
     description: metaDescription,
-    metadataBase: new URL(baseUrl),
+    metadataBase: new URL(effectiveBase),
     alternates: {
       canonical: siteUrl,
     },
