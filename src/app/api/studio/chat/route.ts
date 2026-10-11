@@ -139,16 +139,22 @@ CUSTOMER SATISFACTION DIRECTIVES:
 }
 Do NOT output any markdown backticks outside the JSON. Return only the raw JSON.`;
 
+    // Deterministic Extraction for Contact info (Phone / Email)
+    const phoneMatch = message.match(/(?:\+?\d{1,3}[-.\s]?)?\(?\d{2,4}\)?[-.\s]?\d{3,4}[-.\s]?\d{3,5}|\+\d{9,16}/);
+    const emailMatch = message.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+
     const prompt = `Current Site Context:
 ${JSON.stringify({
   subdomain: targetSite.subdomain,
   name: targetSite.name,
+  tagline: targetSite.tagline,
   niche: targetSite.niche,
   location: targetSite.location,
-  servicesCount: targetSite.services?.length,
+  author: targetSite.author,
+  contact: targetSite.contact,
+  services: targetSite.services?.map(s => ({ title: s.title, description: s.description })),
   postsCount: targetSite.posts?.length,
-  author: targetSite.author?.name
-})}
+}, null, 2)}
 
 User Request: "${message}"
 
@@ -173,6 +179,24 @@ Generate the appropriate JSON response updating or configuring the site precisel
     }
 
     if (!parsed || !parsed.site) {
+      if (phoneMatch || emailMatch) {
+        const directContact = { ...(targetSite.contact || {}) };
+        if (phoneMatch) directContact.phone = phoneMatch[0].trim();
+        if (emailMatch) directContact.email = emailMatch[0].trim();
+        const directUpdatedSite: SiteConfig = {
+          ...targetSite,
+          contact: directContact,
+          updatedAt: new Date().toISOString()
+        };
+        saveOrUpdateSite(directUpdatedSite);
+        return NextResponse.json({
+          success: true,
+          reply: `Your contact information has been updated. The phone number is now set to ${directContact.phone || "unchanged"} and email to ${directContact.email || "unchanged"}. Please review the live preview to confirm everything looks correct.`,
+          site: directUpdatedSite,
+          provider: aiRes.provider
+        });
+      }
+
       return NextResponse.json({
         success: true,
         reply: `I have received your instruction: "${message}". I am refining your publication according to your exact requirements.`,
@@ -201,12 +225,37 @@ Generate the appropriate JSON response updating or configuring the site precisel
       finalPosts = [];
     }
 
+    // Deep merge contact and author
+    const updatedContact = {
+      ...(targetSite.contact || {}),
+      ...(parsed.site.contact || {}),
+    };
+    if (phoneMatch) {
+      updatedContact.phone = phoneMatch[0].trim();
+    }
+    if (emailMatch) {
+      updatedContact.email = emailMatch[0].trim();
+    }
+
+    const updatedAuthor = {
+      ...(targetSite.author || {}),
+      ...(parsed.site.author || {}),
+    };
+
+    const updatedAbout = {
+      ...(targetSite.aboutContent || {}),
+      ...(parsed.site.aboutContent || {}),
+    };
+
     // Merge and persist updated site with 100% data preservation
     const updatedSite: SiteConfig = {
       ...targetSite,
       ...parsed.site,
       id: targetSite.id,
       subdomain: targetSite.subdomain,
+      author: updatedAuthor,
+      contact: updatedContact,
+      aboutContent: updatedAbout,
       customDomain: parsed.site.customDomain !== undefined ? parsed.site.customDomain : targetSite.customDomain,
       posts: finalPosts,
       updatedAt: new Date().toISOString()

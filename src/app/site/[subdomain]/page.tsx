@@ -1,5 +1,6 @@
 import React from 'react';
 import { getSiteBySubdomainOrDomain } from '@/lib/sites';
+import { SiteLiveSync } from '@/components/SiteLiveSync';
 
 export const dynamic = 'force-dynamic';
 import { 
@@ -221,6 +222,7 @@ export default async function TenantSitePage({ params }: SitePageProps) {
 
   return (
     <div className="min-h-screen bg-[#faf8f5] text-stone-900 font-serif selection:bg-amber-100 selection:text-stone-900 antialiased flex flex-col justify-between">
+      <SiteLiveSync subdomain={subdomain} />
       {/* Dynamic JSON-LD Schema for 100/100 Google SEO & Perplexity AI Citations */}
       <script
         type="application/ld+json"
@@ -239,12 +241,12 @@ export default async function TenantSitePage({ params }: SitePageProps) {
           </div>
           <div className="flex items-center gap-4 text-[11px] text-stone-400">
             {site.contact.phone && (
-              <a href={`tel:${site.contact.phone}`} className="hover:text-stone-100 flex items-center gap-1">
+              <a href={`tel:${site.contact.phone}`} data-contact-phone className="hover:text-stone-100 flex items-center gap-1">
                 <Phone className="w-3 h-3 text-stone-400" />
                 <span>{site.contact.phone}</span>
               </a>
             )}
-            <a href={`mailto:${site.contact.email}`} className="hover:text-stone-100 flex items-center gap-1">
+            <a href={`mailto:${site.contact.email}`} data-contact-email className="hover:text-stone-100 flex items-center gap-1">
               <Mail className="w-3 h-3 text-stone-400" />
               <span>{site.contact.email}</span>
             </a>
@@ -260,7 +262,7 @@ export default async function TenantSitePage({ params }: SitePageProps) {
               {site.name.slice(0, 1)}
             </div>
             <div>
-              <span className="text-xl sm:text-2xl tracking-tight font-normal text-stone-950 block leading-tight">
+              <span data-site-name className="text-xl sm:text-2xl tracking-tight font-normal text-stone-950 block leading-tight">
                 {site.name}
               </span>
               <span className="font-sans text-[10px] sm:text-[11px] uppercase tracking-widest text-stone-500 block">
@@ -665,12 +667,12 @@ export default async function TenantSitePage({ params }: SitePageProps) {
             <div className="p-6 rounded-2xl bg-stone-900/80 border border-stone-800 text-center">
               <Phone className="w-5 h-5 text-amber-400 mx-auto mb-3" />
               <span className="text-stone-400 block mb-1">Direct Phone</span>
-              <strong className="text-white text-sm">{site.contact.phone || '+1 (512) 894-3920'}</strong>
+              <strong data-contact-phone className="text-white text-sm">{site.contact.phone || '+92 3323219981'}</strong>
             </div>
             <div className="p-6 rounded-2xl bg-stone-900/80 border border-stone-800 text-center">
               <Mail className="w-5 h-5 text-amber-400 mx-auto mb-3" />
               <span className="text-stone-400 block mb-1">Inquiry Email</span>
-              <strong className="text-white text-sm">{site.contact.email}</strong>
+              <strong data-contact-email className="text-white text-sm">{site.contact.email}</strong>
             </div>
             <div className="p-6 rounded-2xl bg-stone-900/80 border border-stone-800 text-center">
               <Clock className="w-5 h-5 text-amber-400 mx-auto mb-3" />

@@ -166,15 +166,28 @@ export default function ZyntixStudio() {
     fetchSites();
   }, []);
 
-  const fetchSites = async () => {
+  const fetchSites = async (preserveSite?: SiteConfig) => {
     try {
       const res = await fetch("/api/sites");
       const data = await res.json();
       if (data.success && data.sites && data.sites.length > 0) {
         setSites(data.sites);
-        setCurrentSite(data.sites[0]);
-        if (data.sites[0]?.customDomain) {
-          setCustomDomainInput(data.sites[0].customDomain);
+        if (preserveSite) {
+          setCurrentSite(preserveSite);
+          if (preserveSite.customDomain) {
+            setCustomDomainInput(preserveSite.customDomain);
+          }
+        } else {
+          setCurrentSite(prev => {
+            if (!prev) {
+              if (data.sites[0]?.customDomain) {
+                setCustomDomainInput(data.sites[0].customDomain);
+              }
+              return data.sites[0];
+            }
+            const found = data.sites.find((s: SiteConfig) => s.id === prev.id || s.subdomain === prev.subdomain);
+            return found || prev;
+          });
         }
       }
     } catch (err) {
@@ -315,8 +328,21 @@ export default function ZyntixStudio() {
 
       if (data.success && data.site) {
         setCurrentSite(data.site);
+        if (typeof window !== "undefined") {
+          try {
+            localStorage.setItem(`zyntix_preview_${data.site.subdomain}`, JSON.stringify(data.site));
+          } catch (e) {}
+        }
         setIframeKey((k) => k + 1);
-        await fetchSites();
+        await fetchSites(data.site);
+
+        // Instant postMessage to preview iframe
+        try {
+          const iframeEl = document.querySelector('iframe[title="Site Live Preview"]') as HTMLIFrameElement | null;
+          if (iframeEl?.contentWindow) {
+            iframeEl.contentWindow.postMessage({ type: "ZYNTIX_UPDATE_SITE", site: data.site }, "*");
+          }
+        } catch (e) {}
 
         if (data.site.customDomain) {
           setCustomDomainInput(data.site.customDomain);
@@ -345,7 +371,7 @@ export default function ZyntixStudio() {
     }
   };
 
-  const previewUrl = currentSite ? `/site/${currentSite.subdomain}` : "/site/demo";
+  const previewUrl = currentSite ? `/site/${currentSite.subdomain}?v=${iframeKey}` : `/site/demo?v=${iframeKey}`;
   const liveUrl = currentSite?.customDomain ? `https://${currentSite.customDomain}` : previewUrl;
 
   return (

@@ -281,8 +281,8 @@ const INITIAL_DEMO_SITES: SiteConfig[] = [
     ]
   },
   "contact": {
-    "phone": "+1 (512) 894-3920",
-    "email": "studio@meridiancraft.com",
+    "phone": "+92 3323219981",
+    "email": "moderntrendz98@gmail.com",
     "address": "742 Congress Avenue, Historic District, Austin, TX 78701",
     "hours": "Monday – Friday: 8:00 AM – 6:00 PM CST",
     "twitter": "@meridiancraft",
@@ -379,6 +379,9 @@ export function saveOrUpdateSite(siteData: Partial<SiteConfig> & { subdomain: st
       updatedAt: now
     };
     sites[existingIdx] = updatedSite;
+    if (existingIdx < INITIAL_DEMO_SITES.length) {
+      INITIAL_DEMO_SITES[existingIdx] = updatedSite;
+    }
   } else {
     updatedSite = {
       id: siteData.id || `site-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
