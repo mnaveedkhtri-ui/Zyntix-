@@ -4,6 +4,7 @@ import { fetchGoogleSerpSuggestions, generateDeepHumanArticle } from '@/lib/seo-
 import { injectBiDirectionalLinks } from '@/lib/link-mesh';
 import { generateHeadingMatchedImage } from '@/lib/image-engine';
 import { pingIndexNow, pingGoogleSitemap } from '@/lib/indexing';
+import { optimizeMetaTitle, optimizeMetaDescription } from '@/lib/seo-helpers';
 
 export async function GET(req: Request) {
   try {
@@ -42,10 +43,13 @@ export async function GET(req: Request) {
       const existingSummary = site.posts.map(p => ({ slug: p.slug, title: p.title }));
       const linkedContent = injectBiDirectionalLinks(enrichedBlocks, existingSummary, site.niche);
 
+      const optimizedTitle = optimizeMetaTitle(article.title, site.name);
+      const optimizedExcerpt = optimizeMetaDescription(article.excerpt);
+
       const newPost = {
         slug: article.slug,
-        title: article.title,
-        excerpt: article.excerpt,
+        title: optimizedTitle,
+        excerpt: optimizedExcerpt,
         date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
         readTime: article.readTime,
         category: article.category,
@@ -67,12 +71,16 @@ export async function GET(req: Request) {
       // 4. Autonomous Search Engine Ping
       const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://zyntix-studio-ivory.vercel.app';
       const host = site.customDomain || 'zyntix-studio-ivory.vercel.app';
-      const targetUrl = site.customDomain 
-        ? `https://${site.customDomain}#${article.slug}`
+      const cleanDomain = site.customDomain ? site.customDomain.replace(/^https?:\/\//, '') : '';
+      const domainBase = cleanDomain ? `https://${cleanDomain}` : baseUrl;
+      const targetUrl = cleanDomain 
+        ? `${domainBase}/blog/${article.slug}`
         : `${baseUrl}/site/${site.subdomain}#${article.slug}`;
+      const sitemapUrl = `${domainBase}/sitemap.xml`;
+
       const [indexNowRes, googleRes] = await Promise.all([
         pingIndexNow(targetUrl, host),
-        pingGoogleSitemap(`${baseUrl}/sitemap.xml`)
+        pingGoogleSitemap(sitemapUrl)
       ]);
 
       results.push({
