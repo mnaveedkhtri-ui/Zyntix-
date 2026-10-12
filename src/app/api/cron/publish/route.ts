@@ -31,6 +31,18 @@ export async function GET(req: Request) {
       // 2. Generate high-depth human article
       const article = await generateDeepHumanArticle(chosenTopic, site.author.name);
 
+      // Track already used URLs from existing posts to guarantee zero duplicates across publication
+      const usedUrls = new Set<string>();
+      site.posts.forEach(p => {
+        if (p.coverImage) usedUrls.add(p.coverImage);
+        p.content.forEach(c => {
+          const m = c.match(/!\[.*?\]\((https:\/\/images\.unsplash\.com\/[^\)]+)\)/);
+          if (m && m[1]) usedUrls.add(m[1]);
+        });
+      });
+
+      const coverImg = generateHeadingMatchedImage(article.title, site.niche, usedUrls);
+
       // 3. Attach heading-matched images & internal link mesh
       const enrichedBlocks: string[] = [
         `[AEO_ANSWER]: ${article.aeoAnswer}`
@@ -41,8 +53,8 @@ export async function GET(req: Request) {
         if (section.subheading) enrichedBlocks.push(`*${section.subheading}*`);
         enrichedBlocks.push(...section.paragraphs);
 
-        // Generate contextual image
-        const matchedImg = generateHeadingMatchedImage(section.heading, site.niche);
+        // Generate contextual image strictly matched to heading and guaranteed unique
+        const matchedImg = generateHeadingMatchedImage(section.heading, site.niche, usedUrls);
         enrichedBlocks.push(`![${matchedImg.alt}](${matchedImg.url})`);
         enrichedBlocks.push(`*${matchedImg.caption}*`);
 
@@ -68,7 +80,7 @@ export async function GET(req: Request) {
           avatar: site.author.avatar,
           role: 'Author'
         },
-        coverImage: article.coverImage,
+        coverImage: coverImg.url,
         content: linkedContent
       };
 
