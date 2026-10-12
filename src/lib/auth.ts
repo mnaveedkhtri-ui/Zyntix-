@@ -12,57 +12,64 @@ export interface ZUser {
 
 export const ADMIN_EMAIL = "moderntrendz98@gmail.com";
 
-const USERS_FILE = path.join(process.cwd(), "data", "users.json");
-
-function ensureDirectoryExistence(filePath: string) {
-  const dirname = path.dirname(filePath);
-  if (fs.existsSync(dirname)) return true;
-  ensureDirectoryExistence(dirname);
-  fs.mkdirSync(dirname);
+function getSafeUsersFilePath(): string | null {
+  try {
+    const isVercel = process.env.VERCEL === '1';
+    const baseDir = isVercel ? '/tmp' : path.join(process.cwd(), 'data');
+    if (!fs.existsSync(baseDir)) {
+      fs.mkdirSync(baseDir, { recursive: true });
+    }
+    return path.join(baseDir, 'users.json');
+  } catch {
+    return null;
+  }
 }
+
+let inMemoryUsers: ZUser[] = [
+  {
+    id: "usr_founder_001",
+    name: "Founder",
+    email: ADMIN_EMAIL,
+    createdAt: new Date().toISOString(),
+    role: "founder",
+  }
+];
 
 export function getAllUsers(): ZUser[] {
   try {
-    if (!fs.existsSync(USERS_FILE)) {
-      ensureDirectoryExistence(USERS_FILE);
-      const defaultUsers: ZUser[] = [
-        {
-          id: "usr_founder_001",
-          name: "Founder",
-          email: ADMIN_EMAIL,
-          createdAt: new Date().toISOString(),
-          role: "founder",
-        }
-      ];
-      fs.writeFileSync(USERS_FILE, JSON.stringify(defaultUsers, null, 2), "utf-8");
-      return defaultUsers;
-    }
-    const raw = fs.readFileSync(USERS_FILE, "utf-8");
-    return JSON.parse(raw);
-  } catch (err) {
-    console.error("Failed to read users file:", err);
-    return [
-      {
-        id: "usr_founder_001",
-        name: "Founder",
-        email: ADMIN_EMAIL,
-        createdAt: new Date().toISOString(),
-        role: "founder",
+    const filePath = getSafeUsersFilePath();
+    if (filePath && fs.existsSync(filePath)) {
+      const raw = fs.readFileSync(filePath, "utf-8");
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        inMemoryUsers = parsed;
+        return parsed;
       }
-    ];
+    }
+    return inMemoryUsers;
+  } catch (err) {
+    return inMemoryUsers;
   }
 }
 
 export function saveUser(user: ZUser): void {
-  const users = getAllUsers();
+  const users = [...getAllUsers()];
   const existingIdx = users.findIndex(u => u.id === user.id || u.email.toLowerCase() === user.email.toLowerCase());
   if (existingIdx >= 0) {
     users[existingIdx] = user;
   } else {
     users.push(user);
   }
-  ensureDirectoryExistence(USERS_FILE);
-  fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2), "utf-8");
+  inMemoryUsers = users;
+
+  try {
+    const filePath = getSafeUsersFilePath();
+    if (filePath) {
+      fs.writeFileSync(filePath, JSON.stringify(users, null, 2), "utf-8");
+    }
+  } catch (err) {
+    console.warn("Could not persist users to disk, stored in memory cache:", err);
+  }
 }
 
 export function getUserByEmail(email: string): ZUser | null {
