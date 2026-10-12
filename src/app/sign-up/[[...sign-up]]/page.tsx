@@ -26,9 +26,7 @@ export default function SignUpPage() {
               headerTitle: "font-serif text-2xl font-normal text-stone-900",
               headerSubtitle: "font-sans text-xs text-stone-600",
               formButtonPrimary: "bg-stone-900 hover:bg-stone-800 text-stone-50 font-sans text-xs uppercase tracking-wider",
-              socialButtonsBlockButton: "hidden",
-              socialButtons: "hidden",
-              dividerRow: "hidden",
+              socialButtonsBlockButton: "border border-stone-300 hover:bg-stone-50 text-stone-800 font-sans text-xs font-medium rounded-lg shadow-2xs",
               footerActionLink: "text-amber-900 hover:text-amber-950 font-medium font-sans",
             }
           }}
