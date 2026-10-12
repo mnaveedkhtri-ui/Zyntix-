@@ -606,6 +606,26 @@ export default function ZyntixStudio() {
             </div>
           )}
 
+          {/* 1-Click Autonomous 24/7 Autopilot Button */}
+          {currentSite && (
+            <button
+              onClick={() => {
+                setActiveTab("autopilot");
+                handleTriggerAutopilot();
+              }}
+              disabled={autopilotRunning}
+              className={`hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition shadow-sm cursor-pointer ${
+                autopilotRunning 
+                  ? "bg-amber-400 text-zinc-950 animate-pulse" 
+                  : "bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30"
+              }`}
+              title="Click to trigger instant autonomous publishing & SEO ranking cycle"
+            >
+              <Zap className={`w-3.5 h-3.5 ${autopilotRunning ? "animate-spin text-zinc-950" : "text-amber-400 fill-current"}`} />
+              <span>{autopilotRunning ? "Publishing Autopilot..." : "⚡ 24/7 Autopilot: Run Now"}</span>
+            </button>
+          )}
+
           <a
             href={liveUrl}
             target="_blank"
