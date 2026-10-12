@@ -67,15 +67,19 @@ export function optimizeMetaDescription(text: string, fallback?: string): string
   }
 
   if (source.length < 148) {
-    const defaultSuffix = " High-integrity architectural craftsmanship and sustainable engineering.";
-    const combined = source.endsWith(".") ? `${source}${defaultSuffix}` : `${source}.${defaultSuffix}`;
+    const pad1 = " High-integrity architectural craftsmanship and sustainable engineering.";
+    const pad2 = " Verified field research, structural conservation, and timeless design.";
+    let combined = source.endsWith(".") ? `${source}${pad1}` : `${source}.${pad1}`;
+    if (combined.length < 148) {
+      combined = `${combined}${pad2}`;
+    }
     if (combined.length >= 148 && combined.length <= 156) {
       return combined;
     }
     if (combined.length > 156) {
-      const trimmed = combined.slice(0, 154);
+      const trimmed = combined.slice(0, 155);
       const lastSpace = trimmed.lastIndexOf(" ");
-      const finalCut = (lastSpace > 130 ? trimmed.slice(0, lastSpace) : trimmed).trim();
+      const finalCut = (lastSpace >= 147 ? trimmed.slice(0, lastSpace) : trimmed).trim();
       return finalCut.endsWith(".") ? finalCut : finalCut + ".";
     }
     return combined;
