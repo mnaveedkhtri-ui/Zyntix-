@@ -348,14 +348,25 @@ export function getAllSites(): SiteConfig[] {
 
 export function getSiteBySubdomainOrDomain(identifier: string): SiteConfig | null {
   const sites = getAllSites();
-  const cleanId = identifier.toLowerCase().trim();
-  const strippedId = cleanId.replace(/\.(org|com|net|app|io|co)$/i, '');
-  return sites.find(s => 
-    s.subdomain.toLowerCase() === cleanId || 
-    (s.customDomain && s.customDomain.toLowerCase() === cleanId) ||
-    s.subdomain.toLowerCase() === strippedId ||
-    (s.customDomain && s.customDomain.toLowerCase().replace(/\.[a-z]+$/i, '') === strippedId)
-  ) || sites[0] || null;
+  const cleanId = identifier.toLowerCase().trim().replace(/^https?:\/\//, '').replace(/\/$/, '');
+  const rootId = cleanId.replace(/^www\./, '');
+  const strippedId = rootId.replace(/\.(org|com|net|app|io|co|xyz|online|site|tech|store)$/i, '');
+
+  return sites.find(s => {
+    const sub = s.subdomain.toLowerCase().trim();
+    const cust = s.customDomain ? s.customDomain.toLowerCase().trim().replace(/^https?:\/\//, '').replace(/\/$/, '') : null;
+    const custRoot = cust ? cust.replace(/^www\./, '') : null;
+    const custStripped = custRoot ? custRoot.replace(/\.(org|com|net|app|io|co|xyz|online|site|tech|store)$/i, '') : null;
+
+    return (
+      sub === cleanId ||
+      sub === rootId ||
+      sub === strippedId ||
+      (cust && (cust === cleanId || cust === rootId)) ||
+      (custRoot && (custRoot === cleanId || custRoot === rootId || custRoot === strippedId)) ||
+      (custStripped && custStripped === strippedId)
+    );
+  }) || sites[0] || null;
 }
 
 export function getSiteById(id: string): SiteConfig | null {

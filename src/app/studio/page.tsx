@@ -105,6 +105,7 @@ export default function ZyntixStudio() {
   const [conciergeRequested, setConciergeRequested] = useState(false);
   const [conciergeLoading, setConciergeLoading] = useState(false);
   const [conciergeMessage, setConciergeMessage] = useState("");
+  const [domainSavedMsg, setDomainSavedMsg] = useState<string | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [dnsCheckResult, setDnsCheckResult] = useState<{
     status: string;
@@ -211,6 +212,7 @@ export default function ZyntixStudio() {
   const handleConnectDomain = async () => {
     if (!customDomainInput.trim() || !currentSite) return;
     setDomainConnecting(true);
+    setDomainSavedMsg(null);
     try {
       const res = await fetch("/api/domains/connect", {
         method: "POST",
@@ -225,11 +227,13 @@ export default function ZyntixStudio() {
       if (data.success) {
         setCurrentSite(data.site);
         await fetchSites();
+        setDomainSavedMsg(`Domain "${data.domain}" mapped successfully to ${data.site.name}! Follow the 2 DNS steps below.`);
+        handleCheckDns();
         setChatLog(prev => [
           ...prev,
           {
             sender: "bot",
-            text: `Domain **${data.domain}** has been mapped successfully! Please configure your A Record and CNAME Record in ${selectedRegistrar.toUpperCase()} DNS settings. Free Let's Encrypt SSL is active.`
+            text: `Domain **${data.domain}** has been mapped successfully to **${data.site.name}**! Configure the A Record and CNAME Record in ${selectedRegistrar.toUpperCase()} DNS settings. Free Let's Encrypt SSL is active.`
           }
         ]);
       }
@@ -723,6 +727,12 @@ export default function ZyntixStudio() {
                   <p className="text-[11px] text-zinc-500">
                     Tip: No need to include https:// or trailing slashes. Both root domain and www subdomain will be automatically mapped.
                   </p>
+                  {domainSavedMsg && (
+                    <div className="p-3.5 bg-emerald-950/60 border border-emerald-500/40 rounded-xl text-xs text-emerald-300 flex items-center gap-2.5">
+                      <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <span className="font-medium">{domainSavedMsg}</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Step 2: Select Provider for Customized Guide */}

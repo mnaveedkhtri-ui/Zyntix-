@@ -50,16 +50,23 @@ export async function GET(req: Request) {
     const isRootConnected = aRecords.some((ip: string) => validIps.includes(ip));
     const isWwwConnected = wwwRecords.some(
       (cname: string) => cname.includes('vercel-dns.com') || cname.includes('vercel.app')
-    ) || isRootConnected;
+    );
 
-    const isVercelConnected = isRootConnected;
+    const isVercelConnected = isRootConnected || isWwwConnected;
+
+    const isCloudflareProxy = aRecords.some((ip: string) => 
+      ip.startsWith('104.1') || ip.startsWith('104.2') || ip.startsWith('172.64.') || ip.startsWith('172.67.')
+    );
 
     let status = 'not_configured';
     let message = 'No DNS records detected yet. Please add an A Record pointing to 76.76.21.21 in your domain registrar and save.';
 
     if (isVercelConnected) {
       status = 'connected';
-      message = `Success! ${rootDomain} is pointing directly to Zyntix Edge servers (${aRecords.filter(ip => validIps.includes(ip)).join(', ')}). SSL is active and your website is live!`;
+      message = `Success! ${rootDomain} is pointing directly to Zyntix Edge servers (${aRecords.filter(ip => validIps.includes(ip)).join(', ') || 'CNAME Active'}). SSL is active and your publication is live!`;
+    } else if (isCloudflareProxy) {
+      status = 'cloudflare_proxied';
+      message = `${rootDomain} is using Cloudflare Proxy. Please switch your Cloudflare DNS proxy toggle from "Proxied (Orange Cloud)" to "DNS Only (Grey Cloud)" for instant SSL issuance.`;
     } else if (aRecords.length > 0) {
       status = 'pointing_elsewhere';
       message = `${rootDomain} is currently pointing to ${aRecords.join(', ')}. Please update your A Record (@) to 76.76.21.21 in your domain registrar.`;
