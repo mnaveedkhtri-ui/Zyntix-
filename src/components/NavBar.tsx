@@ -13,21 +13,18 @@ export default function NavBar() {
         </div>
         <span className="text-2xl font-normal tracking-tight text-stone-900">Zyntix</span>
       </Link>
-      <div className="hidden md:flex items-center gap-8 text-xs font-sans uppercase tracking-widest text-stone-600 font-medium">
+      <div className="hidden md:flex items-center gap-6 text-xs font-sans uppercase tracking-widest text-stone-600 font-medium">
         <Link href="/site/demo" className="hover:text-stone-950 transition">Showcase Publication</Link>
         <Link href="/pricing" className="hover:text-stone-950 transition">Pricing</Link>
-        <Show when="signed-out">
-          <Link href="/sign-in" className="hover:text-stone-950 transition font-semibold">Sign In</Link>
-          <div className="flex items-center gap-3">
-            <Link href="/sign-up" className="bg-stone-900 text-stone-50 px-4 py-2 rounded-md hover:bg-stone-800 transition">
-              Get Started &rarr;
-            </Link>
-          </div>
-        </Show>
         <Show when="signed-in">
-          <Link href="/studio" className="hover:text-stone-950 transition font-semibold">Studio</Link>
           <UserButton afterSignOutUrl="/" />
         </Show>
+        <Show when="signed-out">
+          <Link href="/sign-in" className="hover:text-stone-950 transition font-semibold">Sign In</Link>
+        </Show>
+        <Link href="/studio" className="bg-stone-900 text-stone-50 px-4 py-2 rounded-md hover:bg-stone-800 transition font-semibold cursor-pointer">
+          Open Studio &rarr;
+        </Link>
       </div>
     </nav>
   );
