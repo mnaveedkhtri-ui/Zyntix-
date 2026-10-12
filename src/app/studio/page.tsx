@@ -450,8 +450,8 @@ export default function ZyntixStudio() {
     }
   };
 
-  const previewUrl = currentSite ? `/site/${currentSite.subdomain}?v=${iframeKey}` : `/site/demo?v=${iframeKey}`;
-  const liveUrl = currentSite?.customDomain ? `https://${currentSite.customDomain}` : previewUrl;
+  const previewUrl = currentSite ? `/site/${currentSite.subdomain}?v=${iframeKey}` : "";
+  const liveUrl = currentSite?.customDomain ? `https://${currentSite.customDomain}` : (currentSite ? `/site/${currentSite.subdomain}` : "#");
 
   if (isLoaded && !isSignedIn && !bypassAuth) {
     return (
@@ -1609,6 +1609,27 @@ export default function ZyntixStudio() {
               </div>
             </div>
           )}
+
+          {/* Fallback View when no publication is active and a configured tab is opened */}
+          {!currentSite && (activeTab === "domain" || activeTab === "editor" || activeTab === "autopilot") && (
+            <div className="flex-1 flex flex-col items-center justify-center p-8 text-center max-w-md mx-auto">
+              <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-300 flex items-center justify-center mb-4">
+                <Sparkles className="w-7 h-7 text-amber-400" />
+              </div>
+              <h3 className="font-serif text-xl font-semibold text-stone-100 mb-2">
+                No Active Publication Selected
+              </h3>
+              <p className="text-zinc-400 text-xs mb-6 leading-relaxed">
+                Please deploy your publication first using the New Site tab or AI Co-Pilot to configure custom domains, edit settings, and view autonomous search ranking telemetry.
+              </p>
+              <button
+                onClick={() => setActiveTab("newsite")}
+                className="px-6 py-3 bg-stone-100 hover:bg-stone-200 text-zinc-950 font-bold rounded-xl text-xs transition cursor-pointer shadow-md"
+              >
+                Deploy Publication Now &rarr;
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Cloud-Style Slide Preview Panel */}
@@ -1629,7 +1650,7 @@ export default function ZyntixStudio() {
                 <div className="flex-1 max-w-sm mx-auto bg-white rounded-md px-3 py-1 text-[11px] text-stone-600 flex items-center justify-center gap-1 font-mono border border-stone-200 truncate">
                   <span className="text-stone-400">https://</span>
                   <span className="text-stone-800 font-medium">
-                    {currentSite?.customDomain ? currentSite.customDomain : `${currentSite?.subdomain || "demo"}.zyntix.app`}
+                    {currentSite?.customDomain ? currentSite.customDomain : `${currentSite?.subdomain || "your-site"}.zyntix.app`}
                   </span>
                 </div>
                 <button
@@ -1642,20 +1663,30 @@ export default function ZyntixStudio() {
               </div>
 
               {/* Live Editorial Website Frame */}
-              <iframe
-                key={iframeKey}
-                src={previewUrl}
-                className="w-full flex-1 border-0 bg-[#faf8f5]"
-                title="Site Live Preview"
-                onLoad={(e) => {
-                  try {
-                    const targetWin = (e.target as HTMLIFrameElement)?.contentWindow;
-                    if (targetWin && currentSite) {
-                      targetWin.postMessage({ type: "ZYNTIX_UPDATE_SITE", site: currentSite }, "*");
-                    }
-                  } catch (err) {}
-                }}
-              />
+              {currentSite ? (
+                <iframe
+                  key={iframeKey}
+                  src={previewUrl}
+                  className="w-full flex-1 border-0 bg-[#faf8f5]"
+                  title="Site Live Preview"
+                  onLoad={(e) => {
+                    try {
+                      const targetWin = (e.target as HTMLIFrameElement)?.contentWindow;
+                      if (targetWin && currentSite) {
+                        targetWin.postMessage({ type: "ZYNTIX_UPDATE_SITE", site: currentSite }, "*");
+                      }
+                    } catch (err) {}
+                  }}
+                />
+              ) : (
+                <div className="flex-1 flex flex-col items-center justify-center p-6 text-center text-stone-500 text-xs">
+                  <Sparkles className="w-8 h-8 text-amber-500/40 mb-2" />
+                  <p className="font-serif text-sm text-stone-800 font-medium">No Publication Preview</p>
+                  <p className="text-[11px] text-stone-400 mt-1 max-w-xs leading-relaxed">
+                    Deploy your publication using the New Site tab to see your live preview here.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         )}

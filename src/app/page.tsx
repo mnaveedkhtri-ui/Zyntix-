@@ -64,7 +64,7 @@ export default function Home() {
         <Show when="signed-out">
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 font-sans text-xs">
             <Link
-              href="/sign-in?redirect_url=/studio"
+              href="/studio?direct=1"
               className="w-full sm:w-auto px-8 py-3.5 bg-stone-900 text-stone-50 rounded-md font-medium hover:bg-stone-800 transition flex items-center justify-center gap-2 shadow-md shadow-stone-900/10 cursor-pointer"
             >
               <span>Launch Zyntix Studio &rarr;</span>

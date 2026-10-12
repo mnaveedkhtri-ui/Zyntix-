@@ -24,7 +24,7 @@ export default function NavBar() {
         </Show>
         <Show when="signed-out">
           <Link href="/sign-in" className="hover:text-stone-950 transition font-semibold">Sign In</Link>
-          <Link href="/sign-in?redirect_url=/studio" className="bg-stone-900 text-stone-50 px-4 py-2 rounded-md hover:bg-stone-800 transition font-semibold cursor-pointer">
+          <Link href="/studio?direct=1" className="bg-stone-900 text-stone-50 px-4 py-2 rounded-md hover:bg-stone-800 transition font-semibold cursor-pointer">
             Open Studio &rarr;
           </Link>
         </Show>
