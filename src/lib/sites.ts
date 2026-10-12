@@ -21,6 +21,7 @@ export interface BlogPost {
 
 export interface SiteConfig {
   id: string;
+  userId?: string | null;
   subdomain: string;
   customDomain?: string | null;
   googleVerification?: string;
@@ -68,6 +69,7 @@ export interface SiteConfig {
 const INITIAL_DEMO_SITES: SiteConfig[] = [
   {
   "id": "site-default-demo",
+  "userId": "admin_founder",
   "subdomain": "demo",
   "customDomain": "moderntrendsnow.org",
   "googleVerification": "gCz9yLEhlFt8IGLhyJZdLHR_v5PHJ7px4ot69CUB1pw",
@@ -346,6 +348,32 @@ export function getAllSites(): SiteConfig[] {
   return memorySitesCache;
 }
 
+export const ADMIN_EMAIL = "moderntrendz98@gmail.com";
+
+export function getSitesForUser(userId: string | null | undefined, userEmail?: string | null): SiteConfig[] {
+  const all = getAllSites();
+
+  // 1. Unauthenticated Guest / Direct Sandbox Mode (?direct=1)
+  if (!userId) {
+    return all.filter(s => s.id === 'site-default-demo' || s.userId === 'admin_founder');
+  }
+
+  // 2. Platform Founder / Admin (owns moderntrendsnow.org)
+  const isFounder = userEmail?.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+  if (isFounder) {
+    return all.filter(s => 
+      s.userId === userId || 
+      s.userId === 'admin_founder' || 
+      s.id === 'site-default-demo' || 
+      !s.userId
+    );
+  }
+
+  // 3. Authenticated Customers / Multi-Tenant Isolation
+  // Strictly return only websites belonging to this specific user's Clerk ID!
+  return all.filter(s => s.userId === userId);
+}
+
 export function getSiteBySubdomainOrDomain(identifier: string): SiteConfig | null {
   const sites = getAllSites();
   const cleanId = identifier.toLowerCase().trim().replace(/^https?:\/\//, '').replace(/\/$/, '');
@@ -366,12 +394,12 @@ export function getSiteBySubdomainOrDomain(identifier: string): SiteConfig | nul
       (custRoot && (custRoot === cleanId || custRoot === rootId || custRoot === strippedId)) ||
       (custStripped && custStripped === strippedId)
     );
-  }) || sites[0] || null;
+  }) || null;
 }
 
 export function getSiteById(id: string): SiteConfig | null {
   const sites = getAllSites();
-  return sites.find(s => s.id === id) || sites[0] || null;
+  return sites.find(s => s.id === id) || null;
 }
 
 export function saveOrUpdateSite(siteData: Partial<SiteConfig> & { subdomain: string; name: string }): SiteConfig {
@@ -388,6 +416,7 @@ export function saveOrUpdateSite(siteData: Partial<SiteConfig> & { subdomain: st
     updatedSite = {
       ...sites[existingIdx],
       ...siteData,
+      userId: siteData.userId || sites[existingIdx].userId || null,
       author: {
         ...sites[existingIdx].author,
         ...(siteData.author || {})
@@ -406,6 +435,7 @@ export function saveOrUpdateSite(siteData: Partial<SiteConfig> & { subdomain: st
   } else {
     updatedSite = {
       id: siteData.id || `site-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+      userId: siteData.userId || null,
       subdomain: siteData.subdomain.toLowerCase(),
       customDomain: siteData.customDomain || null,
       name: siteData.name,

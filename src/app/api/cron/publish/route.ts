@@ -8,7 +8,17 @@ import { optimizeMetaTitle, optimizeMetaDescription } from '@/lib/seo-helpers';
 
 export async function GET(req: Request) {
   try {
-    const sites = getAllSites();
+    const url = new URL(req.url);
+    const targetSubdomain = url.searchParams.get("subdomain") || url.searchParams.get("site");
+    const targetSiteId = url.searchParams.get("siteId");
+
+    let sites = getAllSites();
+    if (targetSubdomain) {
+      sites = sites.filter(s => s.subdomain.toLowerCase() === targetSubdomain.toLowerCase());
+    } else if (targetSiteId) {
+      sites = sites.filter(s => s.id === targetSiteId);
+    }
+
     const results = [];
 
     for (const site of sites) {
@@ -102,3 +112,8 @@ export async function GET(req: Request) {
     return NextResponse.json({ success: false, error: String(err) }, { status: 500 });
   }
 }
+
+export async function POST(req: Request) {
+  return GET(req);
+}
+

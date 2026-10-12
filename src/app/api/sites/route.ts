@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { getAllSites, saveOrUpdateSite, getSiteById } from "@/lib/sites";
+import { auth, clerkClient } from "@clerk/nextjs/server";
+import { getSitesForUser, saveOrUpdateSite, getSiteById, ADMIN_EMAIL } from "@/lib/sites";
 
 export async function GET(req: Request) {
   try {
@@ -9,8 +10,32 @@ export async function GET(req: Request) {
       const site = getSiteById(id);
       return NextResponse.json({ success: true, site });
     }
-    const sites = getAllSites();
-    return NextResponse.json({ success: true, sites });
+
+    let userId: string | null = null;
+    let userEmail: string | null = null;
+
+    try {
+      const authResult = await auth();
+      userId = authResult?.userId || null;
+      if (userId) {
+        const client = await clerkClient();
+        const user = await client.users.getUser(userId);
+        userEmail = user.emailAddresses[0]?.emailAddress || null;
+      }
+    } catch (authErr) {
+      // Unauthenticated visitor / sandbox bypass
+    }
+
+    const sites = getSitesForUser(userId, userEmail);
+    const isFounder = userEmail?.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+
+    return NextResponse.json({
+      success: true,
+      sites,
+      isFounder,
+      authenticated: !!userId,
+      user: userId ? { id: userId, email: userEmail } : null
+    });
   } catch (error) {
     return NextResponse.json({ success: false, error: String(error) }, { status: 500 });
   }
@@ -25,6 +50,19 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
+
+    let userId: string | null = null;
+    try {
+      const authResult = await auth();
+      userId = authResult?.userId || null;
+    } catch (e) {
+      // Non-auth creation
+    }
+
+    if (userId && !body.userId) {
+      body.userId = userId;
+    }
+
     const saved = saveOrUpdateSite(body);
     return NextResponse.json({ success: true, site: saved });
   } catch (error) {

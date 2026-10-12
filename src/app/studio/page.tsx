@@ -28,7 +28,11 @@ import {
   AlertTriangle,
   ChevronDown,
   Clock,
-  Shield
+  Shield,
+  Zap,
+  Activity,
+  CheckCircle2,
+  Radio
 } from "lucide-react";
 
 interface BlogPost {
@@ -93,7 +97,7 @@ export default function ZyntixStudio() {
 
   const [sites, setSites] = useState<SiteConfig[]>([]);
   const [currentSite, setCurrentSite] = useState<SiteConfig | null>(null);
-  const [activeTab, setActiveTab] = useState<"writer" | "domain" | "editor" | "newsite">("writer");
+  const [activeTab, setActiveTab] = useState<"writer" | "domain" | "editor" | "newsite" | "autopilot">("writer");
   const [viewport, setViewport] = useState<"desktop" | "mobile">("desktop");
   
   // Slide Preview Drawer State (Cloud-style toggle)
@@ -108,6 +112,52 @@ export default function ZyntixStudio() {
   ]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [iframeKey, setIframeKey] = useState(0);
+
+  // Autopilot Engine Trigger State
+  const [autopilotRunning, setAutopilotRunning] = useState(false);
+  const [autopilotResult, setAutopilotResult] = useState<{
+    success: boolean;
+    publishedArticle?: string;
+    indexing?: any;
+    message?: string;
+    timestamp?: string;
+  } | null>(null);
+
+  const handleTriggerAutopilot = async () => {
+    if (!currentSite) return;
+    setAutopilotRunning(true);
+    setAutopilotResult(null);
+    try {
+      const res = await fetch(`/api/cron/publish?subdomain=${encodeURIComponent(currentSite.subdomain)}`, {
+        method: "POST"
+      });
+      const data = await res.json();
+      if (data.success && data.results && data.results.length > 0) {
+        const item = data.results[0];
+        setAutopilotResult({
+          success: true,
+          publishedArticle: item.publishedArticle,
+          indexing: item.indexing,
+          message: `Generated & published monograph "${item.publishedArticle}" with automated IndexNow search engine syndication.`,
+          timestamp: new Date().toLocaleTimeString()
+        });
+        await fetchSites(currentSite);
+        setIframeKey(k => k + 1);
+      } else {
+        setAutopilotResult({
+          success: false,
+          message: data.error || "Autopilot completed cycle."
+        });
+      }
+    } catch (err) {
+      setAutopilotResult({
+        success: false,
+        message: "Autopilot dispatch error: " + String(err)
+      });
+    } finally {
+      setAutopilotRunning(false);
+    }
+  };
 
   // Custom Domain Connection State
   const [customDomainInput, setCustomDomainInput] = useState("");
@@ -193,9 +243,10 @@ export default function ZyntixStudio() {
       if (data.success && data.sites && data.sites.length > 0) {
         setSites(data.sites);
         if (preserveSite) {
-          setCurrentSite(preserveSite);
-          if (preserveSite.customDomain) {
-            setCustomDomainInput(preserveSite.customDomain);
+          const match = data.sites.find((s: SiteConfig) => s.id === preserveSite.id || s.subdomain === preserveSite.subdomain);
+          setCurrentSite(match || preserveSite);
+          if (match?.customDomain || preserveSite.customDomain) {
+            setCustomDomainInput(match?.customDomain || preserveSite.customDomain || "");
           }
         } else {
           setCurrentSite(prev => {
@@ -206,9 +257,13 @@ export default function ZyntixStudio() {
               return data.sites[0];
             }
             const found = data.sites.find((s: SiteConfig) => s.id === prev.id || s.subdomain === prev.subdomain);
-            return found || prev;
+            return found || data.sites[0];
           });
         }
+      } else {
+        setSites([]);
+        setCurrentSite(null);
+        setActiveTab("newsite");
       }
     } catch (err) {
       console.error("Failed to load sites", err);
@@ -450,32 +505,44 @@ export default function ZyntixStudio() {
           <div className="h-4 w-px bg-zinc-800 mx-1 hidden sm:block" />
 
           {/* Publication Selector */}
-          <select 
-            value={currentSite?.subdomain || ""}
-            onChange={(e) => {
-              const selected = sites.find(s => s.subdomain === e.target.value);
-              if (selected) {
-                setCurrentSite(selected);
-                setCustomDomainInput(selected.customDomain || "");
-                setIframeKey(k => k + 1);
-              }
-            }}
-            className="bg-zinc-950 border border-zinc-800 rounded-md text-xs px-2.5 py-1.5 text-zinc-200 focus:outline-none focus:border-zinc-500 font-serif max-w-[180px] sm:max-w-xs truncate"
-          >
-            {sites.map(s => (
-              <option key={s.id} value={s.subdomain}>
-                {s.name} ({s.customDomain ? s.customDomain : `${s.subdomain}.zyntix.app`})
-              </option>
-            ))}
-          </select>
+          {sites.length === 0 ? (
+            <button
+              onClick={() => setActiveTab("newsite")}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-500/10 border border-amber-500/30 text-amber-300 rounded-md text-xs font-medium hover:bg-amber-500/20 transition cursor-pointer"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <span>Create Your First Publication</span>
+            </button>
+          ) : (
+            <>
+              <select 
+                value={currentSite?.subdomain || ""}
+                onChange={(e) => {
+                  const selected = sites.find(s => s.subdomain === e.target.value);
+                  if (selected) {
+                    setCurrentSite(selected);
+                    setCustomDomainInput(selected.customDomain || "");
+                    setIframeKey(k => k + 1);
+                  }
+                }}
+                className="bg-zinc-950 border border-zinc-800 rounded-md text-xs px-2.5 py-1.5 text-zinc-200 focus:outline-none focus:border-zinc-500 font-serif max-w-[180px] sm:max-w-xs truncate"
+              >
+                {sites.map(s => (
+                  <option key={s.id} value={s.subdomain}>
+                    {s.name} ({s.customDomain ? s.customDomain : `${s.subdomain}.zyntix.app`})
+                  </option>
+                ))}
+              </select>
 
-          <button
-            onClick={() => setActiveTab("newsite")}
-            className="flex items-center gap-1 px-2.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-stone-200 rounded-md text-xs transition"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">New Site</span>
-          </button>
+              <button
+                onClick={() => setActiveTab("newsite")}
+                className="flex items-center gap-1 px-2.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-stone-200 rounded-md text-xs transition cursor-pointer"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">New Site</span>
+              </button>
+            </>
+          )}
         </div>
 
         {/* Viewport, Live Link & Cloud-Style Slide Preview Controls */}
@@ -538,6 +605,17 @@ export default function ZyntixStudio() {
             >
               <PenTool className="w-3.5 h-3.5" />
               <span>AI Co-Pilot (English)</span>
+            </button>
+            <button
+              onClick={() => setActiveTab("autopilot")}
+              className={`flex-1 py-3 text-center border-b-2 flex items-center justify-center gap-1.5 transition ${activeTab === "autopilot" ? "border-amber-400 text-amber-300 bg-amber-500/10 font-semibold" : "border-transparent text-zinc-400 hover:text-white"}`}
+            >
+              <Activity className="w-3.5 h-3.5 text-amber-400" />
+              <span>Autopilot Engine</span>
+              <span className="relative flex h-2 w-2 ml-1">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
             </button>
             <button
               onClick={() => setActiveTab("domain")}
@@ -1059,10 +1137,34 @@ export default function ZyntixStudio() {
               <button
                 onClick={handleCreateNewSite}
                 disabled={isProcessing || !newSiteBrand.trim() || !newSiteNiche.trim()}
-                className="w-full py-3 bg-stone-100 hover:bg-stone-200 text-zinc-950 rounded-xl font-bold text-xs transition cursor-pointer"
+                className="w-full py-3 bg-stone-100 hover:bg-stone-200 text-zinc-950 rounded-xl font-bold text-xs transition cursor-pointer disabled:opacity-50"
               >
                 {isProcessing ? "Deploying Publication..." : "Deploy Website Instantly &rarr;"}
               </button>
+
+              <div className="pt-3 border-t border-zinc-800/80">
+                <p className="text-[11px] text-zinc-400 mb-2">Or pick a 1-click starter template:</p>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { brand: "Vertex Engineering Journal", niche: "Civil Engineering & Architecture" },
+                    { brand: "Silicon & Strategy", niche: "AI & Modern Technology" },
+                    { brand: "The Artisan Journal", niche: "Fine Woodworking & Joinery" },
+                    { brand: "Apex Wellness Review", niche: "Health & Longevity" }
+                  ].map((preset, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => {
+                        setNewSiteBrand(preset.brand);
+                        setNewSiteNiche(preset.niche);
+                      }}
+                      className="px-2.5 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-[11px] text-zinc-200 border border-zinc-700/60 transition cursor-pointer"
+                    >
+                      + {preset.brand}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
 
@@ -1339,6 +1441,171 @@ export default function ZyntixStudio() {
                     <span>Save & Apply All Changes to Live Site &rarr;</span>
                   )}
                 </button>
+              </div>
+            </div>
+          )}
+
+          {/* Tab 5: Autonomous Autopilot & SEO Command Center */}
+          {activeTab === "autopilot" && currentSite && (
+            <div className="flex-1 p-6 overflow-y-auto space-y-6 text-xs max-w-2xl mx-auto w-full">
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <h3 className="font-serif text-lg text-stone-100 font-semibold flex items-center gap-2">
+                    <Activity className="w-5 h-5 text-amber-400" />
+                    <span>Autonomous Ranking & Publication Autopilot</span>
+                  </h3>
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold uppercase tracking-wider">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    Autopilot Online
+                  </span>
+                </div>
+                <p className="text-zinc-400 text-xs leading-relaxed">
+                  Your website is autonomous: Zyntix automatically conducts Google SERP research, writes deep human monographs, connects bidirectional link meshes, and syndicates live updates to search engines.
+                </p>
+              </div>
+
+              {/* Real-time trigger button card */}
+              <div className="bg-zinc-900/90 border border-amber-500/30 rounded-2xl p-5 space-y-3 shadow-lg">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <h4 className="font-semibold text-amber-300 text-sm">
+                      On-Demand Autopilot Dispatch
+                    </h4>
+                    <p className="text-zinc-400 text-[11px] mt-0.5">
+                      Verify your autopilot live: trigger an instant publishing cycle right now.
+                    </p>
+                  </div>
+                  <button
+                    onClick={handleTriggerAutopilot}
+                    disabled={autopilotRunning}
+                    className="px-4 py-2.5 bg-amber-400 hover:bg-amber-300 text-zinc-950 font-bold rounded-xl text-xs transition cursor-pointer flex items-center justify-center gap-2 shadow-md disabled:opacity-50 shrink-0"
+                  >
+                    {autopilotRunning ? (
+                      <>
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                        <span>Generating & Indexing...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Zap className="w-3.5 h-3.5 fill-current" />
+                        <span>Run Autopilot Cycle Now</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {autopilotResult && (
+                  <div className={`p-3.5 rounded-xl border text-xs leading-relaxed ${
+                    autopilotResult.success 
+                      ? "bg-emerald-950/40 border-emerald-500/30 text-emerald-200"
+                      : "bg-red-950/40 border-red-500/30 text-red-200"
+                  }`}>
+                    <div className="flex items-center gap-2 font-semibold mb-1">
+                      {autopilotResult.success ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <AlertTriangle className="w-4 h-4 text-red-400" />}
+                      <span>{autopilotResult.success ? "Cycle Dispatched Successfully!" : "Autopilot Notice"}</span>
+                      {autopilotResult.timestamp && <span className="text-[10px] text-zinc-400 ml-auto font-mono">{autopilotResult.timestamp}</span>}
+                    </div>
+                    <p className="text-[11px]">{autopilotResult.message}</p>
+                    {autopilotResult.publishedArticle && (
+                      <div className="mt-2 pt-2 border-t border-emerald-500/20 text-[11px]">
+                        <span className="text-emerald-400 font-medium">New Live Article: </span>
+                        <span>{autopilotResult.publishedArticle}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Telemetry Matrix Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-4">
+                  <div className="flex items-center gap-2 text-zinc-300 font-semibold mb-1">
+                    <Radio className="w-4 h-4 text-emerald-400" />
+                    <span>Search Engine IndexNow</span>
+                  </div>
+                  <p className="text-zinc-400 text-[11px] leading-relaxed">
+                    Connected to Bing, Yandex & Seznam endpoints. Instant HTTP 202 indexing triggered upon every publication.
+                  </p>
+                  <div className="mt-2 text-[10px] text-emerald-400 font-mono">
+                    Endpoint: api.indexnow.org (Active)
+                  </div>
+                </div>
+
+                <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-4">
+                  <div className="flex items-center gap-2 text-zinc-300 font-semibold mb-1">
+                    <ShieldCheck className="w-4 h-4 text-blue-400" />
+                    <span>Google SEO & AEO Snippets</span>
+                  </div>
+                  <p className="text-zinc-400 text-[11px] leading-relaxed">
+                    Automated JSON-LD schemas: BlogPosting, BreadcrumbList, LocalBusiness, and #0 AEO Answer Boxes.
+                  </p>
+                  <div className="mt-2 text-[10px] text-blue-400 font-mono">
+                    Sitemap: /sitemap.xml (Pinged Daily)
+                  </div>
+                </div>
+
+                <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-4">
+                  <div className="flex items-center gap-2 text-zinc-300 font-semibold mb-1">
+                    <Clock className="w-4 h-4 text-amber-400" />
+                    <span>Automated Cron Cadence</span>
+                  </div>
+                  <p className="text-zinc-400 text-[11px] leading-relaxed">
+                    Automated background cron runs daily at 08:00 UTC via Vercel Cron. Zero manual maintenance needed.
+                  </p>
+                  <div className="mt-2 text-[10px] text-amber-300 font-mono">
+                    Schedule: 0 8 * * * (Daily)
+                  </div>
+                </div>
+
+                <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-4">
+                  <div className="flex items-center gap-2 text-zinc-300 font-semibold mb-1">
+                    <Sparkles className="w-4 h-4 text-purple-400" />
+                    <span>AI Failover Engine</span>
+                  </div>
+                  <p className="text-zinc-400 text-[11px] leading-relaxed">
+                    Triple redundancy: Groq Llama 3.3 70B Versatile with automated failover pool to Google Gemini 2.5 Flash.
+                  </p>
+                  <div className="mt-2 text-[10px] text-purple-300 font-mono">
+                    Failover Shield: 100% Uptime Guaranteed
+                  </div>
+                </div>
+              </div>
+
+              {/* Published Monograph Feed */}
+              <div className="bg-zinc-900/80 border border-zinc-800 rounded-2xl p-5 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-stone-200 text-xs">
+                    Live Autonomous Articles ({currentSite.posts.length})
+                  </span>
+                  <a
+                    href={currentSite.customDomain ? `https://${currentSite.customDomain}/blog` : `/site/${currentSite.subdomain}/blog`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-amber-400 hover:text-amber-300 text-[11px] font-medium flex items-center gap-1"
+                  >
+                    <span>View Public Journal</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
+
+                <div className="divide-y divide-zinc-800/80">
+                  {currentSite.posts.slice(0, 5).map((post, idx) => (
+                    <div key={idx} className="py-2.5 flex items-center justify-between gap-3 text-xs">
+                      <div className="truncate flex-1">
+                        <div className="text-stone-200 font-serif truncate">{post.title}</div>
+                        <div className="text-[10px] text-zinc-500">{post.date} • {post.readTime} • {post.category}</div>
+                      </div>
+                      <a
+                        href={currentSite.customDomain ? `https://${currentSite.customDomain}/blog/${post.slug}` : `/site/${currentSite.subdomain}/blog/${post.slug}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="px-2 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-stone-300 text-[10px] shrink-0 transition"
+                      >
+                        Inspect
+                      </a>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           )}

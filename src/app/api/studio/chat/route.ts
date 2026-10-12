@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
 import { failoverShield } from '@/lib/failover-shield';
 import { getSiteById, saveOrUpdateSite, SiteConfig, BlogPost } from '@/lib/sites';
 import { optimizeMetaTitle, optimizeMetaDescription } from '@/lib/seo-helpers';
@@ -12,17 +13,24 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: 'Message is required' }, { status: 400 });
     }
 
+    let authUserId: string | null = null;
+    try {
+      const authRes = await auth();
+      authUserId = authRes?.userId || null;
+    } catch (e) {}
+
     const targetSite: SiteConfig = currentSite || (siteId ? getSiteById(siteId) : null) || {
-      id: 'site-default-demo',
-      subdomain: 'demo',
-      name: 'Meridian Craft & Architecture',
-      tagline: 'Architectural Craftsmanship, Sustainable Engineering & Thoughtful Construction',
-      description: 'An independent architectural studio and research journal dedicated to timeless masonry, sustainable timber framing, and grounded regional engineering.',
-      niche: 'Architecture & Craftsmanship',
-      location: 'Austin, Texas',
+      id: `site-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+      userId: authUserId,
+      subdomain: `publication-${Math.floor(100 + Math.random() * 900)}`,
+      name: 'New Custom Publication',
+      tagline: 'Autonomous AI Insights & Practical Research',
+      description: 'An independent publication dedicated to deliberate craftsmanship, thoughtful analysis, and verified standards.',
+      niche: 'Digital Craft & Technology',
+      location: 'Global',
       author: {
-        name: 'Julian Vance',
-        credentials: 'AIA & Master Timber Artisan',
+        name: 'Publication Editor',
+        credentials: 'Chief Editor & Lead Practitioner',
         bio: 'Practicing architect and timber framer with 22 years of field experience in historic restoration across Central Texas.',
         avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'
       },
@@ -431,6 +439,7 @@ Generate the appropriate JSON response updating or configuring the site precisel
       services: finalServices,
       posts: finalPosts,
       id: finalSiteId,
+      userId: targetSite.userId || authUserId || null,
       subdomain: finalSiteSubdomain,
       author: updatedAuthor,
       contact: updatedContact,
