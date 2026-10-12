@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Show, RedirectToSignIn, UserButton } from "@clerk/nextjs";
+import Link from "next/link";
+import { Show, UserButton } from "@clerk/nextjs";
 import { 
   Send, 
   ExternalLink, 
@@ -382,7 +383,35 @@ export default function ZyntixStudio() {
   const liveUrl = currentSite?.customDomain ? `https://${currentSite.customDomain}` : previewUrl;
 
   return (
-    <div className="h-screen w-screen bg-[#121214] text-zinc-100 flex flex-col overflow-hidden font-sans antialiased">
+    <>
+      <Show when="signed-out">
+        <div className="h-screen w-screen bg-[#121214] text-zinc-100 flex flex-col items-center justify-center p-6 text-center select-none">
+          <div className="w-12 h-12 rounded-xl bg-stone-100 text-zinc-950 flex items-center justify-center font-serif font-bold text-xl mb-4 shadow-xl">
+            Z
+          </div>
+          <h2 className="font-serif text-2xl sm:text-3xl font-normal text-stone-100 mb-2">Authentication Required</h2>
+          <p className="text-zinc-400 text-xs sm:text-sm max-w-md mb-8 font-sans leading-relaxed">
+            Please sign in with Google or your email to access your Zyntix Studio publications and AI Co-Pilot.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center gap-3 font-sans text-xs">
+            <Link 
+              href="/sign-in?redirect_url=/studio" 
+              className="w-full sm:w-auto px-6 py-3 bg-stone-100 text-zinc-900 rounded-md font-medium hover:bg-stone-200 transition flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-stone-100/10 font-semibold"
+            >
+              <span>Sign In with Google &rarr;</span>
+            </Link>
+            <Link 
+              href="/" 
+              className="w-full sm:w-auto px-6 py-3 border border-zinc-800 text-zinc-400 hover:text-stone-200 rounded-md font-medium hover:bg-zinc-900 transition flex items-center justify-center cursor-pointer"
+            >
+              &larr; Back to Home
+            </Link>
+          </div>
+        </div>
+      </Show>
+
+      <Show when="signed-in">
+        <div className="h-screen w-screen bg-[#121214] text-zinc-100 flex flex-col overflow-hidden font-sans antialiased">
       {/* Studio Header */}
       <header className="h-14 border-b border-zinc-800 bg-[#18181b] px-4 sm:px-6 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-3">
@@ -1336,5 +1365,7 @@ export default function ZyntixStudio() {
         )}
       </div>
     </div>
+      </Show>
+    </>
   );
 }

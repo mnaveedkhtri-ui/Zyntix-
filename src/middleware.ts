@@ -19,9 +19,15 @@ export function middleware(req: NextRequest) {
   const currentHost = hostname.replace(/:\d+$/, "").toLowerCase();
 
   // 2. Base platform domains (Never rewrite these as subdomains)
-  // Matches: localhost, zyntix.app, *.vercel.app (e.g. zyntix-studio-ivory.vercel.app)
+  // Matches: localhost, zyntix.app, moderntrendsnow.org, www.moderntrendsnow.org, *.vercel.app
   const isVercelDomain = currentHost.endsWith(".vercel.app");
-  const isApex = currentHost === "localhost" || currentHost === "127.0.0.1" || currentHost === "zyntix.app";
+  const isApex = 
+    currentHost === "localhost" || 
+    currentHost === "127.0.0.1" || 
+    currentHost === "zyntix.app" ||
+    currentHost === "www.zyntix.app" ||
+    currentHost === "moderntrendsnow.org" ||
+    currentHost === "www.moderntrendsnow.org";
 
   if (isVercelDomain || isApex) {
     if (url.pathname === "/blog" || url.pathname.startsWith("/blog/")) {
@@ -33,10 +39,20 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // 3. Subdomain detection on custom apex (e.g., client.zyntix.app)
+  // 3. Subdomain detection on custom apex (e.g., client.zyntix.app or client.moderntrendsnow.org)
   if (currentHost.endsWith(".zyntix.app")) {
     const subdomain = currentHost.replace(".zyntix.app", "");
     if (subdomain && subdomain !== "www" && subdomain !== "app") {
+      const path = url.pathname === "/" ? "" : url.pathname;
+      const rewriteUrl = new URL(`/site/${subdomain}${path}`, req.url);
+      rewriteUrl.search = url.search;
+      return NextResponse.rewrite(rewriteUrl);
+    }
+  }
+
+  if (currentHost.endsWith(".moderntrendsnow.org")) {
+    const subdomain = currentHost.replace(".moderntrendsnow.org", "");
+    if (subdomain && subdomain !== "www" && subdomain !== "app" && subdomain !== "clerk" && subdomain !== "accounts") {
       const path = url.pathname === "/" ? "" : url.pathname;
       const rewriteUrl = new URL(`/site/${subdomain}${path}`, req.url);
       rewriteUrl.search = url.search;

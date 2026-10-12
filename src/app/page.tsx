@@ -24,20 +24,25 @@ export default function Home() {
                 Studio
               </Link>
               <UserButton afterSignOutUrl="/" />
+              <Link 
+                href="/studio"
+                className="px-4 py-2 rounded-md bg-stone-900 text-stone-50 hover:bg-stone-800 transition font-sans text-xs font-medium"
+              >
+                Open Studio &rarr;
+              </Link>
             </Show>
 
             <Show when="signed-out">
               <Link href="/sign-in" className="hover:text-stone-950 transition font-semibold">
                 Sign In
               </Link>
+              <Link 
+                href="/sign-in?redirect_url=/studio"
+                className="px-4 py-2 rounded-md bg-stone-900 text-stone-50 hover:bg-stone-800 transition font-sans text-xs font-medium"
+              >
+                Open Studio &rarr;
+              </Link>
             </Show>
-
-            <Link 
-              href="/studio"
-              className="px-4 py-2 rounded-md bg-stone-900 text-stone-50 hover:bg-stone-800 transition font-sans text-xs font-medium"
-            >
-              Open Studio &rarr;
-            </Link>
           </nav>
         </div>
       </header>
@@ -56,26 +61,45 @@ export default function Home() {
           Autonomous multi-tenant publications that rank on autopilot. Built with quiet typography, deep long-tail SERP gap research, and zero AI noise.
         </p>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 font-sans text-xs">
-          <Link
-            href="/studio"
-            className="w-full sm:w-auto px-8 py-3.5 bg-stone-900 text-stone-50 rounded-md font-medium hover:bg-stone-800 transition flex items-center justify-center gap-2 shadow-md shadow-stone-900/10 cursor-pointer"
-          >
-            <span>Launch Zyntix Studio &rarr;</span>
-          </Link>
-          <Link
-            href="/sign-in"
-            className="w-full sm:w-auto px-8 py-3.5 bg-white border border-stone-300 text-stone-800 rounded-md font-medium hover:bg-stone-50 transition flex items-center justify-center gap-2 cursor-pointer"
-          >
-            Sign In with Google
-          </Link>
-          <Link
-            href="/site/demo"
-            className="w-full sm:w-auto px-6 py-3.5 text-stone-600 hover:text-stone-900 transition font-medium cursor-pointer"
-          >
-            Explore Showcase
-          </Link>
-        </div>
+        <Show when="signed-out">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 font-sans text-xs">
+            <Link
+              href="/sign-in?redirect_url=/studio"
+              className="w-full sm:w-auto px-8 py-3.5 bg-stone-900 text-stone-50 rounded-md font-medium hover:bg-stone-800 transition flex items-center justify-center gap-2 shadow-md shadow-stone-900/10 cursor-pointer"
+            >
+              <span>Launch Zyntix Studio &rarr;</span>
+            </Link>
+            <Link
+              href="/sign-in?redirect_url=/studio"
+              className="w-full sm:w-auto px-8 py-3.5 bg-white border border-stone-300 text-stone-800 rounded-md font-medium hover:bg-stone-50 transition flex items-center justify-center gap-2 cursor-pointer shadow-xs hover:border-stone-400"
+            >
+              <span>Sign In with Google</span>
+            </Link>
+            <Link
+              href="/site/demo"
+              className="w-full sm:w-auto px-6 py-3.5 text-stone-600 hover:text-stone-900 transition font-medium cursor-pointer"
+            >
+              Explore Showcase
+            </Link>
+          </div>
+        </Show>
+
+        <Show when="signed-in">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 font-sans text-xs">
+            <Link
+              href="/studio"
+              className="w-full sm:w-auto px-8 py-3.5 bg-stone-900 text-stone-50 rounded-md font-medium hover:bg-stone-800 transition flex items-center justify-center gap-2 shadow-md shadow-stone-900/10 cursor-pointer"
+            >
+              <span>Enter Zyntix Studio &rarr;</span>
+            </Link>
+            <Link
+              href="/site/demo"
+              className="w-full sm:w-auto px-6 py-3.5 bg-white border border-stone-300 text-stone-800 rounded-md font-medium hover:bg-stone-50 transition flex items-center justify-center gap-2 cursor-pointer"
+            >
+              Explore Showcase
+            </Link>
+          </div>
+        </Show>
 
         {/* 3 Value Pillars */}
         <div className="mt-24 grid grid-cols-1 md:grid-cols-3 gap-8 text-left font-sans border-t border-stone-200/80 pt-16">

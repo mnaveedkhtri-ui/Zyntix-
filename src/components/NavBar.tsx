@@ -18,13 +18,16 @@ export default function NavBar() {
         <Link href="/pricing" className="hover:text-stone-950 transition">Pricing</Link>
         <Show when="signed-in">
           <UserButton afterSignOutUrl="/" />
+          <Link href="/studio" className="bg-stone-900 text-stone-50 px-4 py-2 rounded-md hover:bg-stone-800 transition font-semibold cursor-pointer">
+            Open Studio &rarr;
+          </Link>
         </Show>
         <Show when="signed-out">
           <Link href="/sign-in" className="hover:text-stone-950 transition font-semibold">Sign In</Link>
+          <Link href="/sign-in?redirect_url=/studio" className="bg-stone-900 text-stone-50 px-4 py-2 rounded-md hover:bg-stone-800 transition font-semibold cursor-pointer">
+            Open Studio &rarr;
+          </Link>
         </Show>
-        <Link href="/studio" className="bg-stone-900 text-stone-50 px-4 py-2 rounded-md hover:bg-stone-800 transition font-semibold cursor-pointer">
-          Open Studio &rarr;
-        </Link>
       </div>
     </nav>
   );
