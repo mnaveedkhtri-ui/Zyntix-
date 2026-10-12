@@ -18,6 +18,11 @@ export const metadata: Metadata = {
   },
 };
 
+const clerkPublishableKey = 
+  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && !process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY.startsWith("pk_test_")
+    ? process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+    : "pk_live_Y2xlcmsubW9kZXJudHJlbmRzbm93Lm9yZyQ";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -25,7 +30,7 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider
-      publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || "pk_live_Y2xlcmsubW9kZXJudHJlbmRzbm93Lm9yZyQ"}
+      publishableKey={clerkPublishableKey}
       signInUrl="/sign-in"
       signUpUrl="/sign-up"
     >

@@ -19,8 +19,13 @@ export function middleware(req: NextRequest) {
   const currentHost = hostname.replace(/:\d+$/, "").toLowerCase();
 
   // 2. Base platform domains (Never rewrite these as subdomains)
-  // Matches: localhost, zyntix.app, moderntrendsnow.org, www.moderntrendsnow.org, *.vercel.app
+  // Canonical redirect: forward temporary vercel.app to production domain where Clerk is verified
   const isVercelDomain = currentHost.endsWith(".vercel.app");
+  if (isVercelDomain) {
+    const targetUrl = new URL(url.pathname + url.search, "https://www.moderntrendsnow.org");
+    return NextResponse.redirect(targetUrl, 308);
+  }
+
   const isApex = 
     currentHost === "localhost" || 
     currentHost === "127.0.0.1" || 
@@ -29,7 +34,7 @@ export function middleware(req: NextRequest) {
     currentHost === "moderntrendsnow.org" ||
     currentHost === "www.moderntrendsnow.org";
 
-  if (isVercelDomain || isApex) {
+  if (isApex) {
     if (url.pathname === "/blog" || url.pathname.startsWith("/blog/")) {
       const rewriteUrl = new URL(`/site/demo${url.pathname}`, req.url);
       rewriteUrl.search = url.search;
