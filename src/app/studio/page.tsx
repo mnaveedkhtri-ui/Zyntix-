@@ -382,12 +382,7 @@ export default function ZyntixStudio() {
   const liveUrl = currentSite?.customDomain ? `https://${currentSite.customDomain}` : previewUrl;
 
   return (
-    <>
-      <Show when="signed-out">
-        <RedirectToSignIn redirectUrl="/studio" />
-      </Show>
-      <Show when="signed-in">
-        <div className="h-screen w-screen bg-[#121214] text-zinc-100 flex flex-col overflow-hidden font-sans antialiased">
+    <div className="h-screen w-screen bg-[#121214] text-zinc-100 flex flex-col overflow-hidden font-sans antialiased">
       {/* Studio Header */}
       <header className="h-14 border-b border-zinc-800 bg-[#18181b] px-4 sm:px-6 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-3">
@@ -1341,7 +1336,5 @@ export default function ZyntixStudio() {
         )}
       </div>
     </div>
-      </Show>
-    </>
   );
 }
