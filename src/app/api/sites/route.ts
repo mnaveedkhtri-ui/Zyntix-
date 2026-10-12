@@ -14,16 +14,33 @@ export async function GET(req: Request) {
     let userId: string | null = null;
     let userEmail: string | null = null;
 
-    try {
-      const authResult = await auth();
-      userId = authResult?.userId || null;
-      if (userId) {
-        const client = await clerkClient();
-        const user = await client.users.getUser(userId);
-        userEmail = user.emailAddresses[0]?.emailAddress || null;
+    // 1. Check custom built-in session cookie
+    const cookieHeader = req.headers.get("cookie") || "";
+    const sessionMatch = cookieHeader.match(/zyntix_session=([^;]+)/);
+    if (sessionMatch) {
+      try {
+        const raw = Buffer.from(sessionMatch[1], "base64").toString("utf-8");
+        const parsed = JSON.parse(raw);
+        if (parsed.id && parsed.email) {
+          userId = parsed.id;
+          userEmail = parsed.email;
+        }
+      } catch (e) {}
+    }
+
+    // 2. Fallback to Clerk if no custom session
+    if (!userId) {
+      try {
+        const authResult = await auth();
+        userId = authResult?.userId || null;
+        if (userId) {
+          const client = await clerkClient();
+          const user = await client.users.getUser(userId);
+          userEmail = user.emailAddresses[0]?.emailAddress || null;
+        }
+      } catch (authErr) {
+        // Unauthenticated visitor / sandbox bypass
       }
-    } catch (authErr) {
-      // Unauthenticated visitor / sandbox bypass
     }
 
     // Client query fallback if session is on different domain (e.g. vercel.app vs custom domain)

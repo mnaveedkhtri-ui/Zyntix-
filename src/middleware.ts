@@ -1,7 +1,6 @@
-import { clerkMiddleware } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
-export default clerkMiddleware(async (auth: any, req: any) => {
+export function middleware(req: NextRequest) {
   const url = req.nextUrl;
   const hostname = req.headers.get("host") || "";
 
@@ -16,7 +15,7 @@ export default clerkMiddleware(async (auth: any, req: any) => {
     return NextResponse.next();
   }
 
-  // 2. Allow API routes with Clerk auth context attached
+  // 2. Allow API routes
   if (url.pathname.startsWith("/api")) {
     return NextResponse.next();
   }
@@ -40,7 +39,7 @@ export default clerkMiddleware(async (auth: any, req: any) => {
     return NextResponse.next();
   }
 
-  // Handle Clerk/Auth subdomains on custom domain
+  // Handle subdomains on custom domain
   if (currentHost.endsWith(".moderntrendsnow.org")) {
     const sub = currentHost.replace(".moderntrendsnow.org", "");
     if (sub === "clerk" || sub === "accounts") {
@@ -63,10 +62,10 @@ export default clerkMiddleware(async (auth: any, req: any) => {
   const rewriteUrl = new URL(`/site/${targetSubdomainOrDomain}${path}`, req.url);
   rewriteUrl.search = url.search;
   return NextResponse.rewrite(rewriteUrl);
-});
+}
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico).*)",
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
