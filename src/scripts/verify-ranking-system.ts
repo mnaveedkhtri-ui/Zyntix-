@@ -16,15 +16,15 @@ async function runAudit() {
     throw new Error("Demo site not found!");
   }
   console.log(`- Default Demo Site found: "${demoSite.name}" (${demoSite.subdomain})`);
-  console.log(`- Custom Domain on Demo: ${demoSite.customDomain || 'null (Clean platform isolation - PASS)'}`);
+  console.log(`- Custom Domain on Demo: ${demoSite.customDomain || 'none'}`);
 
   // Test Domain Resolution
   const bySubdomain = getSiteBySubdomainOrDomain('demo');
   console.log(`- Lookup by subdomain 'demo': ${bySubdomain ? 'SUCCESS (' + bySubdomain.name + ')' : 'FAILED'}`);
   
-  // Test Platform Apex Resolution (should NOT return demo site as custom domain)
-  const byApex = getSiteBySubdomainOrDomain('moderntrendsnow.org');
-  console.log(`- Lookup by apex 'moderntrendsnow.org': ${byApex ? byApex.name : 'null (Handled by platform landing page - PASS)'}`);
+  // Test Custom Domain Resolution: moderntrendsnow.org MUST resolve to the client website
+  const byCustomDomain = getSiteBySubdomainOrDomain('moderntrendsnow.org');
+  console.log(`- Lookup by custom domain 'moderntrendsnow.org': ${byCustomDomain ? 'SUCCESS (' + byCustomDomain.name + ')' : 'FAILED'}`);
 
   // 2. Audit SEO Calibration Helpers
   console.log("\n[TEST 2] Testing SERP Pixel Calibration Helpers...");

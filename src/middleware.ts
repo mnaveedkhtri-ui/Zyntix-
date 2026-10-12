@@ -18,56 +18,39 @@ export function middleware(req: NextRequest) {
 
   const currentHost = hostname.replace(/:\d+$/, "").toLowerCase();
 
-  // 2. Base platform domains (Never rewrite these as subdomains)
-  // Canonical redirect: forward temporary vercel.app to production domain where Clerk is verified
-  const isVercelDomain = currentHost.endsWith(".vercel.app");
-  if (isVercelDomain) {
-    const targetUrl = new URL(url.pathname + url.search, "https://www.moderntrendsnow.org");
-    return NextResponse.redirect(targetUrl, 308);
-  }
-
-  const isApex = 
+  // 2. Base platform domains (Zyntix SaaS platform & Studio builder)
+  const isPlatformDomain = 
     currentHost === "localhost" || 
     currentHost === "127.0.0.1" || 
     currentHost === "zyntix.app" ||
     currentHost === "www.zyntix.app" ||
-    currentHost === "moderntrendsnow.org" ||
-    currentHost === "www.moderntrendsnow.org";
+    currentHost.endsWith(".vercel.app");
 
-  if (isApex) {
-    if (url.pathname === "/blog" || url.pathname.startsWith("/blog/")) {
-      const rewriteUrl = new URL(`/site/demo${url.pathname}`, req.url);
-      rewriteUrl.search = url.search;
-      return NextResponse.rewrite(rewriteUrl);
-    }
-    // Normal platform access (Landing, Studio, etc.)
+  if (isPlatformDomain) {
+    // Normal SaaS platform access (Landing, Studio, Pricing, Auth)
     return NextResponse.next();
   }
 
-  // 3. Subdomain detection on custom apex (e.g., client.zyntix.app or client.moderntrendsnow.org)
-  if (currentHost.endsWith(".zyntix.app")) {
-    const subdomain = currentHost.replace(".zyntix.app", "");
-    if (subdomain && subdomain !== "www" && subdomain !== "app") {
-      const path = url.pathname === "/" ? "" : url.pathname;
-      const rewriteUrl = new URL(`/site/${subdomain}${path}`, req.url);
-      rewriteUrl.search = url.search;
-      return NextResponse.rewrite(rewriteUrl);
-    }
+  // 3. Custom domain access: if site owner wants to access /studio from their custom domain
+  if (url.pathname === "/studio" || url.pathname.startsWith("/studio/")) {
+    return NextResponse.next();
   }
 
+  // Handle Clerk/Auth subdomains on custom domain
   if (currentHost.endsWith(".moderntrendsnow.org")) {
-    const subdomain = currentHost.replace(".moderntrendsnow.org", "");
-    if (subdomain && subdomain !== "www" && subdomain !== "app" && subdomain !== "clerk" && subdomain !== "accounts") {
-      const path = url.pathname === "/" ? "" : url.pathname;
-      const rewriteUrl = new URL(`/site/${subdomain}${path}`, req.url);
-      rewriteUrl.search = url.search;
-      return NextResponse.rewrite(rewriteUrl);
+    const sub = currentHost.replace(".moderntrendsnow.org", "");
+    if (sub === "clerk" || sub === "accounts") {
+      return NextResponse.next();
     }
   }
 
-  // 4. Custom domain detection
+  // 4. Custom domain & publication rewrite:
+  // For moderntrendsnow.org or www.moderntrendsnow.org, this is the demo/custom website!
+  const isModernTrends = currentHost === "moderntrendsnow.org" || currentHost === "www.moderntrendsnow.org";
+  const targetSubdomainOrDomain = isModernTrends ? "demo" : currentHost;
+
   const path = url.pathname === "/" ? "" : url.pathname;
-  const rewriteUrl = new URL(`/site/${currentHost}${path}`, req.url);
+  const rewriteUrl = new URL(`/site/${targetSubdomainOrDomain}${path}`, req.url);
   rewriteUrl.search = url.search;
   return NextResponse.rewrite(rewriteUrl);
 }

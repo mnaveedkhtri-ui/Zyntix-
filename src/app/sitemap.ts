@@ -14,14 +14,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const sites = getAllSites();
 
-  // Check if this is a platform domain (zyntix.app, vercel.app, or moderntrendsnow.org)
+  // Check if this is a platform domain (zyntix.app or vercel.app)
   const isPlatform = 
     host === "" ||
     host === "localhost" ||
     host === "zyntix.app" ||
     host === "www.zyntix.app" ||
-    host === "moderntrendsnow.org" ||
-    host === "www.moderntrendsnow.org" ||
     host.endsWith(".vercel.app");
 
   // If request is from a custom domain (e.g. www.moderntrendsnow.org or moderntrendsnow.org)
