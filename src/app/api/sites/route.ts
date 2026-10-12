@@ -26,6 +26,16 @@ export async function GET(req: Request) {
       // Unauthenticated visitor / sandbox bypass
     }
 
+    // Client query fallback if session is on different domain (e.g. vercel.app vs custom domain)
+    const queryUserId = url.searchParams.get("userId");
+    const queryUserEmail = url.searchParams.get("userEmail");
+    if (!userId && queryUserId) {
+      userId = queryUserId;
+    }
+    if (!userEmail && queryUserEmail) {
+      userEmail = queryUserEmail;
+    }
+
     const sites = getSitesForUser(userId, userEmail);
     const isFounder = userEmail?.toLowerCase() === ADMIN_EMAIL.toLowerCase();
 

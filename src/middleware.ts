@@ -1,13 +1,13 @@
+import { clerkMiddleware } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
-export function middleware(req: NextRequest) {
+export default clerkMiddleware(async (auth: any, req: any) => {
   const url = req.nextUrl;
   const hostname = req.headers.get("host") || "";
 
-  // 1. Exclude Next.js system assets, static files, API routes, and auth
+  // 1. Exclude Next.js system assets, static files, and auth
   if (
     url.pathname.startsWith("/_next") ||
-    url.pathname.startsWith("/api") ||
     url.pathname.startsWith("/static") ||
     url.pathname.startsWith("/sign-in") ||
     url.pathname.startsWith("/sign-up") ||
@@ -16,9 +16,14 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
+  // 2. Allow API routes with Clerk auth context attached
+  if (url.pathname.startsWith("/api")) {
+    return NextResponse.next();
+  }
+
   const currentHost = hostname.replace(/:\d+$/, "").toLowerCase();
 
-  // 2. Base platform domains (Zyntix SaaS platform & Studio builder)
+  // 3. Base platform domains (Zyntix SaaS platform & Studio builder)
   const isPlatformDomain = 
     currentHost === "localhost" || 
     currentHost === "127.0.0.1" || 
@@ -27,11 +32,10 @@ export function middleware(req: NextRequest) {
     currentHost.endsWith(".vercel.app");
 
   if (isPlatformDomain) {
-    // Normal SaaS platform access (Landing, Studio, Pricing, Auth)
     return NextResponse.next();
   }
 
-  // 3. Custom domain access: if site owner wants to access /studio from their custom domain
+  // 4. Custom domain access: if site owner wants to access /studio from their custom domain
   if (url.pathname === "/studio" || url.pathname.startsWith("/studio/")) {
     return NextResponse.next();
   }
@@ -44,15 +48,14 @@ export function middleware(req: NextRequest) {
     }
   }
 
-  // 4. Strip /site/demo/... or /site/[subdomain]/... if accessed directly on a custom domain!
+  // 5. Strip /site/demo/... or /site/[subdomain]/... if accessed directly on a custom domain!
   if (url.pathname.startsWith("/site/")) {
     const cleanPath = url.pathname.replace(/^\/site\/[^\/]+/, "") || "/";
     const redirectUrl = new URL(cleanPath + url.search, req.url);
     return NextResponse.redirect(redirectUrl, 308);
   }
 
-  // 5. Custom domain & publication rewrite:
-  // For moderntrendsnow.org or www.moderntrendsnow.org, this is the demo/custom website!
+  // 6. Custom domain & publication rewrite:
   const isModernTrends = currentHost === "moderntrendsnow.org" || currentHost === "www.moderntrendsnow.org";
   const targetSubdomainOrDomain = isModernTrends ? "demo" : currentHost;
 
@@ -60,7 +63,7 @@ export function middleware(req: NextRequest) {
   const rewriteUrl = new URL(`/site/${targetSubdomainOrDomain}${path}`, req.url);
   rewriteUrl.search = url.search;
   return NextResponse.rewrite(rewriteUrl);
-}
+});
 
 export const config = {
   matcher: [

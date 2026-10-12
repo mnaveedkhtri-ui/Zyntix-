@@ -353,13 +353,9 @@ export const ADMIN_EMAIL = "moderntrendz98@gmail.com";
 export function getSitesForUser(userId: string | null | undefined, userEmail?: string | null): SiteConfig[] {
   const all = getAllSites();
 
-  // 1. Unauthenticated Guest / Direct Sandbox Mode (?direct=1)
-  if (!userId) {
-    return all.filter(s => s.id === 'site-default-demo' || s.userId === 'admin_founder');
-  }
-
-  // 2. Platform Founder / Admin (owns moderntrendsnow.org)
   const isFounder = userEmail?.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+
+  // 1. Platform Founder / Admin (owns moderntrendsnow.org)
   if (isFounder) {
     return all.filter(s => 
       s.userId === userId || 
@@ -369,9 +365,14 @@ export function getSitesForUser(userId: string | null | undefined, userEmail?: s
     );
   }
 
-  // 3. Authenticated Customers / Multi-Tenant Isolation
-  // Strictly return only websites belonging to this specific user's Clerk ID!
-  return all.filter(s => s.userId === userId);
+  // 2. Authenticated Customers / Different Emails
+  // Strictly return only websites belonging to this user's Clerk ID, NEVER site-default-demo!
+  if (userId) {
+    return all.filter(s => s.userId === userId && s.id !== 'site-default-demo');
+  }
+
+  // 3. Unauthenticated Guest or Direct Sandbox: NEVER return founder site!
+  return [];
 }
 
 export function getSiteBySubdomainOrDomain(identifier: string): SiteConfig | null {

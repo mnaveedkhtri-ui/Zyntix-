@@ -83,7 +83,7 @@ interface SiteConfig {
 }
 
 export default function ZyntixStudio() {
-  const { isSignedIn, isLoaded } = useUser();
+  const { isSignedIn, isLoaded, user } = useUser();
   const [bypassAuth, setBypassAuth] = useState(false);
 
   useEffect(() => {
@@ -233,12 +233,16 @@ export default function ZyntixStudio() {
   const [newServiceDesc, setNewServiceDesc] = useState("");
 
   useEffect(() => {
-    fetchSites();
-  }, []);
+    if (isLoaded) {
+      fetchSites();
+    }
+  }, [isLoaded, user?.id]);
 
   const fetchSites = async (preserveSite?: SiteConfig) => {
     try {
-      const res = await fetch("/api/sites");
+      const currentUserId = user?.id || "";
+      const currentUserEmail = user?.primaryEmailAddress?.emailAddress || "";
+      const res = await fetch(`/api/sites?userId=${encodeURIComponent(currentUserId)}&userEmail=${encodeURIComponent(currentUserEmail)}`);
       const data = await res.json();
       if (data.success && data.sites && data.sites.length > 0) {
         setSites(data.sites);
