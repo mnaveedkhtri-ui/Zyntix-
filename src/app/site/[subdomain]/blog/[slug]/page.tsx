@@ -1,5 +1,6 @@
 import React from 'react';
 import { notFound } from 'next/navigation';
+import { headers } from 'next/headers';
 
 export const dynamic = 'force-dynamic';
 import type { Metadata } from 'next';
@@ -200,9 +201,12 @@ export default async function BlogPostPage({ params }: ArticlePageProps) {
 
   const relatedPosts = site.posts.filter(p => p.slug !== slug).slice(0, 2);
 
-  const isStaging = subdomain === 'demo' || subdomain === site.subdomain;
-  const homeUrl = isStaging ? `/site/${site.subdomain}` : '/';
-  const blogIndexUrl = isStaging ? `/site/${site.subdomain}/blog` : '/blog';
+  const headersList = await headers();
+  const host = (headersList.get("x-forwarded-host") || headersList.get("host") || "").toLowerCase().replace(/:\d+$/, "");
+  const isCustomDomain = host !== "" && host !== "localhost" && !host.endsWith(".vercel.app") && host !== "zyntix.app" && host !== "www.zyntix.app";
+
+  const homeUrl = isCustomDomain ? '/' : `/site/${site.subdomain}`;
+  const blogIndexUrl = isCustomDomain ? '/blog' : `/site/${site.subdomain}/blog`;
   const canonicalBase = site.customDomain 
     ? `https://${site.customDomain}` 
     : `${process.env.NEXT_PUBLIC_APP_URL || 'https://zyntix-studio-ivory.vercel.app'}/site/${site.subdomain}`;

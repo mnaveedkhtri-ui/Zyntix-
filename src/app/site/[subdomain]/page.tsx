@@ -1,4 +1,5 @@
 import React from 'react';
+import { headers } from 'next/headers';
 import { getSiteBySubdomainOrDomain } from '@/lib/sites';
 import { SiteLiveSync } from '@/components/SiteLiveSync';
 import { optimizeMetaTitle, optimizeMetaDescription } from '@/lib/seo-helpers';
@@ -190,9 +191,12 @@ export default async function TenantSitePage({ params }: SitePageProps) {
   const featuredPost = site.posts[0];
   const regularPosts = site.posts.slice(1);
 
-  const isStaging = subdomain === 'demo' || subdomain === site.subdomain;
-  const homePath = isStaging ? `/site/${site.subdomain}` : '/';
-  const blogPath = isStaging ? `/site/${site.subdomain}/blog` : '/blog';
+  const headersList = await headers();
+  const host = (headersList.get("x-forwarded-host") || headersList.get("host") || "").toLowerCase().replace(/:\d+$/, "");
+  const isCustomDomain = host !== "" && host !== "localhost" && !host.endsWith(".vercel.app") && host !== "zyntix.app" && host !== "www.zyntix.app";
+
+  const homePath = isCustomDomain ? '/' : `/site/${site.subdomain}`;
+  const blogPath = isCustomDomain ? '/blog' : `/site/${site.subdomain}/blog`;
 
   // Structured Data for Google Rich Snippets & GEO/AEO
   const schemaJson = {

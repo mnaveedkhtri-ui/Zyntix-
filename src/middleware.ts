@@ -44,7 +44,14 @@ export function middleware(req: NextRequest) {
     }
   }
 
-  // 4. Custom domain & publication rewrite:
+  // 4. Strip /site/demo/... or /site/[subdomain]/... if accessed directly on a custom domain!
+  if (url.pathname.startsWith("/site/")) {
+    const cleanPath = url.pathname.replace(/^\/site\/[^\/]+/, "") || "/";
+    const redirectUrl = new URL(cleanPath + url.search, req.url);
+    return NextResponse.redirect(redirectUrl, 308);
+  }
+
+  // 5. Custom domain & publication rewrite:
   // For moderntrendsnow.org or www.moderntrendsnow.org, this is the demo/custom website!
   const isModernTrends = currentHost === "moderntrendsnow.org" || currentHost === "www.moderntrendsnow.org";
   const targetSubdomainOrDomain = isModernTrends ? "demo" : currentHost;

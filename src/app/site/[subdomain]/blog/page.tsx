@@ -1,5 +1,6 @@
 import React from 'react';
 import { notFound } from 'next/navigation';
+import { headers } from 'next/headers';
 
 export const dynamic = 'force-dynamic';
 import type { Metadata } from 'next';
@@ -91,9 +92,12 @@ export default async function BlogIndexPage({ params }: BlogIndexProps) {
   const featuredPost = posts[0];
   const remainingPosts = posts.slice(1);
 
-  const isStaging = subdomain === 'demo' || subdomain === site.subdomain;
-  const homeUrl = isStaging ? `/site/${site.subdomain}` : '/';
-  const blogUrl = isStaging ? `/site/${site.subdomain}/blog` : '/blog';
+  const headersList = await headers();
+  const host = (headersList.get("x-forwarded-host") || headersList.get("host") || "").toLowerCase().replace(/:\d+$/, "");
+  const isCustomDomain = host !== "" && host !== "localhost" && !host.endsWith(".vercel.app") && host !== "zyntix.app" && host !== "www.zyntix.app";
+
+  const homeUrl = isCustomDomain ? '/' : `/site/${site.subdomain}`;
+  const blogUrl = isCustomDomain ? '/blog' : `/site/${site.subdomain}/blog`;
 
   return (
     <div className="min-h-screen bg-[#faf8f5] text-stone-900 font-serif selection:bg-amber-100 selection:text-stone-900 antialiased flex flex-col justify-between">
