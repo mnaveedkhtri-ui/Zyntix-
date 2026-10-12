@@ -402,7 +402,7 @@ export default function ZyntixStudio() {
               href="/sign-in?redirect_url=/studio" 
               className="w-full sm:w-auto px-6 py-3 bg-stone-100 text-zinc-900 rounded-md font-medium hover:bg-stone-200 transition flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-stone-100/10 font-semibold"
             >
-              <span>Sign In with Google &rarr;</span>
+              <span>Sign In / Continue &rarr;</span>
             </Link>
             <Link 
               href="/" 

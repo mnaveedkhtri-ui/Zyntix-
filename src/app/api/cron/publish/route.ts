@@ -69,8 +69,8 @@ export async function GET(req: Request) {
       });
 
       // 4. Autonomous Search Engine Ping
-      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://zyntix-studio-ivory.vercel.app';
-      const host = site.customDomain || 'zyntix-studio-ivory.vercel.app';
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.moderntrendsnow.org';
+      const host = site.customDomain || 'www.moderntrendsnow.org';
       const cleanDomain = site.customDomain ? site.customDomain.replace(/^https?:\/\//, '') : '';
       const domainBase = cleanDomain ? `https://${cleanDomain}` : baseUrl;
       const targetUrl = cleanDomain 

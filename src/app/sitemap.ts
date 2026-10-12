@@ -14,12 +14,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const sites = getAllSites();
 
-  // Check if this is a platform domain (zyntix.app or vercel.app)
+  // Check if this is a platform domain (zyntix.app, vercel.app, or moderntrendsnow.org)
   const isPlatform = 
     host === "" ||
     host === "localhost" ||
     host === "zyntix.app" ||
     host === "www.zyntix.app" ||
+    host === "moderntrendsnow.org" ||
+    host === "www.moderntrendsnow.org" ||
     host.endsWith(".vercel.app");
 
   // If request is from a custom domain (e.g. www.moderntrendsnow.org or moderntrendsnow.org)
@@ -64,8 +66,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     return siteRoutes;
   }
 
-  // Fallback ONLY for platform root domain (zyntix.app / vercel.app)
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || `${protocol}://${host || "zyntix-studio-ivory.vercel.app"}`;
+  // Fallback ONLY for platform root domain (moderntrendsnow.org / zyntix.app / vercel.app)
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || `${protocol}://${host || "www.moderntrendsnow.org"}`;
 
   const platformRoutes: MetadataRoute.Sitemap = [
     {

@@ -69,7 +69,6 @@ const INITIAL_DEMO_SITES: SiteConfig[] = [
   {
   "id": "site-default-demo",
   "subdomain": "demo",
-  "customDomain": "moderntrendsnow.org",
   "googleVerification": "gCz9yLEhlFt8IGLhyJZdLHR_v5PHJ7px4ot69CUB1pw",
   "name": "Meridian Craft & Architecture",
   "tagline": "Architectural Craftsmanship, Sustainable Engineering & Thoughtful Construction",
