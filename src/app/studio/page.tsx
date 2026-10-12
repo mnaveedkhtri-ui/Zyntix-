@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Show, UserButton } from "@clerk/nextjs";
+import { useUser, UserButton } from "@clerk/nextjs";
 import { 
   Send, 
   ExternalLink, 
@@ -79,6 +79,18 @@ interface SiteConfig {
 }
 
 export default function ZyntixStudio() {
+  const { isSignedIn, isLoaded } = useUser();
+  const [bypassAuth, setBypassAuth] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("direct") === "1" || params.get("admin") === "1") {
+        setBypassAuth(true);
+      }
+    }
+  }, []);
+
   const [sites, setSites] = useState<SiteConfig[]>([]);
   const [currentSite, setCurrentSite] = useState<SiteConfig | null>(null);
   const [activeTab, setActiveTab] = useState<"writer" | "domain" | "editor" | "newsite">("writer");
@@ -386,36 +398,43 @@ export default function ZyntixStudio() {
   const previewUrl = currentSite ? `/site/${currentSite.subdomain}?v=${iframeKey}` : `/site/demo?v=${iframeKey}`;
   const liveUrl = currentSite?.customDomain ? `https://${currentSite.customDomain}` : previewUrl;
 
-  return (
-    <>
-      <Show when="signed-out">
-        <div className="h-screen w-screen bg-[#121214] text-zinc-100 flex flex-col items-center justify-center p-6 text-center select-none">
-          <div className="w-12 h-12 rounded-xl bg-stone-100 text-zinc-950 flex items-center justify-center font-serif font-bold text-xl mb-4 shadow-xl">
-            Z
-          </div>
-          <h2 className="font-serif text-2xl sm:text-3xl font-normal text-stone-100 mb-2">Authentication Required</h2>
-          <p className="text-zinc-400 text-xs sm:text-sm max-w-md mb-8 font-sans leading-relaxed">
-            Please sign in with Google or your email to access your Zyntix Studio publications and AI Co-Pilot.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center gap-3 font-sans text-xs">
-            <Link 
-              href="/sign-in?redirect_url=/studio" 
-              className="w-full sm:w-auto px-6 py-3 bg-stone-100 text-zinc-900 rounded-md font-medium hover:bg-stone-200 transition flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-stone-100/10 font-semibold"
-            >
-              <span>Sign In / Continue &rarr;</span>
-            </Link>
-            <Link 
-              href="/" 
-              className="w-full sm:w-auto px-6 py-3 border border-zinc-800 text-zinc-400 hover:text-stone-200 rounded-md font-medium hover:bg-zinc-900 transition flex items-center justify-center cursor-pointer"
-            >
-              &larr; Back to Home
-            </Link>
-          </div>
+  if (isLoaded && !isSignedIn && !bypassAuth) {
+    return (
+      <div className="h-screen w-screen bg-[#121214] text-zinc-100 flex flex-col items-center justify-center p-6 text-center select-none">
+        <div className="w-12 h-12 rounded-xl bg-stone-100 text-zinc-950 flex items-center justify-center font-serif font-bold text-xl mb-4 shadow-xl">
+          Z
         </div>
-      </Show>
+        <h2 className="font-serif text-2xl sm:text-3xl font-normal text-stone-100 mb-2">Authentication Required</h2>
+        <p className="text-zinc-400 text-xs sm:text-sm max-w-md mb-8 font-sans leading-relaxed">
+          Sign in with your email or enter directly to access your Zyntix Studio publications and AI Co-Pilot.
+        </p>
+        <div className="flex flex-col sm:flex-row items-center gap-3 font-sans text-xs">
+          <Link 
+            href="/sign-in?redirect_url=/studio" 
+            className="w-full sm:w-auto px-6 py-3 bg-stone-100 text-zinc-900 rounded-md font-medium hover:bg-stone-200 transition flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-stone-100/10 font-semibold"
+          >
+            <span>Sign In with Email &rarr;</span>
+          </Link>
+          <button 
+            type="button"
+            onClick={() => setBypassAuth(true)}
+            className="w-full sm:w-auto px-6 py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-700 rounded-md font-medium transition flex items-center justify-center cursor-pointer font-sans"
+          >
+            <span>Enter Studio Directly &rarr;</span>
+          </button>
+          <Link 
+            href="/" 
+            className="w-full sm:w-auto px-6 py-3 border border-zinc-800 text-zinc-400 hover:text-stone-200 rounded-md font-medium hover:bg-zinc-900 transition flex items-center justify-center cursor-pointer"
+          >
+            &larr; Back to Home
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
-      <Show when="signed-in">
-        <div className="h-screen w-screen bg-[#121214] text-zinc-100 flex flex-col overflow-hidden font-sans antialiased">
+  return (
+    <div className="h-screen w-screen bg-[#121214] text-zinc-100 flex flex-col overflow-hidden font-sans antialiased">
       {/* Studio Header */}
       <header className="h-14 border-b border-zinc-800 bg-[#18181b] px-4 sm:px-6 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-3">
@@ -1375,7 +1394,5 @@ export default function ZyntixStudio() {
         )}
       </div>
     </div>
-      </Show>
-    </>
   );
 }

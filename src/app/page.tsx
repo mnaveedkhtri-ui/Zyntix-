@@ -73,7 +73,7 @@ export default function Home() {
               href="/sign-in?redirect_url=/studio"
               className="w-full sm:w-auto px-8 py-3.5 bg-white border border-stone-300 text-stone-800 rounded-md font-medium hover:bg-stone-50 transition flex items-center justify-center gap-2 cursor-pointer shadow-xs hover:border-stone-400"
             >
-              <span>Sign In with Google</span>
+              <span>Sign In with Email</span>
             </Link>
             <Link
               href="/site/demo"

@@ -18,7 +18,7 @@ export default function SignInPage() {
       </div>
 
       {/* Main Sign In Box */}
-      <div className="w-full flex justify-center items-center">
+      <div className="w-full flex flex-col justify-center items-center gap-6">
         <SignIn 
           appearance={{
             elements: {
@@ -26,7 +26,9 @@ export default function SignInPage() {
               headerTitle: "font-serif text-2xl font-normal text-stone-900",
               headerSubtitle: "font-sans text-xs text-stone-600",
               formButtonPrimary: "bg-stone-900 hover:bg-stone-800 text-stone-50 font-sans text-xs uppercase tracking-wider",
-              socialButtonsBlockButton: "border border-stone-300 hover:bg-stone-50 font-sans text-xs",
+              socialButtonsBlockButton: "hidden",
+              socialButtons: "hidden",
+              dividerRow: "hidden",
               footerActionLink: "text-amber-900 hover:text-amber-950 font-medium font-sans",
             }
           }}
@@ -35,6 +37,18 @@ export default function SignInPage() {
           signUpUrl="/sign-up"
           fallbackRedirectUrl="/studio"
         />
+
+        <div className="text-center font-sans">
+          <Link 
+            href="/studio?direct=1"
+            className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-stone-50 text-xs font-medium transition shadow-sm"
+          >
+            <span>Skip & Enter Studio Directly &rarr;</span>
+          </Link>
+          <p className="text-[11px] text-stone-400 mt-2">
+            No password required for direct studio session
+          </p>
+        </div>
       </div>
 
       {/* Bottom Footer */}
