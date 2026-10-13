@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import { getSitesForUser, saveOrUpdateSite, getSiteById, ADMIN_EMAIL } from "@/lib/sites";
+import { getSitesForUser, saveOrUpdateSite, getSiteById, ADMIN_EMAIL, syncSitesFromDatabase } from "@/lib/sites";
 
 export async function GET(req: Request) {
   try {
@@ -53,6 +53,7 @@ export async function GET(req: Request) {
       userEmail = queryUserEmail;
     }
 
+    await syncSitesFromDatabase().catch(() => {});
     const sites = getSitesForUser(userId, userEmail);
     const isFounder = userEmail?.toLowerCase() === ADMIN_EMAIL.toLowerCase();
 

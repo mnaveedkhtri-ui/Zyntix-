@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getAllSites, saveOrUpdateSite } from '@/lib/sites';
+import { getAllSites, saveOrUpdateSite, syncSitesFromDatabase } from '@/lib/sites';
 import { fetchGoogleSerpSuggestions, generateDeepHumanArticle } from '@/lib/seo-engine';
 import { injectBiDirectionalLinks } from '@/lib/link-mesh';
 import { generateHeadingMatchedImage } from '@/lib/image-engine';
@@ -12,6 +12,7 @@ export async function GET(req: Request) {
     const targetSubdomain = url.searchParams.get("subdomain") || url.searchParams.get("site");
     const targetSiteId = url.searchParams.get("siteId");
 
+    await syncSitesFromDatabase().catch(() => {});
     let sites = getAllSites();
     if (targetSubdomain) {
       sites = sites.filter(s => s.subdomain.toLowerCase() === targetSubdomain.toLowerCase());

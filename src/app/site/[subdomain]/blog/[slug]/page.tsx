@@ -4,7 +4,7 @@ import { headers } from 'next/headers';
 
 export const dynamic = 'force-dynamic';
 import type { Metadata } from 'next';
-import { getSiteBySubdomainOrDomain } from '@/lib/sites';
+import { getSiteBySubdomainOrDomain, getSiteBySubdomainOrDomainAsync } from '@/lib/sites';
 import { 
   ArrowLeft, 
   Calendar, 
@@ -27,7 +27,7 @@ interface ArticlePageProps {
 
 export async function generateMetadata({ params }: ArticlePageProps): Promise<Metadata> {
   const { subdomain, slug } = await params;
-  const site = getSiteBySubdomainOrDomain(subdomain);
+  const site = await getSiteBySubdomainOrDomainAsync(subdomain);
   if (!site) return { title: 'Article Not Found | Zyntix' };
 
   const post = site.posts?.find(p => 
@@ -184,7 +184,7 @@ function renderInlineMarkdown(text: string) {
 
 export default async function BlogPostPage({ params }: ArticlePageProps) {
   const { subdomain, slug } = await params;
-  const site = getSiteBySubdomainOrDomain(subdomain);
+  const site = await getSiteBySubdomainOrDomainAsync(subdomain);
 
   if (!site) {
     notFound();

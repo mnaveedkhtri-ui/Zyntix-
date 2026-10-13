@@ -1,6 +1,6 @@
 import { MetadataRoute } from "next";
 import { headers } from "next/headers";
-import { getAllSites } from "@/lib/sites";
+import { getAllSites, syncSitesFromDatabase } from "@/lib/sites";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -12,6 +12,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const protocol = headersList.get("x-forwarded-proto") || "https";
   const now = new Date();
 
+  await syncSitesFromDatabase().catch(() => {});
   const sites = getAllSites();
 
   // Check if this is a platform domain (zyntix.app or vercel.app)

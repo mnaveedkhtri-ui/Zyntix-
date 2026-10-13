@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { Client } from 'pg';
 
 export interface BlogPost {
   slug: string;
@@ -559,6 +560,107 @@ const INITIAL_DEMO_SITES: SiteConfig[] = [
 // In-Memory cache for 100% zero-crash guarantee in any environment
 let memorySitesCache: SiteConfig[] = [...INITIAL_DEMO_SITES];
 
+function getDbClient(): Client | null {
+  const connStr = process.env.DATABASE_URL_UNPOOLED || 
+                  process.env.POSTGRES_URL_NON_POOLING || 
+                  process.env.DATABASE_URL || 
+                  process.env.POSTGRES_URL || 
+                  process.env.POSTGRES_PRISMA_URL;
+  if (!connStr) return null;
+  const cleanStr = connStr
+    .replace('?sslmode=require', '')
+    .replace('&sslmode=require', '')
+    .replace('&channel_binding=require', '')
+    .replace('?channel_binding=require', '')
+    .replace('&supa=base-pooler.x', '')
+    .replace('&pgbouncer=true', '');
+  return new Client({
+    connectionString: cleanStr,
+    ssl: { rejectUnauthorized: false }
+  });
+}
+
+export async function syncSitesFromDatabase(): Promise<SiteConfig[]> {
+  const client = getDbClient();
+  if (!client) return memorySitesCache;
+
+  try {
+    await client.connect();
+
+    // 1. Ensure table exists
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS zyntix_publications (
+        id VARCHAR(255) PRIMARY KEY,
+        data JSONB NOT NULL,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    // 2. Fetch rows
+    const res = await client.query(`SELECT data FROM zyntix_publications ORDER BY updated_at DESC;`);
+    if (res.rows.length > 0) {
+      const dbSites: SiteConfig[] = res.rows.map(r => r.data);
+      const merged = [...dbSites];
+      for (const initial of INITIAL_DEMO_SITES) {
+        if (!merged.some(m => m.id === initial.id || m.subdomain === initial.subdomain)) {
+          merged.push(initial);
+        }
+      }
+      memorySitesCache = merged;
+      await client.end();
+      return merged;
+    } else {
+      // Seed table with INITIAL_DEMO_SITES so Neon immediately has all posts
+      for (const site of INITIAL_DEMO_SITES) {
+        await client.query(`
+          INSERT INTO zyntix_publications (id, data, updated_at) 
+          VALUES ($1, $2, NOW()) 
+          ON CONFLICT (id) DO UPDATE SET data = $2, updated_at = NOW();
+        `, [site.id, JSON.stringify(site)]);
+      }
+    }
+    await client.end();
+  } catch (err: any) {
+    console.warn('[Zyntix DB Sync] Database fallback to memory:', err?.message || err);
+    try { await client.end(); } catch (_) {}
+  }
+
+  return memorySitesCache;
+}
+
+export async function persistSiteToDatabase(site: SiteConfig): Promise<void> {
+  const client = getDbClient();
+  if (!client) return;
+
+  try {
+    await client.connect();
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS zyntix_publications (
+        id VARCHAR(255) PRIMARY KEY,
+        data JSONB NOT NULL,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+    await client.query(`
+      INSERT INTO zyntix_publications (id, data, updated_at) 
+      VALUES ($1, $2, NOW()) 
+      ON CONFLICT (id) DO UPDATE SET data = $2, updated_at = NOW();
+    `, [site.id, JSON.stringify(site)]);
+    await client.end();
+  } catch (err: any) {
+    console.warn('[Zyntix DB Persist] Failed to save site to DB:', err?.message || err);
+    try { await client.end(); } catch (_) {}
+  }
+}
+
+export async function getSiteBySubdomainOrDomainAsync(identifier: string): Promise<SiteConfig | null> {
+  try {
+    await syncSitesFromDatabase();
+  } catch (_) {}
+  return getSiteBySubdomainOrDomain(identifier);
+}
+
+
 function getSafeFilePath(): string | null {
   try {
     const isVercel = process.env.VERCEL === '1';
@@ -752,6 +854,11 @@ export function saveOrUpdateSite(siteData: Partial<SiteConfig> & { subdomain: st
       // Memory fallback safe
     }
   }
+
+  // Fire-and-forget async database persistence to Neon Postgres
+  persistSiteToDatabase(updatedSite).catch(err => {
+    console.warn('[saveOrUpdateSite] Async DB persist failed:', err?.message || err);
+  });
 
   return updatedSite;
 }
