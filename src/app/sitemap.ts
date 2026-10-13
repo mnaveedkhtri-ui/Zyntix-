@@ -34,7 +34,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       host === `${s.subdomain}.zyntix.app`
     ) || sites[0];
 
-    const domainBase = `https://${host}`;
+    const canonicalHost = host.includes("moderntrendsnow.org") ? "www.moderntrendsnow.org" : host;
+    const domainBase = `https://${canonicalHost}`;
     const siteRoutes: MetadataRoute.Sitemap = [
       {
         url: domainBase,
