@@ -471,108 +471,173 @@ export default async function BlogPostPage({ params }: ArticlePageProps) {
 
         {/* Rich Long-Form Body Content */}
         <article className="space-y-7 text-stone-800 leading-[1.95] text-base sm:text-lg font-serif">
-          {post.content.map((block, pIdx) => {
-            if (block.startsWith('[AEO_ANSWER]:')) {
-              const answer = block.replace('[AEO_ANSWER]:', '').trim();
-              return (
-                <div key={pIdx} className="my-10 p-6 sm:p-8 bg-[#f5ede3] border-l-4 border-amber-900 rounded-2xl font-sans text-sm sm:text-base text-stone-900 leading-relaxed shadow-sm">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="w-2.5 h-2.5 rounded-full bg-amber-900 animate-pulse" />
-                    <span className="text-xs uppercase tracking-widest font-bold text-amber-950 font-sans">
-                      Executive Direct Answer (#0 AEO Snippet)
-                    </span>
-                  </div>
-                  <p className="font-sans leading-relaxed text-stone-800 text-[15px] sm:text-base">
-                    {renderInlineMarkdown(answer)}
-                  </p>
-                </div>
-              );
-            }
-            if (block.startsWith('### ') || block.startsWith('## ')) {
-              const text = block.replace(/^(### |## )/, '').trim();
-              const headingId = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-              return (
-                <h2 key={pIdx} id={headingId} className="text-2xl sm:text-4xl font-normal text-stone-950 pt-12 pb-3 border-b border-stone-200/90 font-serif tracking-tight scroll-mt-24">
-                  {text}
-                </h2>
-              );
-            }
-            if (block.startsWith('#### ')) {
-              const text = block.replace('#### ', '').trim();
-              const headingId = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-              return (
-                <h3 key={pIdx} id={headingId} className="text-xl sm:text-2xl font-medium text-stone-900 pt-8 pb-2 font-serif text-amber-950 scroll-mt-24">
-                  {text}
-                </h3>
-              );
-            }
-            if (block.startsWith('*') && block.endsWith('*')) {
-              return (
-                <p key={pIdx} className="text-stone-500 font-sans text-xs sm:text-sm uppercase tracking-wider font-semibold">
-                  {block.replace(/\*/g, '')}
-                </p>
-              );
-            }
-            if (block.startsWith('> ')) {
-              return (
-                <blockquote key={pIdx} className="my-10 p-6 sm:p-8 bg-white/70 border-l-4 border-amber-900/70 rounded-r-2xl italic text-xl sm:text-2xl text-stone-800 font-serif shadow-xs">
-                  &ldquo;{block.replace('> ', '').replace(/^"|"$/g, '')}&rdquo;
-                </blockquote>
-              );
-            }
-            if (block.startsWith('![')) {
-              const match = block.match(/!\[(.*?)\]\((.*?)\)/);
-              if (match) {
-                return (
-                  <figure key={pIdx} className="my-12 rounded-3xl overflow-hidden shadow-md border border-stone-200/90 bg-stone-100">
-                    <img src={match[2]} alt={match[1]} className="w-full h-[320px] sm:h-[480px] object-cover filter contrast-[1.03]" />
-                    <figcaption className="p-3.5 bg-stone-100/95 border-t border-stone-200/90 text-center font-sans text-xs text-stone-600">
-                      <span className="font-semibold text-stone-900 mr-1.5 uppercase tracking-wider text-[11px]">Plate &bull;</span>
-                      {match[1]}
-                    </figcaption>
-                  </figure>
-                );
+          {(() => {
+            type RenderItem = 
+              | { kind: 'block'; text: string }
+              | { kind: 'table'; headers: string[]; rows: string[][] };
+
+            const items: RenderItem[] = [];
+            let tableBuffer: string[] = [];
+
+            const flushTable = () => {
+              if (tableBuffer.length === 0) return;
+              const cleanRows = tableBuffer
+                .filter(r => !r.includes(':---'))
+                .map(r => r.split('|').map(c => c.trim()).filter(Boolean));
+              if (cleanRows.length > 0) {
+                items.push({
+                  kind: 'table',
+                  headers: cleanRows[0],
+                  rows: cleanRows.slice(1)
+                });
+              }
+              tableBuffer = [];
+            };
+
+            for (const b of post.content) {
+              const trimmed = b.trim();
+              if (trimmed.startsWith('|') && trimmed.endsWith('|')) {
+                tableBuffer.push(trimmed);
+              } else {
+                flushTable();
+                items.push({ kind: 'block', text: b });
               }
             }
-            // Numbered list items (e.g., 1. Modern EIFS...)
-            const numMatch = block.match(/^(\d+)\.\s+(.*)$/);
-            if (numMatch) {
-              return (
-                <div key={pIdx} className="my-3 p-5 sm:p-6 bg-white rounded-2xl border border-stone-200/90 shadow-xs flex items-start gap-4">
-                  <span className="w-8 h-8 rounded-xl bg-amber-900 text-stone-100 font-sans text-xs font-bold flex items-center justify-center shrink-0 shadow-xs">
-                    {numMatch[1]}
-                  </span>
-                  <div className="flex-1 font-sans text-sm sm:text-base text-stone-800 leading-relaxed">
-                    {renderInlineMarkdown(numMatch[2])}
+            flushTable();
+
+            return items.map((item, pIdx) => {
+              if (item.kind === 'table') {
+                return (
+                  <div key={pIdx} className="my-10 overflow-x-auto rounded-2xl border border-stone-200/90 shadow-sm bg-white">
+                    <table className="w-full text-left font-sans text-xs sm:text-sm">
+                      <thead className="bg-[#f5ede3] text-stone-900 border-b border-stone-200">
+                        <tr>
+                          {item.headers.map((h, hIdx) => (
+                            <th key={hIdx} className="px-5 py-3.5 font-bold uppercase tracking-wider text-[11px] text-amber-950">
+                              {h}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-stone-100">
+                        {item.rows.map((row, rIdx) => (
+                          <tr key={rIdx} className="hover:bg-amber-50/20 transition">
+                            {row.map((cell, cIdx) => (
+                              <td key={cIdx} className="px-5 py-4 text-stone-700 leading-relaxed font-normal">
+                                {renderInlineMarkdown(cell)}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
-                </div>
-              );
-            }
-            // FAQ format: **Question?** Answer
-            if (block.startsWith('**') && block.includes('?**')) {
-              const [qRaw, ...rest] = block.split('?**');
-              const question = qRaw.replace(/^\*\*/, '') + '?';
-              const answer = rest.join('?**').trim();
-              return (
-                <div key={pIdx} className="my-5 p-6 sm:p-7 bg-white rounded-2xl border border-stone-200/90 shadow-xs hover:border-amber-900/30 transition">
-                  <h4 className="font-serif text-lg sm:text-xl font-medium text-stone-950 mb-3 flex items-start gap-3">
-                    <span className="px-2.5 py-0.5 rounded-lg bg-amber-100 text-amber-950 font-sans text-xs font-bold uppercase tracking-wider shrink-0 mt-0.5">
-                      Q
+                );
+              }
+
+              const block = item.text;
+              if (block.startsWith('[AEO_ANSWER]:')) {
+                const answer = block.replace('[AEO_ANSWER]:', '').trim();
+                return (
+                  <div key={pIdx} className="my-10 p-6 sm:p-8 bg-[#f5ede3] border-l-4 border-amber-900 rounded-2xl font-sans text-sm sm:text-base text-stone-900 leading-relaxed shadow-sm">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="w-2.5 h-2.5 rounded-full bg-amber-900 animate-pulse" />
+                      <span className="text-xs uppercase tracking-widest font-bold text-amber-950 font-sans">
+                        Executive Direct Answer (#0 AEO Snippet)
+                      </span>
+                    </div>
+                    <p className="font-sans leading-relaxed text-stone-800 text-[15px] sm:text-base">
+                      {renderInlineMarkdown(answer)}
+                    </p>
+                  </div>
+                );
+              }
+              if (block.startsWith('### ') || block.startsWith('## ')) {
+                const text = block.replace(/^(### |## )/, '').trim();
+                const headingId = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+                return (
+                  <h2 key={pIdx} id={headingId} className="text-2xl sm:text-4xl font-normal text-stone-950 pt-12 pb-3 border-b border-stone-200/90 font-serif tracking-tight scroll-mt-24">
+                    {text}
+                  </h2>
+                );
+              }
+              if (block.startsWith('#### ')) {
+                const text = block.replace('#### ', '').trim();
+                const headingId = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+                return (
+                  <h3 key={pIdx} id={headingId} className="text-xl sm:text-2xl font-medium text-stone-900 pt-8 pb-2 font-serif text-amber-950 scroll-mt-24">
+                    {text}
+                  </h3>
+                );
+              }
+              if (block.startsWith('*') && block.endsWith('*')) {
+                return (
+                  <p key={pIdx} className="text-stone-500 font-sans text-xs sm:text-sm uppercase tracking-wider font-semibold">
+                    {block.replace(/\*/g, '')}
+                  </p>
+                );
+              }
+              if (block.startsWith('> ')) {
+                return (
+                  <blockquote key={pIdx} className="my-10 p-6 sm:p-8 bg-white/70 border-l-4 border-amber-900/70 rounded-r-2xl italic text-xl sm:text-2xl text-stone-800 font-serif shadow-xs">
+                    &ldquo;{block.replace('> ', '').replace(/^"|"$/g, '')}&rdquo;
+                  </blockquote>
+                );
+              }
+              if (block.startsWith('![')) {
+                const match = block.match(/!\[(.*?)\]\((.*?)\)/);
+                if (match) {
+                  return (
+                    <figure key={pIdx} className="my-12 rounded-3xl overflow-hidden shadow-md border border-stone-200/90 bg-stone-100">
+                      <img src={match[2]} alt={match[1]} loading="lazy" className="w-full h-[320px] sm:h-[480px] object-cover filter contrast-[1.03]" />
+                      <figcaption className="p-3.5 bg-stone-100/95 border-t border-stone-200/90 text-center font-sans text-xs text-stone-600">
+                        <span className="font-semibold text-stone-900 mr-1.5 uppercase tracking-wider text-[11px]">Plate &bull;</span>
+                        {match[1]}
+                      </figcaption>
+                    </figure>
+                  );
+                }
+              }
+              // Numbered list items (e.g., 1. Modern EIFS...)
+              const numMatch = block.match(/^(\d+)\.\s+(.*)$/);
+              if (numMatch) {
+                return (
+                  <div key={pIdx} className="my-3 p-5 sm:p-6 bg-white rounded-2xl border border-stone-200/90 shadow-xs flex items-start gap-4">
+                    <span className="w-8 h-8 rounded-xl bg-amber-900 text-stone-100 font-sans text-xs font-bold flex items-center justify-center shrink-0 shadow-xs">
+                      {numMatch[1]}
                     </span>
-                    <span>{question}</span>
-                  </h4>
-                  <div className="font-sans text-sm sm:text-base text-stone-700 leading-relaxed pl-10 border-l-2 border-amber-900/10">
-                    {renderInlineMarkdown(answer)}
+                    <div className="flex-1 font-sans text-sm sm:text-base text-stone-800 leading-relaxed">
+                      {renderInlineMarkdown(numMatch[2])}
+                    </div>
                   </div>
-                </div>
+                );
+              }
+              // FAQ format: **Question?** Answer
+              if (block.startsWith('**') && block.includes('?**')) {
+                const [qRaw, ...rest] = block.split('?**');
+                const question = qRaw.replace(/^\*\*/, '') + '?';
+                const answer = rest.join('?**').trim();
+                return (
+                  <div key={pIdx} className="my-5 p-6 sm:p-7 bg-white rounded-2xl border border-stone-200/90 shadow-xs hover:border-amber-900/30 transition">
+                    <h4 className="font-serif text-lg sm:text-xl font-medium text-stone-950 mb-3 flex items-start gap-3">
+                      <span className="px-2.5 py-0.5 rounded-lg bg-amber-100 text-amber-950 font-sans text-xs font-bold uppercase tracking-wider shrink-0 mt-0.5">
+                        Q
+                      </span>
+                      <span>{question}</span>
+                    </h4>
+                    <div className="font-sans text-sm sm:text-base text-stone-700 leading-relaxed pl-10 border-l-2 border-amber-900/10">
+                      {renderInlineMarkdown(answer)}
+                    </div>
+                  </div>
+                );
+              }
+              return (
+                <p key={pIdx} className="leading-[1.95] text-stone-800 text-base sm:text-lg font-serif">
+                  {renderInlineMarkdown(block)}
+                </p>
               );
-            }
-            return (
-              <p key={pIdx} className="leading-[1.95] text-stone-800 text-base sm:text-lg font-serif">
-                {renderInlineMarkdown(block)}
-              </p>
-            );
-          })}
+            });
+          })()}
         </article>
 
         {/* Author Bio Colophon */}
