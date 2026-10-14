@@ -660,13 +660,13 @@ const INITIAL_DEMO_SITES: SiteConfig[] = [
 // In-Memory cache for 100% zero-crash guarantee in any environment
 let memorySitesCache: SiteConfig[] = [...INITIAL_DEMO_SITES];
 
-const FALLBACK_NEON_DATABASE_URL = "postgresql://neondb_owner:npg_dJh0OU5xyXfY@ep-proud-smoke-b7mbkvrm.c-13.us-east-1.aws.neon.tech/neondb";
+const FALLBACK_NEON_DATABASE_URL = "postgresql://neondb_owner:npg_dJh0OU5xyXfY@ep-proud-smoke-b7mbkvrm-pooler.c-13.us-east-1.aws.neon.tech/neondb";
 
 function getDbClient(): Client | null {
-  const connStr = process.env.DATABASE_URL_UNPOOLED || 
-                  process.env.POSTGRES_URL_NON_POOLING || 
-                  process.env.DATABASE_URL || 
+  const connStr = process.env.DATABASE_URL || 
                   process.env.POSTGRES_URL || 
+                  process.env.DATABASE_URL_UNPOOLED || 
+                  process.env.POSTGRES_URL_NON_POOLING || 
                   process.env.POSTGRES_PRISMA_URL ||
                   FALLBACK_NEON_DATABASE_URL;
   if (!connStr) return null;
@@ -733,7 +733,9 @@ export async function syncSitesFromDatabase(): Promise<SiteConfig[]> {
 
 export async function persistSiteToDatabase(site: SiteConfig): Promise<void> {
   const client = getDbClient();
-  if (!client) return;
+  if (!client) {
+    throw new Error('No database client configured (missing connection string)');
+  }
 
   try {
     await client.connect();
@@ -753,6 +755,7 @@ export async function persistSiteToDatabase(site: SiteConfig): Promise<void> {
   } catch (err: any) {
     console.warn('[Zyntix DB Persist] Failed to save site to DB:', err?.message || err);
     try { await client.end(); } catch (_) {}
+    throw err;
   }
 }
 
