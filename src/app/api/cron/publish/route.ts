@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getAllSites, saveOrUpdateSiteAsync, syncSitesFromDatabase } from '@/lib/sites';
-import { mineHighIntentKeywords, generateDeepHumanArticle } from '@/lib/seo-engine';
+import { mineHighIntentKeywords, generateDeepHumanArticle, cleanHumanText } from '@/lib/seo-engine';
 import { injectBiDirectionalLinks } from '@/lib/link-mesh';
 import { generateHeadingMatchedImage } from '@/lib/image-engine';
 import { pingIndexNow, pingGoogleSitemap } from '@/lib/indexing';
@@ -90,40 +90,40 @@ export async function GET(req: Request) {
 
         // Deep technical sections with figure captions and citations
         for (const section of article.sections) {
-          enrichedBlocks.push(`### ${section.heading}`);
-          if (section.subheading) enrichedBlocks.push(`*${section.subheading}*`);
-          enrichedBlocks.push(...section.paragraphs);
+          enrichedBlocks.push(`## ${cleanHumanText(section.heading)}`);
+          if (section.subheading) enrichedBlocks.push(`*${cleanHumanText(section.subheading)}*`);
+          enrichedBlocks.push(...section.paragraphs.map(p => cleanHumanText(p)));
 
           const matchedImg = generateHeadingMatchedImage(section.heading, site.niche, usedUrls);
           usedUrls.add(matchedImg.url);
           enrichedBlocks.push(`![${matchedImg.alt}](${matchedImg.url})`);
           enrichedBlocks.push(`*${matchedImg.caption}*`);
 
-          if (section.quote) enrichedBlocks.push(`> ${section.quote}`);
+          if (section.quote) enrichedBlocks.push(`> ${cleanHumanText(section.quote)}`);
         }
 
         // Field Execution Protocol
         if (article.actionProtocol && article.actionProtocol.steps.length > 0) {
-          enrichedBlocks.push(`### ${article.actionProtocol.title}`);
+          enrichedBlocks.push(`## ${cleanHumanText(article.actionProtocol.title)}`);
           article.actionProtocol.steps.forEach((step, idx) => {
-            enrichedBlocks.push(`${idx + 1}. ${step}`);
+            enrichedBlocks.push(`${idx + 1}. ${cleanHumanText(step)}`);
           });
         }
 
         // Frequently Asked Questions
         if (article.faq && article.faq.length > 0) {
-          enrichedBlocks.push(`### Frequently Asked Questions`);
+          enrichedBlocks.push(`## Frequently Asked Questions`);
           for (const f of article.faq) {
-            enrichedBlocks.push(`**${f.question}**`);
-            enrichedBlocks.push(f.answer);
+            enrichedBlocks.push(`### ${cleanHumanText(f.question)}`);
+            enrichedBlocks.push(cleanHumanText(f.answer));
           }
         }
 
         const cumulativeSummary = [...newlyGeneratedPosts, ...site.posts].map(p => ({ slug: p.slug, title: p.title }));
         const linkedContent = injectBiDirectionalLinks(enrichedBlocks, cumulativeSummary, site.niche);
 
-        const optimizedTitle = optimizeMetaTitle(article.metaTitle || article.title, site.name);
-        const optimizedExcerpt = optimizeMetaDescription(article.metaDescription || article.excerpt);
+        const optimizedTitle = cleanHumanText(optimizeMetaTitle(article.metaTitle || article.title, site.name));
+        const optimizedExcerpt = cleanHumanText(optimizeMetaDescription(article.metaDescription || article.excerpt));
 
         const postObj = {
           slug: finalSlug,
@@ -140,7 +140,7 @@ export async function GET(req: Request) {
             role: 'Principal Architect & Conservationist'
           },
           coverImage: coverImg.url,
-          content: linkedContent
+          content: linkedContent.map(b => cleanHumanText(b))
         };
 
         newlyGeneratedPosts.push(postObj);

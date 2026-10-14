@@ -199,19 +199,36 @@ export default async function BlogPostPage({ params }: ArticlePageProps) {
     : `${process.env.NEXT_PUBLIC_APP_URL || 'https://zyntix-studio-ivory.vercel.app'}/site/${site.subdomain}`;
 
   // Extract FAQs for Schema and Rich Snippets
-  const faqs = post.content
-    .filter(b => b.startsWith('**') && b.includes('?**'))
-    .map(b => {
+  const faqs: Array<{ question: string; answer: string }> = [];
+  for (let i = 0; i < post.content.length; i++) {
+    const b = post.content[i].trim();
+    if (b.startsWith('### ') && b.includes('?')) {
+      const question = b.replace(/^###\s+/, '').trim();
+      const next = post.content[i + 1]?.trim() || '';
+      const answer = next && !next.startsWith('#') && !next.startsWith('**') && !next.startsWith('!') && !next.startsWith('|') && !next.startsWith('*') ? next : '';
+      faqs.push({ question, answer });
+    } else if (b.startsWith('**') && b.endsWith('**') && b.includes('?')) {
+      const question = b.slice(2, -2).trim();
+      const next = post.content[i + 1]?.trim() || '';
+      const answer = next && !next.startsWith('#') && !next.startsWith('**') && !next.startsWith('!') && !next.startsWith('|') && !next.startsWith('*') ? next : '';
+      faqs.push({ question, answer });
+    } else if (b.startsWith('**') && b.includes('?**')) {
       const [qRaw, ...rest] = b.split('?**');
-      return {
-        question: qRaw.replace(/^\*\*/, '').trim() + '?',
-        answer: rest.join('?**').trim()
-      };
-    });
+      const question = qRaw.replace(/^\*\*/, '').trim() + '?';
+      const answer = rest.join('?**').trim();
+      if (answer) {
+        faqs.push({ question, answer });
+      } else {
+        const next = post.content[i + 1]?.trim() || '';
+        const nextAnswer = next && !next.startsWith('#') && !next.startsWith('**') && !next.startsWith('!') && !next.startsWith('|') && !next.startsWith('*') ? next : '';
+        faqs.push({ question, answer: nextAnswer });
+      }
+    }
+  }
 
-  // Extract Headings for Interactive Monograph Table of Contents
+  // Extract Headings for Interactive Monograph Table of Contents (Major Chapters)
   const headings = post.content
-    .filter(b => b.startsWith('### ') || b.startsWith('## '))
+    .filter(b => b.startsWith('## ') || (b.startsWith('### ') && !b.includes('?')))
     .map(b => {
       const text = b.replace(/^(### |## )/, '').trim();
       const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
@@ -539,8 +556,8 @@ export default async function BlogPostPage({ params }: ArticlePageProps) {
                   </div>
                 );
               }
-              if (block.startsWith('### ') || block.startsWith('## ')) {
-                const text = block.replace(/^(### |## )/, '').trim();
+              if (block.startsWith('## ')) {
+                const text = block.replace(/^## /, '').trim();
                 const headingId = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
                 return (
                   <h2 key={pIdx} id={headingId} className="text-2xl sm:text-4xl font-normal text-stone-950 pt-12 pb-3 border-b border-stone-200/90 font-serif tracking-tight scroll-mt-24">
@@ -548,13 +565,28 @@ export default async function BlogPostPage({ params }: ArticlePageProps) {
                   </h2>
                 );
               }
+              if (block.startsWith('### ')) {
+                const text = block.replace(/^### /, '').trim();
+                const headingId = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+                const isFaq = text.includes('?');
+                return (
+                  <h3 key={pIdx} id={headingId} className="text-xl sm:text-2xl font-medium text-stone-900 pt-8 pb-2 font-serif text-amber-950 scroll-mt-24 flex items-start gap-2.5">
+                    {isFaq && (
+                      <span className="px-2 py-0.5 rounded-md bg-amber-100 text-amber-950 font-sans text-[11px] font-bold tracking-wider shrink-0 mt-1">
+                        Q
+                      </span>
+                    )}
+                    <span>{renderInlineMarkdown(text)}</span>
+                  </h3>
+                );
+              }
               if (block.startsWith('#### ')) {
                 const text = block.replace('#### ', '').trim();
                 const headingId = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
                 return (
-                  <h3 key={pIdx} id={headingId} className="text-xl sm:text-2xl font-medium text-stone-900 pt-8 pb-2 font-serif text-amber-950 scroll-mt-24">
+                  <h4 key={pIdx} id={headingId} className="text-lg sm:text-xl font-medium text-stone-900 pt-6 pb-2 font-serif text-stone-900 scroll-mt-24">
                     {text}
-                  </h3>
+                  </h4>
                 );
               }
               // Italic note / Subheading / Citation link

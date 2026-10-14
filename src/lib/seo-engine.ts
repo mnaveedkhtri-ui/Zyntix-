@@ -230,6 +230,71 @@ function getGeminiKey(): string {
   return Buffer.from(picked, 'base64').toString('ascii');
 }
 
+export function cleanHumanText(text: string): string {
+  if (!text || typeof text !== 'string') return text || '';
+  return text
+    // Replace em-dashes and en-dashes with natural human punctuation
+    .replace(/\s*[\u2014\u2013]\s*/g, ', ')
+    .replace(/\s*--\s*/g, ', ')
+    // Clean up any double punctuation created
+    .replace(/,\s*,+/g, ', ')
+    .replace(/,\s*\./g, '.')
+    .replace(/\.\s*,/g, '.')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
+export function sanitizeArticle<T>(obj: T): T {
+  if (typeof obj === 'string') {
+    return cleanHumanText(obj) as unknown as T;
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(item => sanitizeArticle(item)) as unknown as T;
+  }
+  if (obj && typeof obj === 'object') {
+    const copy: any = {};
+    for (const key of Object.keys(obj)) {
+      copy[key] = sanitizeArticle((obj as any)[key]);
+    }
+    return copy;
+  }
+  return obj;
+}
+
+function ensureFiveFaqs(topic: string, faqs: Array<{ question: string; answer: string }>): Array<{ question: string; answer: string }> {
+  const result = [...(faqs || [])];
+  const defaults = [
+    {
+      question: `What is the primary maintenance schedule required for this assembly?`,
+      answer: `Perform annual visual inspections before monsoon or freeze-thaw cycles. Check perimeter capillary breaks, clear drainage weep-holes, and touch up sacrificial mineral washes every 5 to 7 years.`
+    },
+    {
+      question: `How does this approach comply with modern regional building codes?`,
+      answer: `Compliance is established under performance-based building code provisions (such as IRC Section R106 or NCC Performance Solutions) through independent laboratory testing of vapor permeance and compressive strength.`
+    },
+    {
+      question: `What is the realistic installation cost comparison against standard materials?`,
+      answer: `Initial specialized labor typically carries a 15% to 20% premium. However, it eliminates recurring synthetic sealant replacements, mechanical dehumidification, and repainting cycles over a 50-year lifecycle.`
+    },
+    {
+      question: `Can this technique be retrofitted onto an existing modern building?`,
+      answer: `Yes, provided all non-breathable synthetic coatings and acrylic sealers are mechanically removed first down to the sound mineral or timber substrate before applying breathable envelopes.`
+    },
+    {
+      question: `Where can architects and builders source verified traditional materials?`,
+      answer: `Directly from regional lime kilns, certified local timber mills with kiln-drying documentation, and geotechnical quarries providing particle gradation sieve certificates.`
+    }
+  ];
+
+  for (const def of defaults) {
+    if (result.length >= 5) break;
+    if (!result.some(f => f.question.toLowerCase().includes(def.question.slice(0, 15).toLowerCase()))) {
+      result.push(def);
+    }
+  }
+  return result.slice(0, 5);
+}
+
 async function generateAiMonographViaGemini(
   topic: string,
   authorName: string = 'Naveed Khatri',
@@ -240,7 +305,17 @@ async function generateAiMonographViaGemini(
     const prompt = `You are Principal Architect & Conservationist ${authorName}, writing a master-level technical architectural monograph for an elite architecture atelier in Latifabad, Sindh, specializing in ${niche}.
 Topic: "${topic}"
 
-Generate an authentic, highly detailed, scientifically rigorous architectural monograph.
+STRICT PROHIBITION ON AI FOOTPRINTS AND PUNCTUATION:
+- NEVER use em-dashes ('—') or en-dashes ('–') anywhere.
+- NEVER use double hyphens ('--').
+- Use clean natural human punctuation: commas, parentheses, colons, or separate sentences.
+- FORBIDDEN WORDS: Never use "delve", "tapestry", "beacon", "testament", "crucial", "pivotal", "furthermore", "moreover", "in conclusion", "it is worth noting", "shed light", "intertwined", "game-changer", "dive in".
+
+VOICE & TONE (Authentic Human Architect & Field Practitioner):
+- Write in the authentic, first-person singular ("I", "my team", "at our Latifabad atelier") voice of Principal Architect Naveed Khatri.
+- Ground explanations in physical jobsite realities: the smell of slaked lime putty, the gritty drag of a steel trowel across porous brick, calibrated digital hygrometers measuring 78% relative humidity, tapping a solid seasoned deodar timber beam with a wooden mallet.
+- Reference exact building codes, standards, and metrics: ASTM C1384, AS 3700, EN 459-1, IRC Section R106, mu-values, MPa compressive ratings, micro-strain tolerances.
+
 Return a STRICT JSON object with these exact keys:
 - title: (Max 55 characters, high-converting Title)
 - metaTitle: (Max 56 characters)
@@ -250,12 +325,19 @@ Return a STRICT JSON object with these exact keys:
 - aeoAnswer: (A definitive 45-55 word direct answer with specific physics/metrics: temperature reduction in Celsius, solar azimuth angles, diurnal thermal lag hours, or material tolerances for Google Snippet #0)
 - table: { headers: string[], rows: string[][] } (A detailed markdown data table with 4 columns and 4-5 rows comparing engineering metrics, operative temperatures, costs, or material standards)
 - sections: Array of 3 sections, each with:
-    heading: string
-    subheading: string
+    heading: string (Concise, descriptive H2 chapter title without hype)
+    subheading: string (Direct technical H3 context)
     paragraphs: string[] (2 deep, articulate paragraphs with first-principles physics, real engineering numbers, no generic buzzwords)
     quote: string (profound field quote)
 - actionProtocol: { title: string, steps: string[] } (3 numbered actionable engineering rules)
-- faq: Array of 2 items: { question: string, answer: string }
+- faq: Array of 5 items: [
+    { "question": string, "answer": string },
+    { "question": string, "answer": string },
+    { "question": string, "answer": string },
+    { "question": string, "answer": string },
+    { "question": string, "answer": string }
+  ]
+  (Each question must be a real high-volume conversational search query. Each answer must be a definitive 45-65 word practical engineering response with specific numbers, codes, or field protocols.)
 
 Return ONLY valid JSON. No markdown code blocks, no backticks.`;
 
@@ -285,7 +367,10 @@ Return ONLY valid JSON. No markdown code blocks, no backticks.`;
     const parsed = JSON.parse(rawText);
     const slug = topic.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
-    return {
+    const rawFaqs = Array.isArray(parsed.faq) ? parsed.faq : [];
+    const guaranteedFaqs = ensureFiveFaqs(topic, rawFaqs);
+
+    const generated: GeneratedArticle = {
       title: parsed.title || topic,
       slug,
       metaTitle: parsed.metaTitle || parsed.title || topic,
@@ -312,8 +397,10 @@ Return ONLY valid JSON. No markdown code blocks, no backticks.`;
       })),
       actionProtocol: parsed.actionProtocol || undefined,
       authorNote: `Documented by ${authorName} from field investigations at the Latifabad architectural atelier.`,
-      faq: parsed.faq || []
+      faq: guaranteedFaqs
     };
+
+    return sanitizeArticle(generated);
   } catch (err: any) {
     console.warn('[Gemini AI Monograph] Generation fallback:', err?.message || err);
     return null;
@@ -359,15 +446,15 @@ export async function generateDeepHumanArticle(
     const table: ArticleTable = {
       headers: ['Performance Metric', itemA, itemB, 'Engineering Advantage'],
       rows: [
-        ['Compressive Strength', '2.5 – 5.0 MPa', '20.0 – 35.0 MPa', `${itemB} carries multi-story shear`],
-        ['Embodied Carbon', '35 – 55 kg CO2e/m²', '240 – 380 kg CO2e/m²', `${itemA} reduces carbon by 85%`],
-        ['Vapor Permeance (Perms)', '12.0 – 16.0 Perms', '< 1.5 Perms (Impermeable)', `${itemA} eliminates interior mold`],
-        ['Thermal Phase Lag', '10 – 14 Hours', '3 – 5 Hours', `${itemA} dampens diurnal heat spikes`],
-        ['Installed Cost ($/sqft)', '$28 – $48 / sqft', '$22 – $36 / sqft', `${itemB} lower initial installation`]
+        ['Compressive Strength', '2.5 to 5.0 MPa', '20.0 to 35.0 MPa', `${itemB} carries multi-story shear`],
+        ['Embodied Carbon', '35 to 55 kg CO2e/m²', '240 to 380 kg CO2e/m²', `${itemA} reduces carbon by 85%`],
+        ['Vapor Permeance (Perms)', '12.0 to 16.0 Perms', '< 1.5 Perms (Impermeable)', `${itemA} eliminates interior mold`],
+        ['Thermal Phase Lag', '10 to 14 Hours', '3 to 5 Hours', `${itemA} dampens diurnal heat spikes`],
+        ['Installed Cost ($/sqft)', '$28 to $48 / sqft', '$22 to $36 / sqft', `${itemB} lower initial installation`]
       ]
     };
 
-    return {
+    return sanitizeArticle({
       title,
       slug,
       metaTitle,
@@ -424,17 +511,17 @@ export async function generateDeepHumanArticle(
         ]
       },
       authorNote: `Documented by Naveed Khatri from field research at the Latifabad architectural atelier.`,
-      faq: [
+      faq: ensureFiveFaqs(cleanTopic, [
         {
           question: `Is ${itemA} compliant with modern international building codes?`,
           answer: `Yes. Comprehensive structural standards including NZS 4298, ASTM E2392, and International Building Code (IBC) Section 1407 govern load calculations, compressive testing, and seismic tie-ins.`
         },
         {
           question: `How does the initial installed cost of ${itemA} compare to ${itemB}?`,
-          answer: `Initial labor for ${itemA} runs approximately 15-20% higher due to skilled pneumatic compaction, but eliminates secondary furring, fiberglass batting, and drywalling costs.`
+          answer: `Initial labor for ${itemA} runs approximately 15% to 20% higher due to skilled pneumatic compaction, but eliminates secondary furring, fiberglass batting, and drywalling costs.`
         }
-      ]
-    };
+      ])
+    });
   }
 
   // Archetype 2: Diagnostics & Failure Physics (Why / Rot / Mold / Cracks)
@@ -448,14 +535,14 @@ export async function generateDeepHumanArticle(
     const table: ArticleTable = {
       headers: ['Material Assembly', 'Vapor Permeance', 'Elastic Modulus (GPa)', 'Failure Risk Profile'],
       rows: [
-        ['Traditional Pure Slaked Lime', '14 – 18 Perms', '0.5 – 1.5 GPa', 'Zero spalling, self-healing micro-fissures'],
-        ['Hydraulic Lime (NHL 3.5)', '8 – 12 Perms', '2.0 – 4.0 GPa', 'Moderate breathability, suitable for harsh coasts'],
-        ['Portland Cement Mortar', '0.8 – 1.5 Perms', '15.0 – 25.0 GPa', 'High spalling risk, fractures adjacent masonry'],
+        ['Traditional Pure Slaked Lime', '14 to 18 Perms', '0.5 to 1.5 GPa', 'Zero spalling, self-healing micro-fissures'],
+        ['Hydraulic Lime (NHL 3.5)', '8 to 12 Perms', '2.0 to 4.0 GPa', 'Moderate breathability, suitable for harsh coasts'],
+        ['Portland Cement Mortar', '0.8 to 1.5 Perms', '15.0 to 25.0 GPa', 'High spalling risk, fractures adjacent masonry'],
         ['Synthetic Acrylic Sealant', '< 0.2 Perms', 'N/A (Rigid Film)', 'Catastrophic moisture entrapment behind skin']
       ]
     };
 
-    return {
+    return sanitizeArticle({
       title,
       slug,
       metaTitle,
@@ -478,7 +565,7 @@ export async function generateDeepHumanArticle(
           subheading: 'How differential vapor pressure destroys historical and natural masonry',
           paragraphs: [
             `Water within a masonry or earthen wall is not inherently destructive; destruction occurs only when water is prevented from escaping. In traditional porous assemblies, rainwater is absorbed through capillary suction and subsequently released back into the atmosphere via natural vapor transpiration.`,
-            `When modern contractors mistakenly apply dense, impermeable cement or acrylic sealers, the evaporation pathway is abruptly blocked. Trapped liquid water accumulates behind the brittle outer skin. During sub-zero winters or intense solar heating cycles, hydrostatic expansion fractures the stone face clean off—a catastrophic failure known as sub-florescence spalling.`
+            `When modern contractors mistakenly apply dense, impermeable cement or acrylic sealers, the evaporation pathway is abruptly blocked. Trapped liquid water accumulates behind the brittle outer skin. During sub-zero winters or intense solar heating cycles, hydrostatic expansion fractures the stone face clean off, causing catastrophic sub-florescence spalling.`
           ],
           image: getEditorialImage(cleanTopic, 1),
           imageCaption: `Plate 1: High-magnification microscopy of micro-capillary pore networks and salt crystallization damage.`
@@ -512,7 +599,7 @@ export async function generateDeepHumanArticle(
         ]
       },
       authorNote: `Documented by Naveed Khatri, Conservation Lead at Meridian Architecture Atelier.`,
-      faq: [
+      faq: ensureFiveFaqs(cleanTopic, [
         {
           question: `Can damaged stone surfaces be consolidated without complete replacement?`,
           answer: `Yes. Ethyl silicate consolidants or repetitive lime-water flushes can re-mineralize friable stone matrices without forming an impermeable surface barrier.`
@@ -521,8 +608,8 @@ export async function generateDeepHumanArticle(
           question: `How long does lime mortar take to reach full structural cure?`,
           answer: `Carbonation begins immediately at the surface within 48 hours, with core carbonation continuing for 90 to 180 days as atmospheric carbon dioxide diffuses through the matrix.`
         }
-      ]
-    };
+      ])
+    });
   }
 
   // Archetype 3: Specifications, Mix Ratios & Compaction Ratios
@@ -531,19 +618,19 @@ export async function generateDeepHumanArticle(
     const metaTitle = `${capitalizeWords(cleanTopic)}: Mix Ratios & Guide`;
     const excerpt = `An exacting geotechnical and structural guide to calculating ${cleanTopic}, optimal particle graduation curves, and moisture compaction physics.`;
 
-    const aeoAnswer = `Calculating ${cleanTopic} requires strict adherence to soil particle graduation: 50-70% sharp angular sand and fine gravel (0.06mm–20mm), 15-25% mineral silt, and 10-18% reactive colloidal clay, compacted at optimum moisture content (typically 9-11% by weight) in 150mm pneumatic lifts to achieve bulk dry density exceeding 2,100 kg/m³.`;
+    const aeoAnswer = `Calculating ${cleanTopic} requires strict adherence to soil particle graduation: 50-70% sharp angular sand and fine gravel (0.06mm to 20mm), 15-25% mineral silt, and 10-18% reactive colloidal clay, compacted at optimum moisture content (typically 9-11% by weight) in 150mm pneumatic lifts to achieve bulk dry density exceeding 2,100 kg/m³.`;
 
     const table: ArticleTable = {
       headers: ['Sieve Component Size', 'Optimal Weight %', 'Mechanical Engineering Function'],
       rows: [
-        ['Coarse Aggregate (5mm – 20mm)', '20% – 30%', 'Compressive skeleton, resists structural point loads'],
-        ['Sharp Quartz Sand (0.06mm – 5mm)', '35% – 45%', 'Friction interlock, eliminates drying shrinkage'],
-        ['Mineral Silt (0.002mm – 0.06mm)', '15% – 25%', 'Microscopic void filler between sand particles'],
-        ['Reactive Clay (< 0.002mm)', '10% – 18%', 'Colloidal binder activated under moisture compaction']
+        ['Coarse Aggregate (5mm to 20mm)', '20% to 30%', 'Compressive skeleton, resists structural point loads'],
+        ['Sharp Quartz Sand (0.06mm to 5mm)', '35% to 45%', 'Friction interlock, eliminates drying shrinkage'],
+        ['Mineral Silt (0.002mm to 0.06mm)', '15% to 25%', 'Microscopic void filler between sand particles'],
+        ['Reactive Clay (< 0.002mm)', '10% to 18%', 'Colloidal binder activated under moisture compaction']
       ]
     };
 
-    return {
+    return sanitizeArticle({
       title,
       slug,
       metaTitle,
@@ -600,7 +687,7 @@ export async function generateDeepHumanArticle(
         ]
       },
       authorNote: `Documented by Naveed Khatri, Principal Structural Investigator at Meridian Architecture Atelier.`,
-      faq: [
+      faq: ensureFiveFaqs(cleanTopic, [
         {
           question: `What is the minimum curing time before stripping formwork?`,
           answer: `Formwork can be struck immediately after compaction is complete, as monolithic earth possesses instantaneous green compressive strength exceeding 0.8 MPa.`
@@ -609,8 +696,8 @@ export async function generateDeepHumanArticle(
           question: `How can exterior surfaces be protected against driving rain?`,
           answer: `By incorporating generous roof overhangs (minimum 600mm) and applying vapor-permeable potassium silicate or silane-siloxane micro-crystalline treatments.`
         }
-      ]
-    };
+      ])
+    });
   }
 
   // Archetype 4: Regulatory, Licensure, Career & Permits
@@ -631,7 +718,7 @@ export async function generateDeepHumanArticle(
       ]
     };
 
-    return {
+    return sanitizeArticle({
       title,
       slug,
       metaTitle,
@@ -664,7 +751,7 @@ export async function generateDeepHumanArticle(
           subheading: 'Understanding IRC Section R106 and municipal square footage limits',
           paragraphs: [
             `Under the International Residential Code (IRC), adopted across North America and widely referenced internationally, single-family dwellings up to two or three stories in height fall under prescriptive construction standards. If floor joists, roof rafters, and wall bracing strictly adhere to published span tables, municipal building officials must approve plans without an architectural stamp.`,
-            `If a custom home incorporates complex structural feats—such as 30-foot open glass spans, cantilevered steel frames, or unreinforced rammed earth walls—building departments will require a licensed Professional Engineer (P.E.) to stamp the structural calculations, while the architectural design remains with the unlicensed designer.`
+            `If a custom home incorporates complex structural feats, such as 30-foot open glass spans, cantilevered steel frames, or unreinforced rammed earth walls, building departments will require a licensed Professional Engineer (P.E.) to stamp the structural calculations, while the architectural design remains with the unlicensed designer.`
           ],
           quote: `"Architecture is a discipline of craftsmanship and life-safety physics, not merely a rubber stamp on a bureaucratic blueprint."`
         },
@@ -688,7 +775,7 @@ export async function generateDeepHumanArticle(
         ]
       },
       authorNote: `Documented by Naveed Khatri, Principal Architect at Meridian Atelier.`,
-      faq: [
+      faq: ensureFiveFaqs(cleanTopic, [
         {
           question: `Can an interior designer or draftsperson submit plans for residential permits?`,
           answer: `Yes, provided the project falls within the residential exemption guidelines of the local building department and complies with prescriptive IRC standards.`
@@ -697,8 +784,8 @@ export async function generateDeepHumanArticle(
           question: `What is the legal risk of using the title "Architect" without a license?`,
           answer: `State licensing boards actively issue cease-and-desist orders and statutory fines ranging from $1,000 to $10,000 for unlawful title misrepresentation.`
         }
-      ]
-    };
+      ])
+    });
   }
 
   // Archetype 5: General High-Depth Architectural & Bioclimatic Engineering (Default)
@@ -714,11 +801,11 @@ export async function generateDeepHumanArticle(
       ['Primary Structural Envelope', 'Monolithic Stone & Compressed Earth', 'Lightweight 2x4 Timber Batts & Foam'],
       ['Vapor Transmission', 'Breathable Slaked Lime (12+ Perms)', 'Impermeable Acrylic Paint & Vapor Barrier'],
       ['Mechanical Joinery', 'Mortise, Tenon & Oak Pegs', 'Galvanized Sheet-Metal Fasteners & Screws'],
-      ['Operational Lifespan', '150 – 300+ Years', '30 – 50 Years (Total Envelope Teardown)']
+      ['Operational Lifespan', '150 to 300+ Years', '30 to 50 Years (Total Envelope Teardown)']
     ]
   };
 
-  return {
+  return sanitizeArticle({
     title,
     slug,
     metaTitle,
@@ -741,7 +828,7 @@ export async function generateDeepHumanArticle(
         subheading: 'Why real-world climate performance requires high dynamic thermal inertia',
         paragraphs: [
           `In contemporary architectural practice, green building metrics have unfortunately been reduced to simplistic static insulation values. However, building envelopes do not exist inside a temperature-controlled laboratory; they exist under the dynamic cycle of rising sun, blowing winds, and nocturnal radiant sky cooling.`,
-          `By engineering structures with genuine mineral thickness—such as monolithic stone, compressed earth, and fired terracotta—we introduce dynamic phase lag. The envelope absorbs diurnal caloric peaks and gradually radiates stored heat hours later, effortlessly maintaining indoor operative comfort without mechanical compressors.`
+          `By engineering structures with genuine mineral thickness, such as monolithic stone, compressed earth, and fired terracotta, we introduce dynamic phase lag. The envelope absorbs diurnal caloric peaks and gradually radiates stored heat hours later, effortlessly maintaining indoor operative comfort without mechanical compressors.`
         ],
         image: getEditorialImage(cleanTopic, 1),
         imageCaption: `Plate 1: Dynamic thermodynamic modeling of thick masonry assemblies under extreme solar exposure.`
@@ -760,7 +847,7 @@ export async function generateDeepHumanArticle(
         subheading: 'Eliminating planned obsolescence through mechanical joinery',
         paragraphs: [
           `Modern building methods rely heavily on petrochemical polyurethane adhesives, silicone sealants, and thin galvanized sheet metal. These components possess an engineered lifespan of barely thirty years, condemning buildings to early demolition.`,
-          `Heirloom craftsmanship employs mechanical interlocking joints—such as mortise and tenon, through-lap dovetails, and seasoned white oak trunnels—that expand and contract harmoniously with the wood, preserving structural capacity across generations.`
+          `Heirloom craftsmanship employs mechanical interlocking joints, such as mortise and tenon, through-lap dovetails, and seasoned white oak trunnels, that expand and contract harmoniously with the wood, preserving structural capacity across generations.`
         ],
         image: getEditorialImage(cleanTopic, 2),
         imageCaption: `Plate 2: Precision timber joinery assembly with seasoned oak pegs, engineered for generational load bearing.`
@@ -775,7 +862,7 @@ export async function generateDeepHumanArticle(
       ]
     },
     authorNote: `Documented by Naveed Khatri from field research at Meridian Atelier.`,
-    faq: [
+    faq: ensureFiveFaqs(cleanTopic, [
       {
         question: `How does passive thermal design reduce commercial building operating costs?`,
         answer: `By stabilizing indoor temperatures within the human comfort zone for over 80% of annual hours, thermal mass reduces HVAC runtime and required cooling tonnage by up to 45%.`
@@ -784,6 +871,6 @@ export async function generateDeepHumanArticle(
         question: `Why is traditional joinery superior to metal structural screws over long periods?`,
         answer: `Metal screws cause localized stress concentrations and rust over time, whereas seasoned wooden pegs breathe and flex with the wood without splitting the structural timber.`
       }
-    ]
-  };
+    ])
+  });
 }
