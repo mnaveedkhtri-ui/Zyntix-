@@ -95,6 +95,22 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
   };
 }
 
+const FALLBACK_ARCHITECTURAL_PHOTO = 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80';
+
+const KNOWN_DEAD_PHOTOS = [
+  'photo-1541888946425-d0fbb186c5f7',
+  'photo-1504917599217-d4dc5ebe6122',
+  'photo-1541888946425-d0fbb186c5f8'
+];
+
+function sanitizePhotoUrl(url?: string): string {
+  if (!url || typeof url !== 'string') return FALLBACK_ARCHITECTURAL_PHOTO;
+  if (KNOWN_DEAD_PHOTOS.some(d => url.includes(d))) {
+    return FALLBACK_ARCHITECTURAL_PHOTO;
+  }
+  return url;
+}
+
 function renderInlineMarkdown(text: string) {
   // Regex matches: [markdown link](url) OR **bold** OR *italic* OR `code`
   const regex = /(\[[^\]]+\]\([^)]+\)|\*\*.*?\*\*|\*.*?\*|`.*?`)/g;
@@ -439,11 +455,8 @@ export default async function BlogPostPage({ params }: ArticlePageProps) {
         {post.coverImage && (
           <div className="mb-14 rounded-3xl overflow-hidden bg-stone-100 shadow-md border border-stone-200/80">
             <img 
-              src={post.coverImage} 
+              src={sanitizePhotoUrl(post.coverImage)} 
               alt={post.title} 
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80';
-              }}
               className="w-full h-[280px] sm:h-[480px] object-cover filter contrast-[1.02]"
             />
             <div className="p-3 bg-stone-100/90 border-t border-stone-200 text-center font-sans text-[11px] text-stone-500">
@@ -638,12 +651,9 @@ export default async function BlogPostPage({ params }: ArticlePageProps) {
                   return (
                     <figure key={pIdx} className="my-12 rounded-3xl overflow-hidden shadow-md border border-stone-200/90 bg-stone-100">
                       <img 
-                        src={match[2]} 
+                        src={sanitizePhotoUrl(match[2])} 
                         alt={match[1]} 
                         loading="lazy" 
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80';
-                        }}
                         className="w-full h-[320px] sm:h-[480px] object-cover filter contrast-[1.03]" 
                       />
                       <figcaption className="p-3.5 bg-stone-100/95 border-t border-stone-200/90 text-center font-sans text-xs text-stone-600">
