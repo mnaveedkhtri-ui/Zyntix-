@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getAllSites, saveOrUpdateSiteAsync, syncSitesFromDatabase } from '@/lib/sites';
-import { fetchGoogleSerpSuggestions, generateDeepHumanArticle } from '@/lib/seo-engine';
+import { mineHighIntentKeywords, generateDeepHumanArticle } from '@/lib/seo-engine';
 import { injectBiDirectionalLinks } from '@/lib/link-mesh';
 import { generateHeadingMatchedImage } from '@/lib/image-engine';
 import { pingIndexNow, pingGoogleSitemap } from '@/lib/indexing';
@@ -8,23 +8,6 @@ import { optimizeMetaTitle, optimizeMetaDescription } from '@/lib/seo-helpers';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60; // Allow sufficient time for dual-article generation and DB write
-
-const CURATED_EXPANSION_TOPICS = [
-  "Rammed earth construction soil mix ratios and compaction",
-  "Lime plaster vs gypsum breathability and mold prevention",
-  "Timber scarf joints mechanical physics and seismic resilience",
-  "Passive solar courtyard architecture in hot-arid climates",
-  "Sourcing reclaimed structural timber grading and defect inspection",
-  "Load-bearing masonry vs reinforced concrete 100-year lifecycle",
-  "Natural stone flooring in high-traffic heritage buildings",
-  "Clay roof tile geometry wind uplift and water drainage",
-  "Traditional joinery without screws mortise and tenon standards",
-  "Geothermal earth tubes for zero-energy building cooling",
-  "Hygrothermal dynamics of non-hydraulic lime mortar",
-  "Stone lintel load calculations in historical masonry",
-  "Heavy oak timber frame fire resistance and charring rates",
-  "Passive nocturnal cooling with traditional Sindhi windcatchers"
-];
 
 export async function GET(req: Request) {
   try {
@@ -43,26 +26,26 @@ export async function GET(req: Request) {
     const results = [];
 
     for (const site of sites) {
-      // 1. Fetch organic SERP opportunities and merge with curated expansion pool
-      const serpQueries = await fetchGoogleSerpSuggestions(site.niche);
-      const combinedPool = [...serpQueries, ...CURATED_EXPANSION_TOPICS];
-
+      // 1. Mine zero-KD, high-CTR long-tail keywords directly from Google Suggest Intent Matrix
+      const existingSummary = (site.posts || []).map(p => ({ slug: p.slug, title: p.title }));
       const existingSlugs = new Set((site.posts || []).map(p => p.slug.toLowerCase()));
+      
+      const minedTopics = await mineHighIntentKeywords(site.niche, existingSummary);
 
-      const availableTopics = combinedPool.filter(t => {
+      const availableTopics = minedTopics.filter(t => {
         const testSlug = t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
         return !existingSlugs.has(testSlug);
       });
 
-      // Guaranteed cadence: 2 high-depth articles per cycle ("din may 2 article hon bas")
+      // Strict daily cadence: exactly 2 high-depth monographs per run ("din may 2 article hon bas")
       const batchTopics = availableTopics.slice(0, 2);
       if (batchTopics.length === 0) {
         batchTopics.push(
-          `${site.niche} Field Architectural Diagnostics Vol ${site.posts.length + 1}`,
+          `${site.niche} Field Structural Standards Vol ${site.posts.length + 1}`,
           `${site.niche} Generational Durability Standards Vol ${site.posts.length + 2}`
         );
       } else if (batchTopics.length === 1) {
-        batchTopics.push(`${site.niche} Generational Structural Standards Vol ${site.posts.length + 2}`);
+        batchTopics.push(`${site.niche} Generational Durability Standards Vol ${site.posts.length + 2}`);
       }
 
       // Track already used image URLs
@@ -79,7 +62,7 @@ export async function GET(req: Request) {
       const publishedTitles = [];
 
       for (const topic of batchTopics) {
-        const article = await generateDeepHumanArticle(topic, site.author.name);
+        const article = await generateDeepHumanArticle(topic, site.author.name, site.niche);
         
         // Ensure slug is strictly unique
         let finalSlug = article.slug;
@@ -91,10 +74,21 @@ export async function GET(req: Request) {
         const coverImg = generateHeadingMatchedImage(article.title, site.niche, usedUrls);
         usedUrls.add(coverImg.url);
 
+        // Assemble Information Gain enriched blocks
         const enrichedBlocks: string[] = [
           `[AEO_ANSWER]: ${article.aeoAnswer}`
         ];
 
+        // If structured data comparison table exists, inject as standard markdown table
+        if (article.table && article.table.headers.length > 0) {
+          enrichedBlocks.push(`| ${article.table.headers.join(' | ')} |`);
+          enrichedBlocks.push(`| ${article.table.headers.map(() => ':---').join(' | ')} |`);
+          for (const row of article.table.rows) {
+            enrichedBlocks.push(`| ${row.join(' | ')} |`);
+          }
+        }
+
+        // Deep technical sections with figure captions and citations
         for (const section of article.sections) {
           enrichedBlocks.push(`### ${section.heading}`);
           if (section.subheading) enrichedBlocks.push(`*${section.subheading}*`);
@@ -108,11 +102,28 @@ export async function GET(req: Request) {
           if (section.quote) enrichedBlocks.push(`> ${section.quote}`);
         }
 
-        const existingSummary = [...newlyGeneratedPosts, ...site.posts].map(p => ({ slug: p.slug, title: p.title }));
-        const linkedContent = injectBiDirectionalLinks(enrichedBlocks, existingSummary, site.niche);
+        // Field Execution Protocol
+        if (article.actionProtocol && article.actionProtocol.steps.length > 0) {
+          enrichedBlocks.push(`### ${article.actionProtocol.title}`);
+          article.actionProtocol.steps.forEach((step, idx) => {
+            enrichedBlocks.push(`${idx + 1}. ${step}`);
+          });
+        }
 
-        const optimizedTitle = optimizeMetaTitle(article.title, site.name);
-        const optimizedExcerpt = optimizeMetaDescription(article.excerpt);
+        // Frequently Asked Questions
+        if (article.faq && article.faq.length > 0) {
+          enrichedBlocks.push(`### Frequently Asked Questions`);
+          for (const f of article.faq) {
+            enrichedBlocks.push(`**${f.question}**`);
+            enrichedBlocks.push(f.answer);
+          }
+        }
+
+        const cumulativeSummary = [...newlyGeneratedPosts, ...site.posts].map(p => ({ slug: p.slug, title: p.title }));
+        const linkedContent = injectBiDirectionalLinks(enrichedBlocks, cumulativeSummary, site.niche);
+
+        const optimizedTitle = optimizeMetaTitle(article.metaTitle || article.title, site.name);
+        const optimizedExcerpt = optimizeMetaDescription(article.metaDescription || article.excerpt);
 
         const postObj = {
           slug: finalSlug,
@@ -126,7 +137,7 @@ export async function GET(req: Request) {
           author: {
             name: site.author.name,
             avatar: site.author.avatar,
-            role: 'Author'
+            role: 'Principal Architect & Conservationist'
           },
           coverImage: coverImg.url,
           content: linkedContent
@@ -178,10 +189,10 @@ export async function GET(req: Request) {
       results
     });
   } catch (err) {
-    return NextResponse.json({ success: false, error: String(err) }, { status: 500 });
+    console.error('Autonomous Cron Job Error:', err);
+    return NextResponse.json({
+      success: false,
+      error: (err as Error).message
+    }, { status: 500 });
   }
-}
-
-export async function POST(req: Request) {
-  return GET(req);
 }
