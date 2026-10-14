@@ -557,11 +557,37 @@ export default async function BlogPostPage({ params }: ArticlePageProps) {
                   </h3>
                 );
               }
-              if (block.startsWith('*') && block.endsWith('*')) {
+              // Italic note / Subheading / Citation link
+              if (block.startsWith('*') && block.endsWith('*') && !block.startsWith('**')) {
+                const inner = block.slice(1, -1);
+                // If it's a cross-reference link or authoritative citation
+                if (inner.includes('[') && inner.includes('](')) {
+                  return (
+                    <div key={pIdx} className="my-6 p-4 rounded-2xl bg-[#f5ede3] border border-amber-900/15 text-xs sm:text-sm font-sans text-stone-700 italic flex items-center gap-2 shadow-xs">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-800 shrink-0" />
+                      <div>{renderInlineMarkdown(inner)}</div>
+                    </div>
+                  );
+                }
                 return (
-                  <p key={pIdx} className="text-stone-500 font-sans text-xs sm:text-sm uppercase tracking-wider font-semibold">
-                    {block.replace(/\*/g, '')}
+                  <p key={pIdx} className="text-stone-600 font-sans text-xs sm:text-sm tracking-wide font-medium italic -mt-1 mb-4">
+                    {renderInlineMarkdown(inner)}
                   </p>
+                );
+              }
+
+              // Bold heading or standalone FAQ Question: **Is lime mortar completely illegal in Australia?**
+              if (block.startsWith('**') && block.endsWith('**')) {
+                const clean = block.slice(2, -2).trim();
+                return (
+                  <h3 key={pIdx} className="font-serif text-lg sm:text-xl font-semibold text-stone-950 mt-8 mb-2 flex items-start gap-2.5">
+                    {clean.includes('?') && (
+                      <span className="px-2 py-0.5 rounded-md bg-amber-100 text-amber-950 font-sans text-[11px] font-bold tracking-wider shrink-0 mt-0.5">
+                        Q
+                      </span>
+                    )}
+                    <span>{renderInlineMarkdown(clean)}</span>
+                  </h3>
                 );
               }
               if (block.startsWith('> ')) {
