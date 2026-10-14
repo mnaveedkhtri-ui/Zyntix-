@@ -441,6 +441,9 @@ export default async function BlogPostPage({ params }: ArticlePageProps) {
             <img 
               src={post.coverImage} 
               alt={post.title} 
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80';
+              }}
               className="w-full h-[280px] sm:h-[480px] object-cover filter contrast-[1.02]"
             />
             <div className="p-3 bg-stone-100/90 border-t border-stone-200 text-center font-sans text-[11px] text-stone-500">
@@ -634,7 +637,15 @@ export default async function BlogPostPage({ params }: ArticlePageProps) {
                 if (match) {
                   return (
                     <figure key={pIdx} className="my-12 rounded-3xl overflow-hidden shadow-md border border-stone-200/90 bg-stone-100">
-                      <img src={match[2]} alt={match[1]} loading="lazy" className="w-full h-[320px] sm:h-[480px] object-cover filter contrast-[1.03]" />
+                      <img 
+                        src={match[2]} 
+                        alt={match[1]} 
+                        loading="lazy" 
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80';
+                        }}
+                        className="w-full h-[320px] sm:h-[480px] object-cover filter contrast-[1.03]" 
+                      />
                       <figcaption className="p-3.5 bg-stone-100/95 border-t border-stone-200/90 text-center font-sans text-xs text-stone-600">
                         <span className="font-semibold text-stone-900 mr-1.5 uppercase tracking-wider text-[11px]">Plate &bull;</span>
                         {match[1]}

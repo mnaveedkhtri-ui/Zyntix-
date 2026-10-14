@@ -27,13 +27,13 @@ const PHOTOGRAPHY_CATALOG: Record<string, string[]> = {
 
   // Timber framing, joinery, oak, woodwork, linseed oil
   timber_woodwork: [
-    'https://images.unsplash.com/photo-1541888946425-d0fbb186c5f7?auto=format&fit=crop&w=1200&q=80', // Heavy timber structural beams
-    'https://images.unsplash.com/photo-1588854337236-6889d631faa8?auto=format&fit=crop&w=1200&q=80', // Weathered historic oak framing
+    'https://images.unsplash.com/photo-1588854337236-6889d631faa8?auto=format&fit=crop&w=1200&q=80', // Heavy timber structural beams
     'https://images.unsplash.com/photo-1572981779307-38b8cabb2407?auto=format&fit=crop&w=1200&q=80', // Precision chiseled wood joinery
     'https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=1200&q=80', // Deep oak wood grain and natural oil finish
-    'https://images.unsplash.com/photo-1504917599217-d4dc5ebe6122?auto=format&fit=crop&w=1200&q=80', // Master carpenter workshop
     'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1200&q=80', // Hand-planing timber joint
     'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1200&q=80', // Heavy heartwood forest timber grain
+    'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&w=1200&q=80', // Architectural material inspection
+    'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1200&q=80', // Precision woodworking craftsmanship
   ],
 
   // Passive thermal mass, climate design, daylighting, courtyards
@@ -47,9 +47,9 @@ const PHOTOGRAPHY_CATALOG: Record<string, string[]> = {
 
   // Artisans, craftsmanship, tools, hands-on workshop inspection
   artisan_craft: [
-    'https://images.unsplash.com/photo-1504917599217-d4dc5ebe6122?auto=format&fit=crop&w=1200&q=80', // Master artisan in workshop with tools
     'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&w=1200&q=80', // Blueprint & architectural material inspection
     'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1200&q=80', // Precision craftsmanship measuring
+    'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1200&q=80', // Architecture drafting and scale model
     'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1200&q=80', // Architect studio drafting table and notes
     'https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=1200&q=80', // Architectural drafting and field journal
   ],
