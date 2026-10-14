@@ -669,14 +669,7 @@ function getDbClient(): Client | null {
                   process.env.POSTGRES_URL_NON_POOLING || 
                   process.env.POSTGRES_PRISMA_URL ||
                   FALLBACK_NEON_DATABASE_URL;
-  if (!connStr) return null;
-  const cleanStr = connStr
-    .replace('?sslmode=require', '')
-    .replace('&sslmode=require', '')
-    .replace('&channel_binding=require', '')
-    .replace('?channel_binding=require', '')
-    .replace('&supa=base-pooler.x', '')
-    .replace('&pgbouncer=true', '');
+  const cleanStr = connStr.split('?')[0];
   return new Client({
     connectionString: cleanStr,
     ssl: { rejectUnauthorized: false }
@@ -710,6 +703,10 @@ export async function syncSitesFromDatabase(): Promise<SiteConfig[]> {
         }
       }
       memorySitesCache = merged;
+      const filePath = getSafeFilePath();
+      if (filePath) {
+        try { fs.writeFileSync(filePath, JSON.stringify(merged, null, 2), 'utf-8'); } catch (_) {}
+      }
       await client.end();
       return merged;
     } else {
@@ -759,9 +756,35 @@ export async function persistSiteToDatabase(site: SiteConfig): Promise<void> {
   }
 }
 
+export function findSiteInList(sites: SiteConfig[], identifier: string): SiteConfig | null {
+  const cleanId = identifier.toLowerCase().trim().replace(/^https?:\/\//, '').replace(/\/$/, '');
+  const rootId = cleanId.replace(/^www\./, '');
+  const strippedId = rootId.replace(/\.(org|com|net|app|io|co|xyz|online|site|tech|store)$/i, '');
+
+  return sites.find(s => {
+    const sub = s.subdomain.toLowerCase().trim();
+    const cust = s.customDomain ? s.customDomain.toLowerCase().trim().replace(/^https?:\/\//, '').replace(/\/$/, '') : null;
+    const custRoot = cust ? cust.replace(/^www\./, '') : null;
+    const custStripped = custRoot ? custRoot.replace(/\.(org|com|net|app|io|co|xyz|online|site|tech|store)$/i, '') : null;
+
+    return (
+      sub === cleanId ||
+      sub === rootId ||
+      sub === strippedId ||
+      (cust && (cust === cleanId || cust === rootId)) ||
+      (custRoot && (custRoot === cleanId || custRoot === rootId || custRoot === strippedId)) ||
+      (custStripped && custStripped === strippedId)
+    );
+  }) || null;
+}
+
 export async function getSiteBySubdomainOrDomainAsync(identifier: string): Promise<SiteConfig | null> {
   try {
-    await syncSitesFromDatabase();
+    const freshSites = await syncSitesFromDatabase();
+    if (freshSites && freshSites.length > 0) {
+      const match = findSiteInList(freshSites, identifier);
+      if (match) return match;
+    }
   } catch (_) {}
   return getSiteBySubdomainOrDomain(identifier);
 }
@@ -831,26 +854,7 @@ export function getSitesForUser(userId: string | null | undefined, userEmail?: s
 }
 
 export function getSiteBySubdomainOrDomain(identifier: string): SiteConfig | null {
-  const sites = getAllSites();
-  const cleanId = identifier.toLowerCase().trim().replace(/^https?:\/\//, '').replace(/\/$/, '');
-  const rootId = cleanId.replace(/^www\./, '');
-  const strippedId = rootId.replace(/\.(org|com|net|app|io|co|xyz|online|site|tech|store)$/i, '');
-
-  return sites.find(s => {
-    const sub = s.subdomain.toLowerCase().trim();
-    const cust = s.customDomain ? s.customDomain.toLowerCase().trim().replace(/^https?:\/\//, '').replace(/\/$/, '') : null;
-    const custRoot = cust ? cust.replace(/^www\./, '') : null;
-    const custStripped = custRoot ? custRoot.replace(/\.(org|com|net|app|io|co|xyz|online|site|tech|store)$/i, '') : null;
-
-    return (
-      sub === cleanId ||
-      sub === rootId ||
-      sub === strippedId ||
-      (cust && (cust === cleanId || cust === rootId)) ||
-      (custRoot && (custRoot === cleanId || custRoot === rootId || custRoot === strippedId)) ||
-      (custStripped && custStripped === strippedId)
-    );
-  }) || null;
+  return findSiteInList(getAllSites(), identifier);
 }
 
 export function getSiteById(id: string): SiteConfig | null {
