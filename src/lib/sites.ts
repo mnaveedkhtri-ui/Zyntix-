@@ -660,12 +660,15 @@ const INITIAL_DEMO_SITES: SiteConfig[] = [
 // In-Memory cache for 100% zero-crash guarantee in any environment
 let memorySitesCache: SiteConfig[] = [...INITIAL_DEMO_SITES];
 
+const FALLBACK_NEON_DATABASE_URL = "postgresql://neondb_owner:npg_dJh0OU5xyXfY@ep-proud-smoke-b7mbkvrm.c-13.us-east-1.aws.neon.tech/neondb";
+
 function getDbClient(): Client | null {
   const connStr = process.env.DATABASE_URL_UNPOOLED || 
                   process.env.POSTGRES_URL_NON_POOLING || 
                   process.env.DATABASE_URL || 
                   process.env.POSTGRES_URL || 
-                  process.env.POSTGRES_PRISMA_URL;
+                  process.env.POSTGRES_PRISMA_URL ||
+                  FALLBACK_NEON_DATABASE_URL;
   if (!connStr) return null;
   const cleanStr = connStr
     .replace('?sslmode=require', '')
