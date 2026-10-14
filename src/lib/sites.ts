@@ -663,12 +663,17 @@ let memorySitesCache: SiteConfig[] = [...INITIAL_DEMO_SITES];
 const FALLBACK_NEON_DATABASE_URL = "postgresql://neondb_owner:npg_dJh0OU5xyXfY@ep-proud-smoke-b7mbkvrm-pooler.c-13.us-east-1.aws.neon.tech/neondb";
 
 function getDbClient(): Client | null {
-  const connStr = process.env.DATABASE_URL || 
-                  process.env.POSTGRES_URL || 
-                  process.env.DATABASE_URL_UNPOOLED || 
-                  process.env.POSTGRES_URL_NON_POOLING || 
-                  process.env.POSTGRES_PRISMA_URL ||
-                  FALLBACK_NEON_DATABASE_URL;
+  let connStr = process.env.DATABASE_URL || 
+                process.env.POSTGRES_URL || 
+                process.env.DATABASE_URL_UNPOOLED || 
+                process.env.POSTGRES_URL_NON_POOLING || 
+                process.env.POSTGRES_PRISMA_URL;
+
+  // Protect against dead/stale Supabase tenant URLs on Vercel:
+  if (!connStr || connStr.includes('cxgbgswhqjeglwhoihei') || connStr.includes('supabase')) {
+    connStr = FALLBACK_NEON_DATABASE_URL;
+  }
+
   const cleanStr = connStr.split('?')[0];
   return new Client({
     connectionString: cleanStr,
